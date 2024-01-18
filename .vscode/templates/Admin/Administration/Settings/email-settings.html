@@ -1,0 +1,104 @@
+{% include "Layout/top.html" %}
+{% include "Layout/settings_sidebar.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<div class="row">
+			<div class="col-md-8 offset-md-2">
+				<form action="/HrmTool/Administration/emailSettings" method="post">
+					<div class="input-block mb-3">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" name="mailoption" id="phpmail" value="option1" >
+							<label class="form-check-label" for="phpmail">PHP Mail</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" name="mailoption" id="smtpmail" 
+								value="option2" checked>
+							<label class="form-check-label" for="smtpmail">SMTP</label>
+						</div>
+					</div>
+					<h4 class="page-title">PHP Email Settings</h4>
+					{% for i in php_email_settings %}
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Email From Address</label>
+								<input class="form-control" type="email" id="phpEmail" name="phpEmail"
+									value="{{i.Email}}" required>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Emails From Name</label>
+								<input class="form-control" type="text" id="phpName" name="phpName" value="{{i.Name}}"
+									required>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+					<h4 class="page-title m-t-30">SMTP Email Settings</h4>
+					{% for i in smtp_email_settings %}
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">SMTP HOST</label>
+								<input class="form-control" type="text" name="smtpHost" value="{{i.SMTP_HOST}}"
+									required>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">SMTP USER</label>
+								<input class="form-control" type="text" name="smtpUser" value="{{i.SMTP_USER}}"
+									required>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">SMTP PASSWORD</label>
+								<input class="form-control" type="password" name="smtpPassword"
+									value="{{i.SMTP_PASSWORD}}" required>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">SMTP PORT</label>
+								<input class="form-control" type="text" name="smtpPort" value="{{i.SMTP_PORT}}"
+									required>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">SMTP Security {{i.SMTP_Security}}</label>
+								<select class="form-select" name="smtpSecurity" value="{{i.SMTP_Security}}" required>
+									<option value="here give your choose name">Name</option>
+									<option>SSL</option>
+									<option>TLS</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">SMTP Authentication Domain</label>
+								<input class="form-control" type="text" name="smtpAuthentication"
+									value="{{i.Authentication_Domain}}" required>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn">Save &amp; update</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

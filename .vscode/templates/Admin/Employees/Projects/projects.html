@@ -1,0 +1,902 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Projects</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item active">Projects</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#create_project"><i
+							class="fa-solid fa-plus"></i> Create Project</a>
+					<div class="view-icons">
+						<a href="#" class="grid-view btn btn-link active"><i class="fa fa-th"></i></a>
+						<a href="#" class="list-view btn btn-link"><i class="fa-solid fa-bars"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<!-- Search Filter -->
+		<div class="row filter-row">
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating" onkeyup="search_by_name($(this).val())">
+					<label class="focus-label">Project Name</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating" onkeyup="search_by_employee($(this).val())">
+					<label class="focus-label">Employee Name</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus select-focus">
+					<select class="select floating">
+						<option>Select Designation</option>
+						{% for i in desig_data %}
+						<option value="{{i.id}}">{{i.Name}}</option>
+						{% endfor %}
+					</select>
+					<label class="focus-label">Designation</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<a href="#" class="btn btn-success w-100"> Search </a>
+			</div>
+		</div>
+		<!-- Search Filter -->
+
+		<div class="row search_table">
+			{%for i in display%}
+			<div class="col-lg-4 col-sm-6 col-md-4 col-xl-3 d-flex">
+				<div class="card w-100">
+					<div class="card-body">
+						<div class="dropdown dropdown-action profile-action">
+							<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+								aria-expanded="false"><i class="material-icons">more_vert</i></a>
+							<div class="dropdown-menu dropdown-menu-right">
+								<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project"
+									onclick="edit_guest('{{i.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+								<a class="dropdown-item" href="#" data-bs-toggle="modal"
+									data-bs-target="#delete_project" onclick="delete_guest('{{i.id}}')"><i
+										class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+							</div>
+						</div>
+						<h4 class="project-title"><a href="project-view.html">{{i.Project_Name}}</a></h4>
+						<small class="block text-ellipsis m-b-15">
+							<span class="text-xs">1</span> <span class="text-muted">open tasks, </span>
+							<span class="text-xs">9</span> <span class="text-muted">tasks completed</span>
+						</small>
+						<p class="text-muted">
+							{% if i.Description %}
+							{{ i.Description }}
+							{% endif %}
+						</p>
+						<div class="pro-deadline m-b-15">
+							<div class="sub-title">
+								Deadline:
+							</div>
+							<div class="text-muted">
+								{{format_display_date(i.End_Date)}}
+							</div>
+						</div>
+						<div class="project-members m-b-15">
+							<div>Project Leader :</div>
+							<ul class="team-members">
+								{% for j in employee_ids %}
+								{% if i.Project_Leader_id|int == j.id|int %}
+								<li>
+									<a href="#" title="{{j.First_Name}} {{j.Last_Name}}" data-bs-toggle="tooltip"><img
+											src="/templates/assets/uploaded_files/{{j.Photo }}" alt="User Image"></a>
+								</li>
+								{% endif %}
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="project-members m-b-15">
+							<div>Team :</div>
+							<ul class="team-members">
+								{% for a in  employee_ids %}
+								{% if i.Teams|int == a.id|int %}
+								<li>
+									<a href="#" title="{{a.First_Name}} {{a.Last_Name}}"
+										data-bs-toggle="tooltip"><img src="/templates/assets/uploaded_files/{{a.Photo }}"
+											alt="User Image"></a>
+								</li>
+								{% endif %}
+								{% endfor %}
+							</ul>
+						</div>
+						<p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
+						<div class="progress progress-xs mb-0">
+							<div class="progress-bar bg-success w-40" role="progressbar" data-bs-toggle="tooltip"
+								title="40%"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<!-- /Page Content -->
+
+		<!-- Create Project Modal -->
+		<div id="create_project" class="modal custom-modal fade" role="dialog">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Create Project</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form action='/HrmTool/Employee/create_project' method='POST' enctype='multipart/form-data'>
+							<div class="row">
+								<input name="pagetype" value="grid" type="hidden" />
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Project Name</label>
+										<input class="form-control" type="text" id="Project_Name" name="Project_Name"
+											required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Client</label>
+										<select class="form-select" id="Client_id" name="Client_id" required>
+											<option value="">-select-</option>
+											{% for i in client_data %}
+											<option value="{{i.id}}">{{ i.First_Name }} {{i.Last_Name}}</option>
+											{% endfor%}
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Start Date</label>
+										<div class="cal-icon">
+											<input class="form-control datetimepicker" type="text" id="Start_Date"
+												name="Start_Date" required>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">End Date</label>
+										<div class="cal-icon">
+											<input class="form-control datetimepicker" type="text" id="End_Date"
+												name="End_Date" required>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-3">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Rate</label>
+										<input placeholder="$50" class="form-control allow_numbers_only" type="text" id="Rate" name="Rate"
+											required>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Time</label>
+										<select class="form-select" id="hour_fix" name="hour_fix" required>
+											<option value="">-select-</option>
+											<option value="Hourly">Hourly</option>
+											<option value="Fixed">Fixed</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Priority</label>
+										<select class="form-select" id="Priority" name="Priority" required>
+											<option value="">-select-</option>
+											<option value="High">High</option>
+											<option value="Medium">Medium</option>
+											<option value="Low">Low</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Add Project Leader</label>
+										<select class="form-select" name="Project_Leader_id" id="projectLeaderSelect">
+											<option value="">-select-</option>
+											{% for i in employee_ids %}
+											<option value="{{i.id}}" data-photo="{{i.Photo}}">{{ i.First_Name}}{{i.Last_Name}}</option>
+											{% endfor%}
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Team Leader</label>
+										<div class="project-members">
+											<a href="#" data-bs-toggle="tooltip" class="avatar">
+												<img src="/templates/assets/img/profile1.png" alt="User Image" id="teamLeaderPhoto">
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Add Team</label>
+										<select class="form-select" id="Teams" name="Teams"  required>
+											<option value="" >-select-</option>
+											{% for i in employee_ids %}
+											<option value="{{i.id}}" data-photo="/templates/assets/uploaded_files/{{i.Photo}}">{{ i.First_Name }}{{i.Last_Name}}</option>
+											{% endfor%}
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Team Members</label>
+										<div class="project-members" id="teamMembersPhotos">
+											<span class="all-team" id="selectedTeamCount">+{{ employee_ids|length }}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="input-block mb-3">
+								<label class="col-form-label">Description</label>
+								<textarea rows="4" class="form-control" placeholder="Enter your message here"
+									name="Description" id="Description" oninput="checkDescriptionLength()"></textarea>
+							</div>
+							<div class="input-block mb-3">
+								<label class="col-form-label">Upload Files</label>
+								<input class="form-control" type="file" id="File" name="File" accept="application/pdf" oninput="display_pdf.data=window.URL.createObjectURL(this.files[0]);display_pdf.style.display='block'" >
+								<br>
+								<br>
+								<br>
+								<object id="display_pdf" data="/templates/assets/img/test.pdf" width="700" height="300" style="display: none;"></object>
+							</div>
+							<div class="submit-section">
+								<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Create Project Modal -->
+
+		<!-- Edit Project Modal -->
+		<div id="edit_project" class="modal custom-modal fade" role="dialog">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Edit Project</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form action="/update_project" method="POST" enctype="multipart/form-data">
+							<div class="row">
+								<input name="pagetype" value="grid" type="hidden" />
+								<input id="edit_idz" name="edit_id" type="hidden" />
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Project Name</label>
+										<input class="form-control" value="Project Management" type="text"
+											id="edit_projectname" name="edit_projectname" required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Client</label>
+										<select class="form-select" id="edit_clientid" name="edit_clientid" required>
+											{% for i in client_data %}
+											<option value="{{i.id}}">{{ i.First_Name }} {{i.Last_Name}}</option>
+											{% endfor%}
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Start Date</label>
+										<div class="cal-icon">
+											<input class="form-control datetimepicker" type="text" id="edit_startdate"
+												name="edit_startdate" required>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">End Date</label>
+										<div class="cal-icon">
+											<input class="form-control datetimepicker" type="text" id="edit_enddate"
+												name="edit_enddate" required>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-3">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Rate</label>
+										<input placeholder="$50" class="form-control" value="" type="text"
+											id="edit_rate" name="edit_rate" required>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Time</label>
+										<select class="form-select">
+											<option>Hourly</option>
+											<option selected>Fixed</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Priority</label>
+										<select class="form-select" id="edit_priority" name="edit_priority" required>
+											<option selected>High</option>
+											<option>Medium</option>
+											<option>Low</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Add Project Leader</label>
+										<!--<input class="form-control" type="text" id="edit_projectleaderid" name="edit_projectleaderid">-->
+										<select id="edit_projectleaderid" name="edit_projectleaderid"
+											class="form-control">
+											{% for i in employee_ids %}
+											<option value="{{i.id}}">{{ i.First_Name }}{{i.Last_Name}}</option>
+											{% endfor%}
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Team Leader</label>
+										<div class="project-members">
+											<a href="#" data-bs-toggle="tooltip" title="Jeffery Lalor" class="avatar">
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Add Team</label>
+										<select id="edit_teams" name="edit_teams" class="form-control">
+											{% for i in employee_ids %}
+											<option value="{{i.id}}">{{ i.First_Name }}{{i.Last_Name}}</option>
+											{% endfor%}
+										</select>
+										<!--<input class="form-control" type="text" id="edit_teams" name="edit_teams">-->
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Team Members</label>
+										<div class="project-members">
+											<!--<a href="#" data-bs-toggle="tooltip" title="John Doe" class="avatar">
+											<img src="templates/assets/img/profiles/avatar-16.jpg" alt="User Image">
+										</a>
+										<a href="#" data-bs-toggle="tooltip" title="Richard Miles" class="avatar">
+											<img src="templates/assets/img/profiles/avatar-09.jpg" alt="User Image">
+										</a>
+										<a href="#" data-bs-toggle="tooltip" title="John Smith" class="avatar">
+											<img src="templates/assets/img/profiles/avatar-10.jpg" alt="User Image">
+										</a>
+										<a href="#" data-bs-toggle="tooltip" title="Mike Litorus" class="avatar">
+											<img src="templates/assets/img/profiles/avatar-05.jpg" alt="User Image">
+										</a>
+										<span class="all-team">+2</span>-->
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="input-block mb-3">
+								<label class="col-form-label">Description</label>
+								<textarea rows="4" class="form-control" placeholder="Enter your message here"
+									id="edit_description" name="edit_description"></textarea>
+							</div>
+							<div class="input-block mb-3">
+								<label class="col-form-label">Upload Files</label>
+								<input class="form-control" type="file" accept="application/pdf" id="edit_file" name="edit_file" oninput="editdisplay_pdf.data=window.URL.createObjectURL(this.files[0]);editdisplay_pdf.style.display='block'">
+								<br>
+								<br>
+								<br>
+								<object id="editdisplay_pdf" data="/templates/assets/uploaded_files/" width="700" height="300" ></object>
+							</div>
+							<div class="submit-section">
+								<button class="btn btn-primary submit-btn">Save</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Edit Project Modal -->
+
+		<!-- Delete Project Modal -->
+		<div class="modal custom-modal fade" id="delete_project" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="form-header">
+							<h3>Delete Project</h3>
+							<p>Are you sure want to delete?</p>
+						</div>
+						<div class="modal-btn delete-action">
+							<div class="row">
+
+								<input name="delete_id" id="delete_id" type="hidden">
+								<input name="pagetype" value="grid" type="hidden" />
+								<div class="col-6">
+									<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+										onclick="delete_data($('#delete_id').val())">Delete</a>
+								</div>
+								<div class="col-6">
+									<a href="javascript:void(0);" data-bs-dismiss="modal"
+										class="btn btn-primary cancel-btn">Cancel</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Delete Project Modal -->
+
+	</div>
+	<!-- /Page Wrapper -->
+
+</div>
+<!-- /Main Wrapper -->
+<!--edit project-->
+<script>
+	function edit_guest(data) {
+		console.log(data)
+		$.get('/HrmTool/Employee/edit_projectgrid/' + data, function (res) {
+			console.log(res)
+			$('#edit_idz').val(res.id)
+			$('#edit_projectname').val(res.Project_Name)
+			$('#edit_clientid').val(res.Client_id)
+			$('#edit_startdate').val(res.Start_Date)
+			$('#edit_enddate').val(res.End_Date)
+			$('#edit_rate').val(res.Rate)
+			$('#edit_priority').val(res.Priority)
+			$('#edit_projectleaderid').val(res.Project_Leader_id)
+			$('#edit_teams').val(res.Teams)
+			$('#edit_description').val(res.Description)
+			$('#editdisplay_pdf').attr('data','/templates/assets/uploaded_files/'+res.File)
+		})
+	}
+
+	function delete_guest(data) {
+		$('#delete_id').val(data)
+	}
+
+	function delete_data(data) {
+		$.get('/delete_projectgrid/' + data, function (res) {
+			location.reload()
+		})
+	}
+</script>
+
+<!--photo-->
+<script>
+	$(document).ready(function () {
+		$('#projectLeaderSelect').change(function () {
+			var selectedOption = $('option:selected', this);
+			var selectedPhoto = selectedOption.data('photo');
+
+			// Check if data-photo attribute exists before updating the image source
+			if (selectedPhoto !== undefined) {
+				$('#teamLeaderPhoto').attr('src', '/templates/assets/uploaded_files/' + selectedPhoto);
+			} else {
+				// Handle the case when data-photo is not set
+				console.error("Data attribute 'data-photo' not found for the selected option.");
+			}
+		});
+	});
+</script>
+
+
+<script>
+	$(document).ready(function () {
+		// Function to update team members' photos
+		function updateTeamMembersPhotos() {
+			$('#teamMembersPhotos').empty(); // Clear previous photos
+
+			// Iterate through selected options and display their photos
+			$('#Teams option:selected').each(function () {
+				var photoUrl = $(this).data('photo');
+				var employeeName = $(this).text();
+				$('#teamMembersPhotos').append('<a href="#" data-bs-toggle="tooltip" title="' + employeeName + '" class="avatar">' +
+					'<img src="' + photoUrl + '" alt="User Image"></a>');
+			});
+
+			// Update the count of selected team members
+			$('#selectedTeamCount').text('+' + $('#Teams option:selected').length);
+		}
+
+		// Event listener for changes in the dropdown selection
+		$('#Teams').change(function () {
+			updateTeamMembersPhotos();
+		});
+
+		// Trigger initial update
+		updateTeamMembersPhotos();
+	});
+</script>
+
+<!--/photo-->
+
+<!-- search script filter-->
+<script>
+	function formatDisplayDate(dateStr) {
+		// Assuming dateStr is in the format 'DD-MM-YYYY'
+		var parts = dateStr.split('-');
+		var formattedDate = parts[0] + ' ' + parts[1] + ' ' + parts[2];
+		return formattedDate;
+	}
+	function search_by_name(data) {
+		if (data) {
+			$.get('/HrmTool/Employee/search_name/' + data, function (res) {
+				$('.search_table').html(function () {
+					h2 = '';
+					console.log(res)
+					console.log(res.length)
+					for (let i = 0; i < res.length; i++) {
+						h2 +=
+							`
+					<div class="col-lg-4 col-sm-6 col-md-4 col-xl-3 d-flex">
+						<div class="card w-100">
+							<div class="card-body">
+								<div class="dropdown dropdown-action profile-action">
+									<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+									<div class="dropdown-menu dropdown-menu-right">
+										<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project" onclick="edit_guest(${res[i].id})"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+										<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_project" onclick="delete_guest(${res[i].id})"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+									</div>
+								</div>
+								<h4 class="project-title"><a href="project-view.html">${res[i].Project_Name}</a></h4>
+								<small class="block text-ellipsis m-b-15">
+									<span class="text-xs">1</span> <span class="text-muted">open tasks, </span>
+									<span class="text-xs">9</span> <span class="text-muted">tasks completed</span>
+								</small>
+								<p class="text-muted">${res[i].Description}
+								</p>
+								<div class="pro-deadline m-b-15">
+									<div class="sub-title">
+										Deadline:
+									</div>
+									<div class="text-muted">
+										${res[i].End_Date}
+									</div>
+								</div>
+								<div class="project-members m-b-15">
+									<div>Project Leader :</div>
+									<ul class="team-members">
+										
+									</ul>
+								</div>
+								<div class="project-members m-b-15">
+									<div>Team :</div>
+									<ul class="team-members">
+										{% for project, employee in team %}
+											<li>
+												<a href="#" title="{{employee.First_Name}} {{employee.Last_Name}}" data-bs-toggle="tooltip"><img src="templates/assets/photos/{{employee.Photo}}" alt="User Image"></a>
+											</li>
+										{% endfor %}
+										<!--<li class="dropdown avatar-dropdown">
+											<a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<div class="avatar-group">
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-02.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-09.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-10.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-05.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-11.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-12.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-13.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-01.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-16.jpg" alt="User Image">
+													</a>
+												</div>
+												<div class="avatar-pagination">
+													<ul class="pagination">
+														<li class="page-item">
+															<a class="page-link" href="#" aria-label="Previous">
+																<span aria-hidden="true">«</span>
+																<span class="visually-hidden">Previous</span>
+															</a>
+														</li>
+														<li class="page-item"><a class="page-link" href="#">1</a></li>
+														<li class="page-item"><a class="page-link" href="#">2</a></li>
+														<li class="page-item">
+															<a class="page-link" href="#" aria-label="Next">
+																<span aria-hidden="true">»</span>
+															<span class="visually-hidden">Next</span>
+															</a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</li>-->
+									</ul>
+								</div>
+								<p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
+								<div class="progress progress-xs mb-0">
+									<div class="progress-bar bg-success w-40" role="progressbar" data-bs-toggle="tooltip" title="40%"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					`;
+					}
+					return h2
+				})
+			});
+		}
+		else {
+			window.location.reload();
+		}
+	}
+
+	function search_by_employee(data) {
+		if (data) {
+			$.get('/HrmTool/Employee/search_employee/' + data, function (res) {
+				$('.search_table').html(function () {
+					h2 = '';
+					console.log(res)
+					console.log(res.length)
+					for (let i = 0; i < res.length; i++) {
+						h2 +=
+							`
+					<div class="col-lg-4 col-sm-6 col-md-4 col-xl-3 d-flex">
+						<div class="card w-100">
+							<div class="card-body">
+								<div class="dropdown dropdown-action profile-action">
+									<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+									<div class="dropdown-menu dropdown-menu-right">
+										<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project" onclick="edit_guest(${res[i].id})"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+										<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_project" onclick="delete_guest(${res[i].id})"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+									</div>
+								</div>
+								<h4 class="project-title"><a href="project-view.html">${res[i].Project_Name}</a></h4>
+								<small class="block text-ellipsis m-b-15">
+									<span class="text-xs">1</span> <span class="text-muted">open tasks, </span>
+									<span class="text-xs">9</span> <span class="text-muted">tasks completed</span>
+								</small>
+								<p class="text-muted">${res[i].Description}
+								</p>
+								<div class="pro-deadline m-b-15">
+									<div class="sub-title">
+										Deadline:
+									</div>
+									<div class="text-muted">
+										${res[i].End_Date}
+									</div>
+								</div>
+								<div class="project-members m-b-15">
+									<div>Project Leader :</div>
+									<ul class="team-members">
+									</ul>
+								</div>
+								<div class="project-members m-b-15">
+									<div>Team :</div>
+									<ul class="team-members">
+										{% for project, employee in team %}
+											<li>
+												<a href="#" title="{{employee.First_Name}} {{employee.Last_Name}}" data-bs-toggle="tooltip"><img src="templates/assets/photos/{{employee.Photo}}" alt="User Image"></a>
+											</li>
+										{% endfor %}
+										<!--<li class="dropdown avatar-dropdown">
+											<a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<div class="avatar-group">
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-02.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-09.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-10.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-05.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-11.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-12.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-13.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-01.jpg" alt="User Image">
+													</a>
+													<a class="avatar avatar-xs" href="#">
+														<img src="templates/assets/img/profiles/avatar-16.jpg" alt="User Image">
+													</a>
+												</div>
+												<div class="avatar-pagination">
+													<ul class="pagination">
+														<li class="page-item">
+															<a class="page-link" href="#" aria-label="Previous">
+																<span aria-hidden="true">«</span>
+																<span class="visually-hidden">Previous</span>
+															</a>
+														</li>
+														<li class="page-item"><a class="page-link" href="#">1</a></li>
+														<li class="page-item"><a class="page-link" href="#">2</a></li>
+														<li class="page-item">
+															<a class="page-link" href="#" aria-label="Next">
+																<span aria-hidden="true">»</span>
+															<span class="visually-hidden">Next</span>
+															</a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</li>-->
+									</ul>
+								</div>
+								<p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
+								<div class="progress progress-xs mb-0">
+									<div class="progress-bar bg-success w-40" role="progressbar" data-bs-toggle="tooltip" title="40%"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					`;
+					}
+					return h2
+				})
+			});
+		}
+		else {
+			window.location.reload();
+		}
+	}
+
+	function checkDescriptionLength() {
+		var descriptionInput = document.getElementById("Description");
+		var descriptionValue = descriptionInput.value;
+
+		if (descriptionValue.length > 255) {
+			alert("Description cannot exceed 255 characters");
+			// You can also update the UI to indicate the error, e.g., change the border color of the input
+			// descriptionInput.style.borderColor = "red";
+		}
+	}
+
+	//preview document
+	const fileInput = document.getElementById('File');
+	const previewImage = document.getElementById('previewImage');
+
+	fileInput.addEventListener('change', () => {
+		const file = fileInput.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				previewImage.src = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		}
+	});
+
+	function displayPDF(pdfData) {
+		// Ensure pdfjsLib is defined
+		if (window.pdfjsLib) {
+			window.pdfjsLib.getDocument({ data: pdfData }).promise.then(function (pdf) {
+				// Fetch the first page
+				return pdf.getPage(1);
+			}).then(function (page) {
+				const scale = 0.5;
+				const viewport = page.getViewport({ scale });
+
+				// Prepare canvas using PDF page dimensions
+				const canvas = document.getElementById('pdfCanvas');
+				const context = canvas.getContext('2d');
+				canvas.height = viewport.height;
+				canvas.width = viewport.width;
+
+				// Render PDF page into canvas context
+				const renderContext = {
+					canvasContext: context,
+					viewport: viewport
+				};
+				page.render(renderContext);
+			}).catch(function (error) {
+				console.error('Error loading PDF:', error);
+			});
+		} else {
+			console.error('pdfjsLib is not defined');
+		}
+	}
+
+	function displayPDFPreview() {
+		const fileInput = document.getElementById('File');
+		const pdfCanvas = document.getElementById('pdfCanvas');
+		const file = fileInput.files[0];
+
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				const pdfData = new Uint8Array(e.target.result);
+				displayPDF(pdfData);
+			};
+			reader.readAsArrayBuffer(file);
+		}
+	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		// Get references to the start and end date input fields
+		var startDateInput = document.getElementById('Start_Date');
+		var endDateInput = document.getElementById('End_Date');
+
+		// Add event listener to the end date input field
+		endDateInput.addEventListener('change', function () {
+			// Get the values of the start and end date inputs
+			var startDateValue = new Date(startDateInput.value);
+			var endDateValue = new Date(endDateInput.value);
+
+			// Check if end date is greater than start date
+			if (endDateValue < startDateValue) {
+				alert('End date cannot be greater than start date.');
+				// You can choose to clear the end date or take other actions here
+				endDateInput.value = '';
+			}
+		});
+	});
+</script>
+
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

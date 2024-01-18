@@ -1,0 +1,44 @@
+{% include "Layout/top.html" %}
+{% include "Layout/settings_sidebar.html" %}
+			
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<div class="content container-fluid">
+		<div class="row">
+			<div class="col-md-6 offset-md-3">
+			
+				<!-- Page Header -->
+				<div class="page-header">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3 class="page-title">ToxBox Setting</h3>
+						</div>
+					</div>
+				</div>
+				<!-- /Page Header -->
+				
+				<form action="/HrmTool/Administration/add_details" method="POST">
+					<div class="input-block mb-3">
+						<label class="col-form-label">ApiKey <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" type="text" id="api" name="api" {% if data and data.api %} value="{{ data.api }}" {% endif %} required>
+					</div>
+					<div class="input-block mb-3">
+						<label class="col-form-label"> ApiSecret <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" id="apisec" name="apisec" {% if data and data.apisec %} value="{{ data.apisec }}" {% endif %} required>
+					</div>
+					
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn">Save Changes</button>
+					</div>
+				</form>
+					
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+	
+</div>
+<!-- /Page Wrapper -->
+			
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

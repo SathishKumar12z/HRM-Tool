@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-layout="vertical"
+  data-topbar="light"
+  data-sidebar="dark"
+  data-sidebar-size="lg"
+  data-sidebar-image="none"
+>
+  <!-- Mirrored from smarthr.dreamstechnologies.com/html/template/register.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 08 Dec 2023 06:28:54 GMT -->
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Smarthr - Bootstrap Admin Template" />
+    <meta
+      name="keywords"
+      content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern, accounts, invoice, html5, responsive, CRM, Projects"
+    />
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template" />
+    <title>Register - HRMS admin template</title>
+
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="/templates/assets/img/favicon.png"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/templates/assets/css/bootstrap.min.css" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/templates/assets/css/style.css" />
+  </head>
+  <body class="account-page">
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      <div class="account-content">
+        <div class="container">
+          <!-- Account Logo -->
+          <div class="account-logo">
+            <a href="admin-dashboard.html"
+              ><img
+                src="/templates/assets/img/logo.png"
+                width="200"
+                alt="Dreamguy's Technologies"
+            /></a>
+          </div>
+          <!-- /Account Logo -->
+
+          <div class="account-box">
+            <div class="account-wrapper">
+              <h3 class="account-title">Register</h3>
+              <p class="account-subtitle">Access to our dashboard</p>
+
+              <!-- Account Form -->
+              <form id="Reg_form" action="/HrmTool/Register/register" method="post">
+                <div class="input-block mb-4">
+                  <label class="col-form-label"
+                    >Email<span class="mandatory">*</span></label
+                  >
+                  <input
+                    class="form-control"
+                    id="Email"
+                    name="Email"
+                    type="email"
+                  />
+                </div>
+                <div class="input-block mb-4">
+                  <label class="col-form-label"
+                    >Password<span class="mandatory">*</span></label
+                  >
+                  <input
+                    class="form-control"
+                    id="Password"
+                    name="Password"
+                    type="password"
+                  />
+                </div>
+                <div class="input-block mb-4">
+                  <label class="col-form-label"
+                    >Repeat Password<span class="mandatory">*</span></label
+                  >
+                  <input
+                    class="form-control"
+                    type="password"
+                    id="rep_pass"
+                    name="rep_pass"
+                  />
+                </div>
+                <div class="input-block mb-4 text-center">
+                  <button class="btn btn-primary account-btn" type="submit">
+                    Register
+                  </button>
+                </div>
+                <div class="account-footer">
+                  <p>Already have an account? <a href="index.html">Login</a></p>
+                </div>
+              </form>
+              <!-- /Account Form -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Main Wrapper -->
+
+    <!-- jQuery -->
+    <script src="/templates/assets/js/jquery-3.7.1.min.js"></script>
+
+    <!-- Bootstrap Core JS -->
+    <script src="/templates/assets/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="/templates/assets/js/app.js"></script>
+
+    <script>
+      let form = document.getElementById("Reg_form");
+
+      form.addEventListener("submit", function (event) {
+        console.log("form submit");
+        let email = document.getElementById("Email").value;
+        let password = document.getElementById("Password").value;
+        let repeatpassword = document.getElementById("rep_pass").value;
+
+        if (!isValidEmail(email)) {
+          console.log("Please enter a valid email address");
+          event.preventDefault();
+          return false;
+        }
+        if (!isValidPassword(password)) {
+          console.log("Wrong password");
+          event.preventDefault();
+          return false;
+        }
+
+        if (password !== repeatpassword) {
+          console.log("no match");
+          event.preventDefault();
+          return false;
+        }
+      });
+      function isValidEmail(email) {
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      function isValidPassword(password) {
+        let passRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return passRegex.test(password);
+      }
+    </script>
+  </body>
+
+  <!-- Mirrored from smarthr.dreamstechnologies.com/html/template/register.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 08 Dec 2023 06:28:54 GMT -->
+</html>

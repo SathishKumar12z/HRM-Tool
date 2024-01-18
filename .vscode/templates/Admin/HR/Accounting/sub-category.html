@@ -1,0 +1,228 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Sub Categories</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item active">Accounts</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_categories"><i
+							class="fa-solid fa-plus"></i> Add Sub Categories</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Sub-Category Name</th>
+								<th>Status</th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for new_id in new_id %}
+							<tr>
+								<td>{{loop.index }}</td>
+								<td>{{ new_id.Name }}</td>
+								<td>
+									<div class="dropdown action-label">
+										{% if new_id.current_status == "Inactive" %}
+										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											<i class="fa-regular fa-circle-dot text-danger"></i>
+											{{new_id.current_status}}
+										</a>
+										{% else %}
+										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											<i class="fa-regular fa-circle-dot text-success"></i>
+											{{new_id.current_status}}
+										</a>
+										{% endif %}
+										<div class="dropdown-menu">
+											<a class="dropdown-item " href="#"
+												onclick="state($(this),'{{new_id.id}}')"><i
+													class="fa-regular fa-circle-dot text-success"></i> Active</a>
+											<a class="dropdown-item " href="#"
+												onclick="state($(this),'{{new_id.id}}')"><i
+													class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
+										</div>
+									</div>
+								</td>
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#edit_categories"
+												onClick="subcatedit('{{new_id.id}}')"><i
+													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#delete" onclick="deletesub('{{new_id.id}}')"><i
+													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+	<!-- Add Modal -->
+	<div class="modal custom-modal fade" id="add_categories" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Sub Categories</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div style="padding-left: 203px;" id="error"></div>
+				<div class="modal-body">
+					<form>
+						<div class="input-block mb-3">
+							<input id="Name" name="Name" value="{{cat_name.id}}" type="hidden" />
+							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" value="{{cat_name.Name}}" readonly>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Sub Categories Name <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" id="SubCategory_id" name="SubCategory_id">
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Status <span class="text-danger">*</span></label>
+							<select class="form-select" id="cur_state" name="cur_state" required>
+								<option value="Active">Active</option>
+								<option value="Inactive">InActive</option>
+							</select>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn" type="button" onclick="add_submit()">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Modal -->
+
+	<!-- Edit Modal -->
+	<div class="modal custom-modal fade" id="edit_categories" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Sub Categories</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/subcategory_update" method="POST">
+						<div class="input-block mb-3">
+							<input id="Name" name="Name" value="{{cat_name.id}}" type="hidden" />
+							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" value="{{cat_name.Name}}" readonly>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Sub Categories Name <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" id="edit_SubCategory_id" name="edit_SubCategory_id">
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Status <span class="text-danger">*</span></label>
+							<select class="form-select" id="cur_state" name="cur_state" required>
+								<option value="Active">Active</option>
+								<option value="Inactive">InActive</option>
+							</select>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Edit</button>
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- /Edit Modal -->
+
+	<!-- Delete Holiday Modal -->
+	<div class="modal custom-modal fade" id="delete" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete </h3>
+						<p>Are you sure want to delete?</p>
+						<input name="del_id" id="del_id" type="hidden">
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<form>
+									<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+										onclick="deletesubcat($('#del_id').val())">Delete</a>
+								</form>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Holiday Modal -->
+</div>
+<!-- /Page Wrapper -->
+
+<script>
+	function subcatedit(data) {
+		$.get('/HrmTool/HR/subcatedit/' + data, function (res) {
+			console.log(res)
+			$('#edit_id').val(res.id)
+			$('#edit_SubCategory_id').val(res.Name)
+		})
+	}
+
+
+	function deletesub(data) {
+		$('#del_id').val(data)
+	}
+
+	function deletesubcat(data) {
+		$.get('/HrmTool/HR/delsubcat/' + data, function (res) {
+			location.reload()
+		})
+	}
+</script>
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

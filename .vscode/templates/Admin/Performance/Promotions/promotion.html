@@ -1,0 +1,318 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Promotion</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item active">Promotion</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_promotion"><i
+							class="fa-solid fa-plus"></i> Add Promotion</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+
+					<!-- Promotion Table -->
+					<table class="table table-striped custom-table mb-0 datatable">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Promoted Employee </th>
+								<th>Promotion Designation From </th>
+								<th>Promotion Designation To </th>
+								<th>Promotion Date </th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								{% for employee in cid %}
+								<td>{{loop.index}}</td>
+								<td>
+									<h2 class="table-avatar blue-link">
+										{% for i in emp %}
+											{% if i.id|int == employee.Promotion_For|int%}
+											<a href="#" class="avatar"><img src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+											<a href="profile.html">{{i.First_Name }} {{i.Last_Name}}</a>
+											{% endif %}
+										{% endfor %}
+									</h2>
+								</td>
+								<td>{{employee.Promotion_From}}</td>
+								{% for j in new_id %}
+								{% if j.id|int == employee.Promotion_To|int %}
+								<td>{{j.Name}}</td>
+								{% endif %}
+								{% endfor %}
+								<td class="dateformate">{{employee.Promotion_Date}}</td>
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#edit_promotion"
+												onclick="Guest_value('{{employee.id}}')"><i
+													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#delete_promotion"
+												onclick="deletingid('{{employee.id}}')"><i
+													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<!-- /Promotion Table -->
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+	<!-- Add Promotion Modal -->
+	<div id="add_promotion" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Promotion</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Performance/add_promotion" method="POST">
+
+						<div class="input-block mb-3 ">
+							<label class="col-form-label">Promotion For <span class="text-danger">*</span></label>
+							<select class="form-select" id="promotionfor" name="promotionfor"
+								onchange="search_by_designation($(this).val())" required>
+								<option value="">Select Employee</option>
+								{% for Employee in emp %}
+								<option value="{{ Employee.id}}">{{Employee.First_Name}} {{Employee.Last_Name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="input-block mb-3 show_search_class">
+							<label class="col-form-label">Promotion From <span class="text-danger">*</span></label>
+							<input type="text" class="form-control " id="promotionfrom" name="promotionfrom" readonly
+								required>
+						</div>
+
+						<div class="input-block mb-3">
+							<label class="col-form-label">Promotion To <span class="text-danger">*</span></label>
+							<div id="pro_to">
+								<input class="form-control " placeholder="Select Employee" readonly/>
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Promotion Date <span class="text-danger">*</span></label>
+								<input class="form-control" type="date"
+									id="promotiondate" name="promotiondate" required></div>
+
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		var promotionDateInput = document.getElementById('promotiondate');
+		promotionDateInput.addEventListener('input', function(event) {
+			var inputValue = event.target.value;
+		var dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+		if (!dateFormat.test(inputValue)) {
+			event.target.value = '';
+				}
+			});
+	</script>
+	<!-- /Add Promotion Modal -->
+
+	<!-- Edit Promotion Modal -->
+	<div id="edit_promotion" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Promotion</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Performance/update_promotion" method="POST">
+						<input id="edit_idz" name="edit_id" type="hidden">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Promotion For <span class="text-danger">*</span></label>
+							<select class="form-select" id="epromotionfor" name="epromotionfor" required>
+								<option value="">Select Employee</option>
+								{% for Employee in emp %}
+								<option value="{{ Employee.id}}">{{ Employee.First_Name }} {{ Employee.Last_Name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Promotion From <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" id="epromotionfrom" name="epromotionfrom" required readonly>
+						</div>
+
+						<div class="input-block mb-3">
+							<label class="col-form-label">Promotion To <span class="text-danger">*</span></label>
+							<select class="form-select" id="epromotionto" name="epromotionto" required>
+								<option value="">Select promotion To</option>
+								{% for i in new_id%}
+								<option value="{{i.id}}">{{i.Name}} </option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Promotion Date <span class="text-danger">*</span></label>
+								<input type="date" class="form-control " id="epromotiondate"
+									name="epromotiondate" required>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+
+		function edit_master()
+		{
+			$("form").submit(function (event) {
+				let image = $('#eimage')
+				var formData = {
+					edit_id: $("#edit_idz").val(),
+					epromotionfor: $('#epromotionfor').val(),
+					epromotionfrom: $("#epromotionfrom").val(),
+					epromotionto: $("#epromotionto").val(),
+					epromotiondate: $("#epromotiondate").val(),
+
+				};
+				console.log(formData)
+				$.ajax({
+					type: "post",
+					url: "/update_promotion",
+					data: formData,
+					dataType: "json",
+					encode: true,
+				}).done(function (data) {
+					if (data == "Already this name Exist") {
+						$("#messages").html(data);
+					}
+					if (data == "Done") {
+						location.reload();
+					}
+				});
+				event.preventDefault();
+			});
+		}
+
+
+		function Guest_value(data)
+		{
+			var id = data;
+		$.ajax( {
+			type    : "put",
+		url     : '/HrmTool/Performance/put_data/'+id,
+		id    : id,
+		contentType: "application/json",
+
+		success: function(data) {
+			console.log(data);
+		$("#edit_idz").val(data[0].id)
+		$("#epromotionfrom").val(data[0].Promotion_From),
+		$("#epromotiondate").val(data[0].Promotion_Date),
+
+		$("#epromotionfor").val(data[0].Promotion_For),
+		$("#epromotionto").val(data[0].Promotion_To),
+		$('#edit_promotion').model('show')
+					
+				},
+			});
+		return false
+		}
+	</script>
+
+
+
+
+	<!-- /Edit Promotion Modal -->
+
+	<!-- Delete Promotion Modal -->
+	<div class="modal custom-modal fade" id="delete_promotion" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Promotion</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<input type="hidden" id="del_id" />
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+									onclick="conformdel($('#del_id').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+		function deletingid(id)
+		{
+			$('#del_id').val(id)
+		}
+
+		function conformdel(id){
+			$.get('/HrmTool/Performance/delete/' + id, function () {
+				location.reload();
+			})
+		}
+	</script>
+
+	<!-- /Delete Promotion Modal -->
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

@@ -1,0 +1,444 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Employee Salary</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item active">Salary</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_salary"><i
+							class="fa-solid fa-plus"></i> Add Salary</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<!-- Search Filter -->
+		<div class="row filter-row">
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating">
+					<label class="focus-label">Employee Name</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+				<div class="input-block mb-3 form-focus select-focus">
+					<select class="form-select">
+						<option value=""> -- Select -- </option>
+						<option value="">Employee</option>
+						<option value="1">Manager</option>
+					</select>
+					<label class="focus-label">Role</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+				<div class="input-block mb-3 form-focus select-focus">
+					<select class="form-select">
+						<option> -- Select -- </option>
+						<option> Pending </option>
+						<option> Approved </option>
+						<option> Rejected </option>
+					</select>
+					<label class="focus-label">Leave Status</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+				<div class="input-block mb-3 form-focus">
+					<div class="cal-icon">
+						<input class="form-control " type="date">
+					</div>
+					<label class="focus-label">From</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+				<div class="input-block mb-3 form-focus">
+					<div class="cal-icon">
+						<input class="form-control floating datetimepicker" type="text">
+					</div>
+					<label class="focus-label">To</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
+				<a href="#" class="btn btn-success w-100"> Search </a>
+			</div>
+		</div>
+		<!-- /Search Filter -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table datatable">
+						<thead>
+							<tr>
+								<th>Employee</th>
+								<th>Employee ID</th>
+								<th>Email</th>
+								<th>Join Date</th>
+								<th>Role</th>
+								<th>Salary</th>
+								<th>Payslip</th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for i in Emp_salary %}
+								{% for j in employee_data %}
+									{% if i.Employee_id|int == j.id|int %}
+									<tr>
+										<td>
+											<h2 class="table-avatar">
+												<a href="profile.html" class="avatar"><img
+														src="/templates/assets/uploaded_files/{{j.Photo}}" alt="User Image"></a>
+												<a href="profile.html"><span>{{j.First_Name}}{{j.Last_Name}}</span></a>
+											</h2>
+										</td>
+										<td>{{j.Employee_ID}}</td>
+										<td><a href="https://smarthr.dreamstechnologies.com/cdn-cgi/l/email-protection"
+												class="__cf_email__"
+												data-cfemail="c8bca9baa9a0bba0baa7b8bba0a1baad88adb0a9a5b8a4ade6aba7a5">[email&#160;protected]</a>
+										</td>
+										<td>{{j.Joining_Date}}</td>
+										<td>
+											<div class="dropdown">
+												<a href="#" class="btn btn-white btn-sm btn-rounded dropdown-toggle"
+													data-bs-toggle="dropdown" aria-expanded="false">Android Developer </a>
+												<div class="dropdown-menu">
+													<a class="dropdown-item" href="#">Software Engineer</a>
+													<a class="dropdown-item" href="#">Software Tester</a>
+													<a class="dropdown-item" href="#">Frontend Developer</a>
+													<a class="dropdown-item" href="#">UI/UX Developer</a>
+												</div>
+											</div>
+										</td>
+										<td>{{i.Net_Salary}}</td>
+										<td><a class="btn btn-sm btn-primary" href="/HrmTool/HR/geting_form">Generate Slip</a></td>
+										<td class="text-end">
+											<div class="dropdown dropdown-action">
+												<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+													aria-expanded="false"><i class="material-icons">more_vert</i></a>
+												<div class="dropdown-menu dropdown-menu-right">
+													<a class="dropdown-item" href="#" data-bs-toggle="modal"
+														data-bs-target="#edit_salary" onClick="editing_id('{{i.id}}')"><i
+															class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+													<a class="dropdown-item" href="#" data-bs-toggle="modal"
+														data-bs-target="#delete_salary" onClick="delete_id('{{i.id}}')"><i
+															class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+												</div>
+											</div>
+										</td>
+									</tr>
+									{% endif %}
+								{% endfor %}
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Add Salary Modal -->
+	<div id="add_salary" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Staff Salary</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/HR/create_data" method="POST">
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="input-block mb-3" id="Employee_ID" name="Employee_ID">
+									<label class="col-form-label">Select Staff</label><br>
+									<select name="Employee_ID" class="form-select">
+										{% for employee in employee_data %}
+										<option value="{{ employee.id }}">{{ employee.First_Name}} {{ employee.Last_Name }}</option>
+										{% endfor %}
+									</select>
+
+
+								</div>
+
+							</div>
+							<div class="col-sm-6">
+								<label class="col-form-label">Net Salary</label>
+								<input class="form-control" type="number" id="Net_Salary" name="Net_Salary">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<h4 class="text-primary">Earnings</h4>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Basic</label>
+									<input class="form-control" type="number" id="Basic" name="Basic">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">DA(40%)</label>
+									<input class="form-control" type="number" id="DA_40" name="DA_40">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">HRA(15%)</label>
+									<input class="form-control" type="number" id="HRA_15" name="HRA_15">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Conveyance</label>
+									<input class="form-control" type="number" id="Conveyance" name="Conveyance">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Allowance</label>
+									<input class="form-control" type="number" name="Allowance">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Medical Allowance</label>
+									<input class="form-control" type="number" id="Medical_Allowance"
+										name="Medical_Allowance">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Others</label>
+									<input class="form-control" type="text">
+								</div>
+								<div class="add-more">
+									<a href="#"><i class="fa-solid fa-plus-circle"></i> Add More</a>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<h4 class="text-primary">Deductions</h4>
+								<div class="input-block mb-3">
+									<label class="col-form-label">TDS</label>
+									<input class="form-control" type="number" id="TDS" name="TDS">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">ESI</label>
+									<input class="form-control" type="number" id="ESI" name="ESI">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">PF</label>
+									<input class="form-control" type="number" id="PF" name="PF">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Leave</label>
+									<input class="form-control" type="number" id="Leave" name="Leave">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Prof. Tax</label>
+									<input class="form-control" type="number" id="Prof_Tax" name="Prof_Tax">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Labour Welfare</label>
+									<input class="form-control" type="number" id="Labour_Welfare" name="Labour_Welfare">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Others</label>
+									<input class="form-control" type="text">
+								</div>
+								<div class="add-more">
+									<a href="#"><i class="fa-solid fa-plus-circle"></i> Add More</a>
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button type="submit" class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Salary Modal -->
+	<!-- edit -->
+	<div id="edit_salary" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Staff Salary</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/HR/edit_data/" method="POST">
+						<div class="row">
+							<div class="col-sm-6">
+								<input id="edit_idz" name="edit_id" type="hidden" />
+								<div class="input-block mb-3">
+									<label class="col-form-label">Select Staff</label>
+									<select class="form-select" name="edit_Employee_ID" id="edit_Employee_ID">
+										{% for employee in employee_data %}
+										<option value="{{ employee.id }}">{{ employee.First_Name }} {{ employee.Last_Name }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<label class="col-form-label">Net Salary</label>
+								<input class="form-control" type="text" value="" id="edit_Net_Salary"
+									name="edit_Net_Salary">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<h4 class="text-primary">Earnings</h4>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Basic</label>
+									<input class="form-control" type="number" value="" id="edit_Basic"
+										name="edit_Basic">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">DA(40%)</label>
+									<input class="form-control" type="number" value="" id="edit_DA_40"
+										name="edit_DA_40">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">HRA(15%)</label>
+									<input class="form-control" type="number" value="" id="edit_HRA_15"
+										name="edit_HRA_15">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Conveyance</label>
+									<input class="form-control" type="number" value="" id="edit_Conveyance"
+										name="edit_Conveyance">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Allowance</label>
+									<input class="form-control" type="number" value="" id="edit_Allowance"
+										name="edit_Allowance">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Medical Allowance</label>
+									<input class="form-control" type="number" value="" id="edit_Medical_Allowance"
+										name="edit_Medical_Allowance">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Others</label>
+									<input class="form-control" type="text">
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<h4 class="text-primary">Deductions</h4>
+								<div class="input-block mb-3">
+									<label class="col-form-label">TDS</label>
+									<input class="form-control" type="number" value="" id="edit_TDS" name="edit_TDS">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">ESI</label>
+									<input class="form-control" type="number" value="" id="edit_ESI" name="edit_ESI">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">PF</label>
+									<input class="form-control" type="number" value="" id="edit_PF" name="edit_PF">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Leave</label>
+									<input class="form-control" type="number" value="" id="edit_Leave"
+										name="edit_Leave">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Prof. Tax</label>
+									<input class="form-control" type="number" value="" id="edit_Prof_Tax"
+										name="edit_Prof_Tax">
+								</div>
+								<div class="input-block mb-3">
+									<label class="col-form-label">Labour Welfare</label>
+									<input class="form-control" type="number" value="" id="edit_Labour_Welfare"
+										name="edit_Labour_Welfare">
+								</div>
+
+								<div class="input-block mb-3">
+									<label class="col-form-label">Others</label>
+									<input class="form-control" type="text" value="">
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		function editing_id(data) {
+			$.get('/HrmTool/HR/employee_salary_id/' + data, function (res) 
+			{
+				$('#edit_idz').val(res.id)
+				$('#edit_Employee_ID').val(res.Employee_id)
+				$('#edit_Net_Salary').val(res.Net_Salary)
+				$('#edit_Basic').val(res.Basic)
+				$('#edit_TDS').val(res.TDS)
+				$('#edit_DA_40').val(res.DA_40)
+				$('#edit_ESI').val(res.ESI)
+				$('#edit_PF').val(res.PF)
+				$('#edit_HRA_15').val(res.HRA_15)
+				$('#edit_Conveyance').val(res.Conveyance)
+				$('#edit_Leave').val(res.Leave)
+				$('#edit_Allowance').val(res.Allowance)
+				$('#edit_Prof_Tax').val(res.Prof_Tax)
+				$('#edit_Medical_Allowance').val(res.Medical_Allowance)
+				$('#edit_Labour_Welfare').val(res.Labour_Welfare)
+
+			})
+		}
+
+		function conform_delete(data)
+		{
+			$.get('/HrmTool/HR/employee_salary_delete/' + data, function (res) {
+				location.reload()
+			})
+		}
+
+	</script>
+
+	<div class="modal custom-modal fade" id="delete_salary" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Salary</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<input id="del_id" value="" type="hidden" />
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+									onclick="conform_delete($('#del_id').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function delete_id(id) {
+			console.log("Deleting ID:", id);
+			conform_delete(id);
+		}
+
+	</script>
+
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

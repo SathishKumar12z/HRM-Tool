@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none">
+    
+<!-- Mirrored from smarthr.dreamstechnologies.com/html/template/lock-screen.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 08 Dec 2023 06:28:54 GMT -->
+<head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Smarthr - Bootstrap Admin Template">
+		<meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern, accounts, invoice, html5, responsive, CRM, Projects">
+        <meta name="author" content="Dreamguys - Bootstrap Admin Template">
+        <title>Lock Screen - HRMS admin template</title>
+		
+		<!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="/templates/assets/img/favicon.png">
+		
+		<!-- Fontawesome CSS -->
+        <link rel="stylesheet" href="/templates/assets/plugins/fontawesome/css/fontawesome.min.css">
+    	<link rel="stylesheet" href="/templates/assets/plugins/fontawesome/css/all.min.css">
+
+		<!-- Lineawesome CSS -->
+        <link rel="stylesheet" href="/templates/assets/css/line-awesome.min.css">
+		<link rel="stylesheet" href="/templates/assets/css/material.css">
+		<!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/templates/assets/css/bootstrap.min.css">
+		
+		<!-- Main CSS -->
+        <link rel="stylesheet" href="/templates/assets/css/style.css">
+		
+		 
+    </head>
+    <body class="account-page">
+	
+		<!-- Main Wrapper -->
+        <div class="main-wrapper">
+			<div class="account-content">
+				<div class="container">
+				
+					<!-- Account Logo -->
+					<div class="account-logo">
+						<a href="admin-dashboard.html"><img src="/templates/assets/img/logo.png" alt="Dreamguy's Technologies"></a>
+					</div>
+					<!-- /Account Logo -->
+					
+					<div class="account-box">
+						<div class="account-wrapper">
+
+							<!-- Lock User Img -->
+							<div class="lock-user">
+								<img src="/templates/assets/uploaded_files/{{emp_data.Photo}}" alt="User Image" class="rounded-circle">
+								<h4>{{emp_data.First_Name }} {{emp_data.Last_Name  }}</h4>
+								<span id="error"></span>
+							</div>
+							<!-- /Lock User Img -->
+							
+							<!-- Account Form -->
+							<form>
+								<div class="input-block mb-3">
+									<label class="col-form-label" >Password</label>
+									<input class="form-control" type="password" id="lock_password" name="lock_password">
+								</div>
+								<div class="input-block mb-3 text-center">
+									<button class="btn btn-primary account-btn" type="button" onclick="submit_lock()">Enter</button>
+								</div>
+								<div class="account-footer">
+									<p>Sign in as a different user? <a href="index.html">Login</a></p>
+								</div>
+							</form>
+							<!-- /Account Form -->
+							
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+		<!-- /Main Wrapper -->
+		
+		<script>
+			function submit_lock(){
+
+				const forms={
+					lock_password:$('#lock_password').val()
+				}
+
+				$.post('/HrmTool/Lock/lockscreen',forms,function(res){
+					console.log(res)
+					if(res=='ok'){
+						location.href='/HrmTool/Admin/dashboard';
+					}else{
+						$('#error').html('<h3 style="color: #e61111;">Wrong Password</h3>')
+					}
+				})
+			}
+		</script>
+
+		<!-- jQuery -->
+       <script src="/templates/assets/js/jquery-3.7.1.min.js"></script>
+		
+		<!-- Bootstrap Core JS -->
+        <script src="/templates/assets/js/bootstrap.bundle.min.js"></script>
+		
+		<!-- Custom JS -->
+		<script src="/templates/assets/js/app.js"></script>
+		
+    </body>
+
+<!-- Mirrored from smarthr.dreamstechnologies.com/html/template/lock-screen.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 08 Dec 2023 06:28:54 GMT -->
+</html>

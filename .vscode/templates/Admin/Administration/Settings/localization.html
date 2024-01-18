@@ -1,0 +1,149 @@
+{% include "Layout/top.html" %}
+{% include "Layout/settings_sidebar.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<div class="row">
+			<div class="col-md-8 offset-md-2">
+
+				<!-- Page Header -->
+				<div class="page-header">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3 class="page-title">Basic Settings</h3>
+						</div>
+					</div>
+				</div>
+				<!-- /Page Header -->
+
+				<form action="/HrmTool/Administration/localization" method="post">
+					<div class="row">
+						<div class="col-sm-6">
+							{% if localization_data %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Default Country</label>
+								<select class="form-select" id="default_Country" name="default_Country">
+									<option selected="selected">{{localization_data.Default_Country}}</option>
+									<option>USA</option>
+									<option>United Kingdom</option>
+								</select>
+							</div>
+							{% else %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Default Country</label>
+								<select class="form-select" id="default_Country" name="default_Country">
+									<option selected="selected">USA</option>
+									<option>United Kingdom</option>
+								</select>
+							</div>
+							{% endif %}
+						</div>
+						<div class="col-sm-6">
+							{% if localization_data %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Date Format</label>
+								<select class="form-select" id="date_Format" name="date_Format" value="{{localization_data.Date_Format}}">
+									<option value="{{localization_data.Date_Format}}" selected>{{localization_data.Date_Format}}</option>
+									<option value="15/05/2016">15/05/2016</option>
+									<option value="5.05.2016">15.05.2016</option>
+									<option value="15-05-2016">15-05-2016</option>
+									<option value="05/15/2016">05/15/2016</option>
+									<option value="2016/05/15">2016/05/15</option>
+									<option value="2016-05-15">2016-05-15</option>
+									<option value="May 15 2016">May 15 2016</option>
+									<option value="15 May 2016">15 May 2016</option>
+								</select>
+							</div>
+							{% else %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Date Format</label>
+								<select class="form-select" id="date_Format" name="date_Format">
+									<option value="15/05/2016">15/05/2016</option>
+									<option value="5.05.2016">15.05.2016</option>
+									<option value="15-05-2016">15-05-2016</option>
+									<option value="05/15/2016">05/15/2016</option>
+									<option value="2016/05/15">2016/05/15</option>
+									<option value="2016-05-15">2016-05-15</option>
+									<option value="May 15 2016">May 15 2016</option>
+									<option selected="selected" value="15 May 2016">15 May 2016</option>
+								</select>
+							</div>
+							{% endif %}
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Timezone</label>
+								<select class="form-select" id="timezone" name="timezone">
+									<option>(UTC +5:30) Antarctica/Palmer</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							{% if localization_data %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Default Language</label>
+								<select class="form-select" id="default_Language" name="default_Language" >
+									<option selected="selected">{{localization_data.Default_Language}}</option>
+									<option>English</option>
+									<option>French</option>
+								</select>
+							</div>
+							{% else %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Default Language</label>
+								<select class="form-select" id="default_Language" name="default_Language">
+									<option selected="selected">English</option>
+									<option>French</option>
+								</select>
+							</div>
+							{% endif %}
+						</div>
+						<div class="col-sm-6">
+							{% if localization_data %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Currency Code</label>
+								<select class="form-select" id="currency_Code" name="currency_Code">
+									<option selected="selected">{{localization_data.Currency_Code}}</option>
+									<option>USD</option>
+									<option>Pound</option>
+									<option>EURO</option>
+									<option>Ringgit</option>
+								</select>
+							</div>
+							{% else %}
+							<div class="input-block mb-3">
+								<label class="col-form-label">Currency Code</label>
+								<select class="form-select" id="currency_Code" name="currency_Code">
+									<option selected="selected">USD</option>
+									<option>Pound</option>
+									<option>EURO</option>
+									<option>Ringgit</option>
+								</select>
+							</div>
+							{% endif %}
+						</div>
+						<div class="col-sm-6">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Currency Symbol</label>
+								<input class="form-control" readonly value="$" type="text" id="currency_Symbol" name="currency_Symbol">
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="submit-section">
+								<button class="btn btn-primary submit-btn" type="submit">Save</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

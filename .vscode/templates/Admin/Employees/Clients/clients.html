@@ -1,0 +1,576 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Clients</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item active">Clients</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_client"><i
+							class="fa-solid fa-plus"></i> Add Client</a>
+					<div class="view-icons differ_views">
+						<a href="#" class="grid-view btn btn-link active" onclick="grid_view_point_change()"><i
+								class="fa fa-th"></i></a>
+						<a href="#" class="list-view btn btn-link" onclick="list_view_point_change()"><i
+								class="fa-solid fa-bars"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<!-- Search Filter -->
+		<div class="row filter-row">
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating client_id_search" >
+					<label class="focus-label">Client ID</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating">
+					<label class="focus-label">Client Name</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="d-grid">
+					<a href="#" class="btn btn-success w-100"> Search </a>
+				</div>
+			</div>
+		</div>
+		<script>
+			function grid_view_point_change() {
+				$(".differ_views").html(`<a href="#" class="grid-view btn btn-link active" onclick="grid_view_point_change()"><i class="fa fa-th"></i></a><a href="#" class="list-view btn btn-link " onclick="list_view_point_change()"><i class="fa-solid fa-bars"></i></a>`)
+				$(".diside_view").html(`<div class="row staff-grid-row show_search_class grid_view" >
+					{% for i in grid %}
+				<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 d-flex ">
+					<div class="profile-widget w-100">
+						<div class="profile-img">
+							<a href="client-profile.html" class="avatar"><img src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+						</div>
+						<div class="dropdown profile-action">
+							<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+						<div class="dropdown-menu dropdown-menu-right">
+							<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_client"  onclick="edit_guest('{{i.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+							<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_client" onclick="delete_guest('{{i.id}}')" ><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+						</div>
+						</div>
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="client-profile.html">{{i.First_Name}}{{i.Last_Name}}</a></h4>
+						<h5 class="user-name m-t-10 mb-0 text-ellipsis"><a href="client-profile.html">{{i.Company_Name}}</a></h5>
+						<div class="small text-muted"></div>
+						<a href="chat.html" class="btn btn-white btn-sm m-t-10">Message</a>
+						<a href="client-profile.html" class="btn btn-white btn-sm m-t-10">View Profile</a>
+					</div>
+				</div>
+				{% endfor %}
+			</div>`)
+			}
+			function list_view_point_change() {
+				$(".differ_views").html(`<a href="#" class="grid-view btn btn-link " onclick="grid_view_point_change()"><i class="fa fa-th"></i></a><a href="#" class="list-view btn btn-link active" onclick="list_view_point_change()"><i class="fa-solid fa-bars"></i></a>`)
+				$(".diside_view").html(`
+				<div class="list_view">
+					<div class="row ">
+						<div class="col-md-12">
+							<div class="table-responsive">
+								<table class="table table-striped custom-table datatable">
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Client ID</th>
+											<th>Company Name</th>
+											<th>Mobile</th>
+											<th>Status</th>
+											<th class="text-end">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for i in grid %}
+										<tr>
+											<td>
+												<h2 class="table-avatar">
+													<a href="client-profile.html" class="avatar"><img
+															src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+													<a href="client-profile.html">{{i.First_Name}}{{i.Last_Name}}</a>
+												</h2>
+											</td>
+											<td>{{i.Client_ID }}</td>
+											<td>{{i.Company_Name}}</td>
+											<td>{{i.Phone }}</td>
+											<td>
+												<div class="dropdown action-label">
+													<a href="#" class="btn btn-white btn-sm btn-rounded dropdown-toggle"
+														data-bs-toggle="dropdown" aria-expanded="false"><i
+															class="fa-regular fa-circle-dot text-success"></i> Active </a>
+													<div class="dropdown-menu">
+														<a class="dropdown-item" href="#"><i
+																class="fa-regular fa-circle-dot text-success"></i> Active</a>
+														<a class="dropdown-item" href="#"><i
+																class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
+													</div>
+												</div>
+											</td>
+											<td class="text-end">
+												<div class="dropdown dropdown-action">
+													<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+														aria-expanded="false"><i class="material-icons">more_vert</i></a>
+													<div class="dropdown-menu dropdown-menu-right">
+														<a class="dropdown-item" href="#" data-bs-toggle="modal"
+															data-bs-target="#edit_client" onclick="edit_guest('{{i.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+														<a class="dropdown-item" href="#" data-bs-toggle="modal"
+															data-bs-target="#delete_client" onclick="delete_guest('{{i.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i>
+															Delete</a>
+													</div>
+												</div>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>`)
+			}
+
+		</script>
+		<script>
+			$(".client_id_search").on('keyup',function(){
+				let data = $(this).val()
+				$.get('/HrmTool/Client/search_by_id/'+data,function(res){
+					console.log(res)
+					
+				})
+			})
+		</script>
+		<!-- Search Filter -->
+		
+		<div class="diside_view">
+			<div>
+				<div class="row staff-grid-row">
+					{% for i in grid %}
+					<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 d-flex ">
+						<div class="profile-widget w-100">
+							<div class="profile-img">
+								<a href="client-profile.html" class="avatar"><img
+										src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+							</div>
+							<div class="dropdown profile-action">
+								<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+									aria-expanded="false"><i class="material-icons">more_vert</i></a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_client"
+										onclick="edit_guest('{{i.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+									<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_client"
+										onclick="delete_guest('{{i.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i>
+										Delete</a>
+								</div>
+							</div>
+							<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a
+									href="client-profile.html">{{i.First_Name}}{{i.Last_Name}}</a></h4>
+							<h5 class="user-name m-t-10 mb-0 text-ellipsis"><a
+									href="client-profile.html">{{i.Company_Name}}</a></h5>
+							<div class="small text-muted"></div>
+							<a href="chat.html" class="btn btn-white btn-sm m-t-10">Message</a>
+							<a href="client-profile.html" class="btn btn-white btn-sm m-t-10">View Profile</a>
+						</div>
+					</div>
+					{% endfor %}
+					<div class="list_view" style="display:none;">
+						<div class="row ">
+							<div class="col-md-12">
+								<div class="table-responsive">
+									<table class="table table-striped custom-table datatable">
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Client ID</th>
+												<th>Company Name</th>
+												<th>Mobile</th>
+												<th>Status</th>
+												<th class="text-end">Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for i in grid %}
+											<tr>
+												<td>
+													<h2 class="table-avatar">
+														<a href="client-profile.html" class="avatar"><img
+																src="/templates/assets/uploaded_files/{{i.Photo}}"
+																alt="User Image"></a>
+														<a href="client-profile.html">{{i.First_Name}}{{i.Last_Name}}</a>
+													</h2>
+												</td>
+												<td>{{i.Client_ID }}</td>
+												<td>{{i.Company_Name}}</td>
+												<td>{{i.Phone }}</td>
+												<td>
+													<div class="dropdown action-label">
+														<a href="#" class="btn btn-white btn-sm btn-rounded dropdown-toggle"
+															data-bs-toggle="dropdown" aria-expanded="false"><i
+																class="fa-regular fa-circle-dot text-success"></i> Active
+														</a>
+														<div class="dropdown-menu">
+															<a class="dropdown-item" href="#"><i
+																	class="fa-regular fa-circle-dot text-success"></i>
+																Active</a>
+															<a class="dropdown-item" href="#"><i
+																	class="fa-regular fa-circle-dot text-danger"></i>
+																Inactive</a>
+														</div>
+													</div>
+												</td>
+												<td class="text-end">
+													<div class="dropdown dropdown-action">
+														<a href="#" class="action-icon dropdown-toggle"
+															data-bs-toggle="dropdown" aria-expanded="false"><i
+																class="material-icons">more_vert</i></a>
+														<div class="dropdown-menu dropdown-menu-right">
+															<a class="dropdown-item" href="#" data-bs-toggle="modal"
+																data-bs-target="#edit_client"><i
+																	class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+															<a class="dropdown-item" href="#" data-bs-toggle="modal"
+																data-bs-target="#delete_client"><i
+																	class="fa-regular fa-trash-can m-r-5"></i>
+																Delete</a>
+														</div>
+													</div>
+												</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<!-- /Page Content -->
+
+		<!-- Add Client Modal -->
+		<div id="add_client" class="modal custom-modal fade" role="dialog">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Add Client</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form action="/HrmTool/Client/add_client" method="post" enctype="multipart/form-data">
+							<div class="row">
+								<input name="pagetype" value="grid" type="hidden" />
+								<div class="profile-img-wrap edit-img">
+									<img class="inline-block" src="/templates/assets/img/profile1.png" id="add_photo"
+										alt="User Image">
+									<div class="fileupload btn">
+										<span class="btn-text">add</span>
+										<input class="upload" type="file" id="client_photo" name="client_photo"
+											oninput="add_photo.src=window.URL.createObjectURL(this.files[0])" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">First Name <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" id="firstname" name="firstname"
+											required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Last Name</label>
+										<input class="form-control" type="text" id="lastname" name="lastname" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Username <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" id="username" name="username" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Email <span class="text-danger">*</span></label>
+										<input class="form-control floating" type="email" id="email" name="email"
+											required>
+									</div>
+								</div>
+								<div class="col-md-6 position-relative">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Password</label>
+										<input class="form-control" type="password" id="password" name="password" required>
+										<span style="position: absolute; top: 54%; right: 7%;" class="fa-solid fa-eye-slash position-absolute right-0" id="toggle-password"></span>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Confirm Password</label>
+										<input class="form-control repassword" type="password" minlength="6"
+											id="conpass" name="conpass" required>
+										<span class="client_error"></span>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Client ID <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" id="clientid" name="clientid"
+											value="{{client_ids}}" readonly>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Phone </label>
+										<input class="form-control" type="text" id="phone" name="phone" oninput="
+										var phoneNumberInput = document.getElementById('phone');
+										var phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
+										phoneNumber = phoneNumber.slice(0, 10);
+										phoneNumberInput.value = phoneNumber;
+									" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Company Name</label>
+										<input class="form-control" type="text" id="compname" name="compname" required>
+									</div>
+								</div>
+							</div>
+							<div class="submit-section">
+								<button class="btn btn-primary submit-btn">Submit</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Add Client Modal -->
+		<!-- Edit Client Modal -->
+		<div id="edit_client" class="modal custom-modal fade" role="dialog">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Edit Client</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form enctype="multipart/form-data" action="/HrmTool/Client/update_clients" method="POST">
+							<div class="row">
+								<input name="pagetype" value="list" type="hidden" />
+								<input id="edit_idz" name="edit_id" type="hidden" />
+								<div class="profile-img-wrap edit-img">
+									<div class="editing_portion">
+										<img class="inline-block" src="templates/assets/img/profiles/avatar-02.jpg"
+											alt="User Image" id="edit_photo" required>
+									</div>
+									<div class="fileupload btn">
+										<span class="btn-text">edit</span>
+										<input class="upload" type="file" id="edit_client_photo"
+											name="edit_client_photo"
+											onchange="edit_photo.src=window.URL.createObjectURL(this.files[0])">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">First Name <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" value=" " id="edit_firstname"
+											name="edit_firstname">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Last Name</label>
+										<input class="form-control" type="text" value=" " id="edit_lastname"
+											name="edit_lastname">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Username <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" value=" " id="edit_username"
+											name="edit_username">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Email <span class="text-danger">*</span></label>
+										<input class="form-control floating" type="edit_email" value=" " id="edit_email"
+											name="edit_email">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Password</label>
+										<input class="form-control" type="password" value=" " id="edit_password"
+											name="edit_password">
+									</div>
+								</div>
+								
+
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Confirm Password</label>
+										<input class="form-control" type="password" value=" " id="edit_conpass"
+											name="edit_conpass">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Client ID <span
+												class="text-danger">*</span></label>
+										<input class="form-control floating" type="text" value=" " id="edit_clientid"
+											name="edit_clientid" readonly>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Phone </label>
+										<input class="form-control" type="text" value=" " id="edit_phone"
+											name="edit_phone">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Company Name</label>
+										<input class="form-control" type="text" value=" " id="edit_compname"
+											name="edit_compname">
+									</div>
+								</div>
+							</div>
+							<div class="submit-section">
+								<button class="btn btn-primary submit-btn" type="submit"
+									onclick="edit_master()">Save</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		<script>
+
+			function edit_master() {
+				$("form").submit(function (event) {
+					let image = $('#edit_client_photo')
+					var formData = {
+						edit_id: $("#edit_idz").val(),
+						edit_firstname: $("#edit_firstname").val(),
+						edit_lastname: $("#edit_lastname").val(),
+						edit_username: $("#edit_username").val(),
+						edit_email: $("#edit_email").val(),
+						edit_password: $("#edit_password").val(),
+						edit_conpass: $("#edit_conpass").val(),
+						edit_clientid: $("#edit_clientid").val(),
+						edit_phone: $("#edit_phone").val(),
+						edit_compname: $("#edit_compname").val(),
+						edit_client_photo: image[0].files
+					};
+					console.log(formData)
+					$.ajax({
+						type: "post",
+						url: "/HrmTool/Client/update_clients",
+						data: formData,
+						dataType: "json",
+						encode: true,
+					}).done(function (data) {
+						if (data == "Already this name Exist") {
+							$("#messages").html(data);
+						}
+						if (data == "Done") {
+							location.reload();
+						}
+					});
+					event.preventDefault();
+				});
+			} 
+		</script>
+		<!-- /Edit Client Modal -->
+		<!-- Delete Client Modal -->
+		<div class="modal custom-modal fade" id="delete_client" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="form-header">
+							<h3>Delete Client</h3>
+							<p>Are you sure want to delete?</p>
+						</div>
+						<div class="modal-btn delete-action">
+							<div class="row">
+								<input name="pagetype" value="grid" type="hidden" />
+								<input name="del_id" id="del_id" type="hidden">
+								<div class="col-6">
+									<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+										onclick="delete_confm($('#del_id').val())">Delete</a>
+								</div>
+								<div class="col-6">
+									<a href="javascript:void(0);" data-bs-dismiss="modal"
+										class="btn btn-primary cancel-btn">Cancel</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Delete Client Modal -->
+
+	</div>
+	<!-- /Page Wrapper -->
+
+</div>
+<!-- /Main Wrapper -->
+
+<script>
+	function edit_guest(data) {
+		$.get('/HrmTool/Client/edit_guest_add/' + data, function (res) {
+			console.log(res)
+			$('#edit_idz').val(res.id)
+			$('#edit_firstname').val(res.First_Name)
+			$('#edit_lastname').val(res.Last_Name)//abcd
+			$('#edit_username').val(res.Username)
+			$('#edit_email').val(res.Email)
+			$('#edit_password').val(res.Password)
+			$('#edit_conpass').val(res.Password)
+			$('#edit_clientid').val(res.Client_ID)
+			$('#edit_phone').val(res.Phone)
+			$('#edit_compname').val(res.Company_Name)
+			$(".editing_portion").html(`<img class="inline-block" src="/templates/assets/uploaded_files/${res.Photo}" alt="User Image" id="edit_photo" required>`)
+		})
+	}
+	function delete_guest(data) {
+		$('#del_id').val(data)
+	}
+
+	function delete_confm(data) {
+		$.get('/HrmTool/Client/delete_clients/' + data, function (res) {
+			location.reload()
+		})
+
+	}
+</script>
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

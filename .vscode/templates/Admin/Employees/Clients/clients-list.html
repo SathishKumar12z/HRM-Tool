@@ -1,0 +1,820 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Clients</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item ACTIVE">Clients</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_client"><i
+							class="fa-solid fa-plus"></i> Add Client</a>
+					<div class="view-icons">
+						<a href="/client-grid" class="grid-view btn btn-link"><i class="fa fa-th"></i></a>
+						<a href="/client-list" class="list-view btn btn-link ACTIVE"><i
+								class="fa-solid fa-bars"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<!-- Search Filter -->
+		<div class="row filter-row">
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating" id="clientidInput">
+					<label class="focus-label">Client ID</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating" id="clientnameInput">
+					<label class="focus-label">Client Name</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus select-focus">
+					<select class="select floating" id="companyInput">
+						{% for i in client_data %}
+						<option value="{{i.Company_Name}}">{{i.Company_Name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="d-grid">
+					<a href="#" class="btn btn-success w-100"
+						onclick="filtering($('#clientidInput').val(),$('#clientnameInput').val(),$('#companyInput').val())"
+						,> Search </a>
+				</div>
+			</div>
+		</div>
+		<script>
+			function filtering(first, last, status) {
+				const forms = {
+
+					first: first,
+					last: last,
+					status: status
+				};
+				console.log(forms)
+
+
+				$.post('/filter_by', forms, function (res) {
+					console.log(res);
+
+					// Assuming res is an array of estimate_data objects
+					const clientTableBody = document.getElementById('clientTableBody');
+					clientTableBody.innerHTML = ''; // Clear existing rows
+
+					res.forEach((client, index) => {
+						const row = document.createElement('tr');
+						row.innerHTML = `
+		
+		<td>${client.First_Name}</td>
+		<td>${client.Last_Name}</td>
+		
+		
+		<td>${client.Client_ID}</td>
+		<td>${client.Phone}</td>
+		<td>${client.current_status}</td>
+		
+									<td class="text-end">
+										<div class="dropdown dropdown-action">
+											<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_client"  onclick="edit_guest('${client.id}')" ><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_client" onclick="delete_guest('${client.id}')" ><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+											</div>
+										</div>
+									</td>
+	`;
+						clientTableBody.appendChild(row);
+					});
+				});
+			}
+		</script>
+		<!-- Search Filter -->
+
+		<div class="row staff-grid-row show_search_class">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table datatable">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Client ID</th>
+								<!-- <th>Contact Person</th> -->
+								<!-- <th>Email</th> -->
+								<th>Mobile</th>
+								<th>Status</th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody id="clientTableBody">
+							{% for i in client_data %}
+							<tr>
+								<td>
+									<h2 class="table-avatar">
+										<a href="client-profile.html" class="avatar"><img
+												src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+										<a href="client-profile.html">{{i.First_Name}} {{i.Last_Name}}</a>
+									</h2>
+								</td>
+								<td>{{i.Client_ID}}</td>
+								<td>{{i.Phone}}</td>
+								<!-- <td><a href="https://smarthr.dreamstechnologies.com/cdn-cgi/l/email-protection"
+										class="__cf_email__"
+										data-cfemail="22404350505b4157464362475a434f524e470c414d4f">[email&#160;protected]</a>
+								</td> -->
+								<!-- <td>{{i.Phone}} </td> -->
+								<!-- Add an id to the dropdown for easy identification -->
+								<td class="text-center">
+									<div class="dropdown action-label">
+										<a href="#" class="btn btn-white btn-sm btn-rounded dropdown-toggle"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											<i id="status_icon_{{i.id}}"
+												class="fa-regular fa-circle-dot {% if i.current_status == 'ACTIVE' %}text-success{% else %}text-danger{% endif %}"></i>
+											<span id="status_{{i.id}}"
+												class="{% if i.current_status == 'ACTIVE' %}text-success{% else %}text-danger{% endif %}"></span>{{i.current_status}}
+										</a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#"
+												onclick="changeStatus('{{i.id}}', 'ACTIVE')">
+												<i class="fa-regular fa-circle-dot text-success"></i> ACTIVE
+											</a>
+											<a class="dropdown-item" href="#"
+												onclick="changeStatus('{{i.id}}', 'INACTIVE')">
+												<i class="fa-regular fa-circle-dot text-danger"></i> INACTIVE
+											</a>
+										</div>
+									</div>
+								</td>
+
+
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#edit_client" onclick="edit_guest('{{i.id}}')"><i
+													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#delete_client" onclick="delete_guest('{{i.id}}')"><i
+													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		function edit_guest(data) {
+			$.get('/edit_guest_add/' + data, function (res) {
+				console.log(res)
+				$('#edit_id').val(res.id)
+				$('#edit_firstname').val(res.First_Name)
+				$('#edit_lastname').val(res.Last_Name)//abcd
+				$('#edit_username').val(res.Username)
+				$('#edit_email').val(res.Email)
+				$('#edit_password').val(res.Password)
+				$('#edit_conpass').val(res.Conf_pass)
+				$('#edit_clientid').val(res.Client_ID)
+				$('#edit_phone').val(res.Phone)
+				$('#edit_compname').val(res.Company_Name)
+				// edit_client_photo:image[0].files
+			})
+		}
+		function delete_guest(data) {
+			$('#del_id').val(data)
+		}
+
+		function delete_confm(data) {
+			$.get('/delete_clients/' + data, function (res) {
+				alert('Deleted Successfully')
+				location.reload()
+			})
+
+		}
+		// function search_by_eid(data) {
+		// 	if (data) {
+		// 		$.get('/searching_list/' + data, function (res) {
+		// 			console.log(res)
+		// 			$('.show_search_class').html(function () {
+		// 				h1 = '';
+		// 				for (let i = 0; i < res.length; i++) {
+		// 					h1 += `
+
+		// 						<tr>
+		// 							<td>
+		// 								<h2 class="table-avatar">
+		// 									<a href="client-profile.html" class="avatar"><img src="/templates/assets/uploaded_files/${res[i].Photo}" alt="User Image"></a>
+		// 									<a href="client-profile.html">${res[i].First_Name} ${res[i].Last_Name}</a>
+		// 								</h2>
+		// 							</td>
+		// 							<td>${res[i].Client_ID}</td>
+		// 							<td>${res[i].Phone}</td>
+
+
+		// 							<td>
+		// 								<div class="dropdown action-label">
+		// 									<a href="#" class="btn btn-white btn-sm btn-rounded dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-regular fa-circle-dot text-success"></i> ${res[i].current_status} </a>
+		// 									<div class="dropdown-menu">
+		// 										<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-success"></i> ACTIVE</a>
+		// 										<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-danger"></i> INACTIVE</a>
+		// 									</div>
+		// 								</div>
+		// 							</td>
+		// 							<td class="text-end">
+		// 								<div class="dropdown dropdown-action">
+		// 									<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+		// 									<div class="dropdown-menu dropdown-menu-right">
+		// 										<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_client"  onclick="edit_guest('${res[i].id}')" ><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+		// 										<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_client" onclick="delete_guest('${res[i].id}')"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+		// 									</div>
+		// 								</div>
+		// 							</td>
+		// 						</tr>
+
+		// 				`;
+		// 				}
+		// 				return h1;
+		// 			})
+		// 		})
+		// 	} else {
+		// 		window.location.reload();
+		// 	}
+		// }
+
+		function changeStatus(item_id, new_status) {
+			// Make an AJAX request to update the database
+			const form = {
+				item_id: item_id,
+				new_status: new_status,
+			};
+
+			$.post('/update_status', form, function (res) {
+				// Update the color dynamically based on the new status
+				var statusSpan = $('#status_' + item_id);
+				if (new_status === 'ACTIVE') {
+					statusSpan.removeClass('text-danger').addClass('text-success');
+				} else {
+					statusSpan.removeClass('text-success').addClass('text-danger');
+				}
+
+				// Reload the page after updating the status
+				location.reload();
+			});
+		}
+
+
+	</script>
+
+
+	<!-- /Page Content -->
+
+	<!-- Add Client Modal -->
+	<div id="add_client" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Clientas</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/add_client" method="post" enctype="multipart/form-data" class="clientForm">
+						<div class="row">
+							<input name="pagetype" value="list" type="hidden" />
+							<div class="profile-img-wrap edit-img">
+								<img class="inline-block" src="templates/assets/img/profiles/avatar-02.jpg"
+									alt="User Image">
+								<div class="fileupload btn">
+									<span class="btn-text">add</span>
+									<input class="upload" type="file" id="client_photo" name="client_photo">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">First Name <span class="text-danger">*</span></label>
+									<input class="form-control" type="text" id="firstname" name="firstname">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Last Name</label>
+									<input class="form-control" type="text" id="lastname" name="lastname">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Username <span class="text-danger">*</span></label>
+									<input class="form-control" type="text" id="username" name="username">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Email <span class="text-danger">*</span></label>
+									<input class="form-control floating" type="email" id="email" name="email">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Password</label>
+									<input class="form-control" type="password" minlength="6" id="password"
+										name="password">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Confirm Password</label>
+									<input class="form-control" type="password" minlength="6" id="conpass"
+										name="conpass">
+								</div>
+							</div>
+							<!-- <div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Client ID <span
+											class="text-danger">*</span></label>
+									<input class="form-control floating" type="text" id="clientid"
+										name="clientid" readonly>
+								</div>
+							</div> -->
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Phone </label>
+									<input class="form-control" type="text" id="phone" name="phone" oninput="
+											var phoneNumberInput = document.getElementById('phone');
+											var phoneNumber = phoneNumberInput.value.replace(/\D/g, '');
+											phoneNumber = phoneNumber.slice(0, 10);
+											phoneNumberInput.value = phoneNumber;
+										">
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Company Name</label>
+									<input class="form-control" type="text" id="compname" name="compname">
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Client Modal -->
+
+	<!-- Edit Client Modal -->
+	<div id="edit_client" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Client</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form enctype="multipart/form-data" action="/update_clients" method="POST">
+						<!-- <form action="/update_clients" method="post" > -->
+
+						<div class="row">
+							<input name="pagetype" value="list" type="hidden" />
+							<input id="edit_id" name="edit_id" type="hidden" />
+							<div class="profile-img-wrap edit-img">
+								<img class="inline-block" src="templates/assets/img/profiles/avatar-02.jpg"
+									alt="User Image" id="image" name="image" required>
+								<div class="fileupload btn">
+									<span class="btn-text">edit</span>
+									<input class="upload" type="file" id="edit_client_photo" name="edit_client_photo">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">First Name <span class="text-danger">*</span></label>
+									<input class="form-control" type="text" value=" " id="edit_firstname"
+										name="edit_firstname">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Last Name</label>
+									<input class="form-control" type="text" value=" " id="edit_lastname"
+										name="edit_lastname">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Username <span class="text-danger">*</span></label>
+									<input class="form-control" type="text" value=" " id="edit_username"
+										name="edit_username">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Email <span class="text-danger">*</span></label>
+									<input class="form-control floating" type="edit_email" value=" " id="edit_email"
+										name="edit_email">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Password</label>
+									<input class="form-control" type="password" value=" " id="edit_password"
+										name="edit_password">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Confirm Password</label>
+									<input class="form-control" type="password" value=" " id="edit_conpass"
+										name="edit_conpass">
+								</div>
+							</div>
+							<!-- <div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Client ID <span
+											class="text-danger">*</span></label>
+									<input class="form-control floating" type="text" value=" "
+										id="edit_clientid" name="edit_clientid" readonly>
+								</div>
+							</div> -->
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Phone </label>
+									<input class="form-control" type="text" value=" " id="edit_phone" name="edit_phone">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Company Name</label>
+									<input class="form-control" type="text" value=" " id="edit_compname"
+										name="edit_compname">
+								</div>
+							</div>
+
+
+						</div>
+
+
+						<!-- <div class="table-responsive m-t-15">
+							<table class="table table-striped custom-table">
+								<thead>
+									<tr>
+										<th>Module Permission</th>
+										<th class="text-center">Read</th>
+										<th class="text-center">Write</th>
+										<th class="text-center">Create</th>
+										<th class="text-center">Delete</th>
+										<th class="text-center">Import</th>
+										<th class="text-center">Export</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Projects</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<td>Tasks</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<td>Chat</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<td>Estimates</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<td>Invoices</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+									</tr>
+									<tr>
+										<td>Timing Sheets</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+										<td class="text-center">
+											<label class="custom_check">
+												<input type="checkbox" checked>
+												<span class="checkmark"></span>
+											</label>
+										</td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div> -->
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn" type="submit"
+								onclick="edit_master()">Save</button>
+						</div>
+
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+
+		function edit_master() {
+			$("form").submit(function (event) {
+				let image = $('#edit_client_photo')
+				var formData = {
+					edit_id: $("#edit_id").val(),
+					edit_firstname: $("#edit_firstname").val(),
+					edit_lastname: $("#edit_lastname").val(),
+					edit_username: $("#edit_username").val(),
+					edit_email: $("#edit_email").val(),
+					edit_password: $("#edit_password").val(),
+					edit_conpass: $("#edit_conpass").val(),
+					edit_clientid: $("#edit_clientid").val(),
+					edit_phone: $("#edit_phone").val(),
+					edit_compname: $("#edit_compname").val(),
+					edit_client_photo: image[0].files
+				};
+				console.log(formData)
+				$.ajax({
+					type: "post",
+					url: "/update_clients",
+					data: formData,
+					dataType: "json",
+					encode: true,
+				}).done(function (data) {
+					if (data == "Already this name Exist") {
+						// $("#messages").html(data);
+						// alert(data);
+					}
+					if (data == "Done") {
+						location.reload();
+					}
+				});
+				event.preventDefault();
+			});
+		} 
+	</script>
+	<!-- /Edit Client Modal -->
+
+	<!-- Delete Client Modal -->
+	<div class="modal custom-modal fade" id="delete_client" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Client</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+
+							<div class="col-6">
+								<input name="pagetype" value="list" type="hidden" />
+								<input name="del_id" id="del_id" type="hidden">
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+									data-bs-dismiss="modal" onclick="delete_confm($('#del_id').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Client Modal -->
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

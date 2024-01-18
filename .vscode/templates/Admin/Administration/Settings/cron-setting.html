@@ -1,0 +1,57 @@
+{% include "Layout/top.html" %}
+{% include "Layout/settings_sidebar.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<div class="content container-fluid">
+		<div class="row">
+			<div class="col-md-6 offset-md-3">
+			
+				<!-- Page Header -->
+				<div class="page-header">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3 class="page-title">Cron Setting</h3>
+						</div>
+					</div>
+				</div>
+				<!-- /Page Header -->
+				<form action="/HrmTool/Administration/add_cron" method="POST">
+					<div class="input-block mb-3">
+						<label class="col-form-label">Cron Key <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" value="{{ existing_entry.Cron_Key if existing_entry else '' }}" id="ckey" name="ckey" required>
+					</div>
+					<div class="input-block mb-3">
+						<label class="col-form-label">Auto Backup Database <span class="text-danger">*</span></label><br>
+						<input type="hidden" value="checked" name="auto_backup_db" id="auto_backup_db">
+						<label class="switch">
+							<input type="checkbox" {{ existing_entry.Auto_Backup if existing_entry else checked }} id="check_backup" >
+							<span></span>
+						</label>
+					</div>
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn">Save Changes</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#check_backup").on('input',function(){
+			let ans = $(this);
+			if(ans.prop('checked')){
+				$("#auto_backup_db").val('checked')
+			}else{
+				$("#auto_backup_db").val('unchecked')
+			}
+		})
+	</script>
+
+	
+	<!-- /Page Content -->
+	
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

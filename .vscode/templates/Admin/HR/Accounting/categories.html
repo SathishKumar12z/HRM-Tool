@@ -1,0 +1,146 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+	
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Categories</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item active">Accounts</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_categories"><i class="fa-solid fa-plus"></i> Add Categories</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Category Name</th>
+								<th>Sub-Category Name</th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for new_id in new_id %}
+								<tr>
+									<td>{{ new_id.id }}</td>
+									<td>{{ new_id.Name }}</td>
+									{% if sub_cate %}
+										{% for i in sub_cate %}
+											{% if i.Category_id|int == new_id.id|int %}
+												<td>{{ i.Name }}</td>
+											{% endif %}
+										{% endfor %}
+									{% else %}
+										<td>{{ new_id.SubCategory_id }}</td>
+									{% endif %}
+									<td class="text-end">
+										<div class="dropdown dropdown-action">
+											<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+												<i class="material-icons">more_vert</i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_categories"  onClick="catedit('{{new_id.id}}')">
+													<i class="fa-solid fa-pencil m-r-5"></i> Edit
+												</a>
+												<a href="/HrmTool/HR/subcat/{{new_id.id}}" class="dropdown-item">
+													<i class="fa-solid fa-object-ungroup m-r-5"></i> Sub-Category
+												</a>
+											</div>
+										</div>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+	<!-- /Page Content -->
+	
+	<!-- Add Holiday Modal -->
+	<div class="modal custom-modal fade" id="add_categories" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Categories</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/HR/category" method="POST">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" id="Name" name="Name">
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Holiday Modal -->
+	
+	<!-- Add Holiday Modal -->
+	<div class="modal custom-modal fade" id="edit_categories" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Categories</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/HR/category_update" method="POST">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
+							<input id="edit_idz" name="edit_id" type="hidden" />
+							<input class="form-control" type="text" value="" id="edit_Name" name="edit_Name">
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Holiday Modal -->
+</div>
+<!-- /Page Wrapper -->
+
+</div>
+<!-- /Main Wrapper -->
+
+<script>
+function catedit(data){
+	$.get('/HrmTool/HR/catedit/'+data,function(res){
+		console.log(res)
+		$('#edit_idz').val(res.id)
+		$('#edit_Name').val(res.Name)
+	})
+}
+</script>
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

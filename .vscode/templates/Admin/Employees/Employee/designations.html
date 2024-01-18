@@ -1,0 +1,214 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Designations</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item active">Designations</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_designation"><i
+							class="fa-solid fa-plus"></i> Add Designation</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0 datatable">
+						<thead>
+							<tr>
+								<th class="width-thirty">#</th>
+								<th>Designation </th>
+								<th>Department </th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for i in a %}
+							<tr>
+								<td>{{i.id}}</td>
+								<td>{{i.Name}}</td>
+								{% for j in depart_data %}
+									{% if i.Department_id|int == j.id|int %}
+										<td>{{j.Name}}</td>
+									{% endif %}
+								{% endfor %}
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#edit_designation"
+												onclick="taking_designation_id('{{i.id}}')"><i
+													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#delete_designation"
+												onclick="taking_dlt_designation('{{i.id}}')"><i
+													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+
+							{% endfor %}
+						</tbody>
+					</table>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+	<script>
+		function taking_designation_id(data) {
+			$.get('/HrmTool/Employee/taking_edit_designation/' + data, function (res) {
+				$('#edit_idz').val(res.id)
+				$('#edit_name').val(res.Name)
+				$('#edit_dept').val(res.Department_id)
+			})
+		}
+
+		function taking_dlt_designation(data) {
+			$('#delete_pop').val(data)
+		}
+
+		function conform_delete_addition(data) {
+			$.get('/HrmTool/Employee/taking_dlt_id_designation/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
+
+	<!-- Add Designation Modal -->
+	<div id="add_designation" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Designation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Employee/add_designation" method="POST">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Designation Name <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" name="des_name" id="des_name" required>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Department <span class="text-danger">*</span></label>
+							<!-- <select class="form-select" name="dept" id="dept" required>
+								<option>Select Department</option>
+								{% for i in depart_data %}
+								<option value="{{i.id}}">{{i.Name}}</option>
+								{% endfor %}
+							</select> -->
+							<select class="form-multi-select" id="multiple-select-tag" multiple data-coreui-selection-type="tags" data-coreui-search="true">
+								<option value="0">Angular</option>
+								<option value="1">Bootstrap</option>
+								<option value="2">React.js</option>
+								<option value="3">Vue.js</option>
+							  </select>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		const myMutliSelect = document.getElementById('multiple-select-tag')
+			myMutliSelect.addEventListener('changed.coreui.multi-select', event => {
+			// Get the list of selected options.
+			const selected = event.value
+			})
+	</script>
+	<!-- /Add Designation Modal -->
+
+	<!-- Edit Designation Modal -->
+	<div id="edit_designation" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Designation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Employee/edit_designation" method="POST">
+						<div class="input-block mb-3">
+							<input id="edit_idz" name="edit_id" type="hidden" />
+							<label class="col-form-label">Designation Name <span class="text-danger">*</span></label>
+							<input class="form-control" value="Web Developer" type="text" name="edit_name" required
+								id="edit_name">
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Department <span class="text-danger">*</span></label>
+							<select class="form-select" name="edit_dept" id="edit_dept" required>
+								<option>Select Department</option>
+								{% for i in depart_data %}
+								<option value="{{i.id}}">{{i.Name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Edit Designation Modal -->
+
+	<!-- Delete Designation Modal -->
+	<div class="modal custom-modal fade" id="delete_designation" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Designation</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<input name="delete_pop" id="delete_pop" type="hidden">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary continue-btn"
+									onclick="conform_delete_addition($('#delete_pop').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Designation Modal -->
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

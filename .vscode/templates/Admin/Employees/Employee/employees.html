@@ -1,0 +1,1024 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Employee</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item active">Employee</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_employee"><i
+							class="fa-solid fa-plus"></i> Add Employee</a>
+					<div class="view-icons differ_views">
+						<a href="#" class="grid-view btn btn-link active" onclick="grid_view_point_change()"><i class="fa fa-th"></i></a>
+						<a href="#" class="list-view btn btn-link " onclick="list_view_point_change()"><i class="fa-solid fa-bars"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<!-- Search Filter -->
+		<div class="row filter-row">
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating" onkeyup="search_by_eid($(this).val())">
+					<label class="focus-label">Employee ID</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 form-focus">
+					<input type="text" class="form-control floating" onkeyup="search_by_eid($(this).val())">
+					<label class="focus-label">Employee Name</label>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="input-block mb-3 ">
+					<select class="form-select" name="selectdesignation" id="selectdesignation"
+						onchange="search_desig($(this).val())">
+						<option>Select Designation</option>
+						{% for i in depart_data %}
+						<option value="{{i.id}}">{{i.Name}}</option>
+						{% endfor %}
+ 					</select>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+				<div class="d-grid">
+					<a href="#" class="btn btn-success w-100"> Search </a>
+				</div>
+			</div>
+		</div>
+		<!-- Search Filter -->
+		<div class="diside_view">
+			<div class="row staff-grid-row show_search_class grid_view" >
+				{% for Employee in emp %}
+				<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 ">
+					<div class="profile-widget">
+						<div class="profile-img">
+							<a href="profile.html" class="avatar"><img
+									src="/templates/assets/uploaded_files/{{Employee.Photo}}" alt="User Image"></a>
+						</div>
+						<div class="dropdown profile-action">
+							<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+								aria-expanded="false"><i class="material-icons">more_vert</i></a>
+							<div class="dropdown-menu dropdown-menu-right">
+								<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee"
+									onclick="Guest_value('{{Employee.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+								<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_employee"
+									onclick="deletingid('{{Employee.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i>
+									Delete</a>
+							</div>
+						</div>
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="profile.html">{{Employee.First_Name}} {{Employee.Last_Name}}</a>
+						</h4>
+						{% for k in depart_data %}
+							{% if Employee.Department_id |int == k.id|int %}
+							<div class="small text-muted">{{k.Name}}</div>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			<div class="list_view" style="display: none;">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="table-responsive">
+							<table class="table table-striped custom-table datatable">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Employee ID</th>
+										<th>Mobile</th>
+										<th class="text-nowrap">Join Date</th>
+										<th>Department</th>
+										<th class="text-end no-sort">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for Employee in emp %}
+									<tr>
+										<td>
+											<h2 class="table-avatar">
+												<a href="#" class="avatar"><img src="/templates/assets/uploaded_files/{{Employee.Photo}}" alt="User Image"></a>
+												<a href="#">{{Employee.First_Name}} {{Employee.Last_Name}}
+													{% for k in depart_data %}
+														{% if Employee.Department_id |int == k.id|int %}
+														<span>{{k.Name}}</span>
+														{% endif %}
+													{% endfor %}
+													</a>
+											</h2>
+										</td>
+										<td>{{Employee.Employee_ID}}</td>
+										<td>{{Employee.Phone }}</td>
+										<td class="dateformate">{{Employee.Joining_Date }}</td>
+										<td>
+											{% for k in depart_data %}
+												{% if Employee.Department_id |int == k.id|int %}
+													<a href="#" class="btn btn-white btn-sm btn-rounded "  aria-expanded="false">{{k.Name}} </a>
+												{% endif %}
+											{% endfor %}
+										</td>
+										<td class="text-end">
+											<div class="dropdown dropdown-action">
+												<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+												<div class="dropdown-menu dropdown-menu-right">
+													<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee" onclick="Guest_value('{{Employee.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+													<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_employee" onclick="deletingid('{{Employee.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+												</div>
+											</div>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Content -->
+		<script>
+			function grid_view_point_change(){
+				$(".differ_views").html(`<a href="#" class="grid-view btn btn-link active" onclick="grid_view_point_change()"><i class="fa fa-th"></i></a><a href="#" class="list-view btn btn-link " onclick="list_view_point_change()"><i class="fa-solid fa-bars"></i></a>`)
+				$(".diside_view").html(`<div class="row staff-grid-row show_search_class grid_view" >
+				{% for Employee in emp %}
+				<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 ">
+					<div class="profile-widget">
+						<div class="profile-img">
+							<a href="profile.html" class="avatar"><img
+									src="/templates/assets/uploaded_files/{{Employee.Photo}}" alt="User Image"></a>
+						</div>
+						<div class="dropdown profile-action">
+							<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+								aria-expanded="false"><i class="material-icons">more_vert</i></a>
+							<div class="dropdown-menu dropdown-menu-right">
+								<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee"
+									onclick="Guest_value('{{Employee.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+								<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_employee"
+									onclick="deletingid('{{Employee.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i>
+									Delete</a>
+							</div>
+						</div>
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="profile.html">{{Employee.First_Name}} {{Employee.Last_Name}}</a>
+						</h4>
+						{% for k in depart_data %}
+							{% if Employee.Department_id |int == k.id|int %}
+							<div class="small text-muted">{{k.Name}}</div>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				{% endfor %}
+			</div>`)
+			}
+			function list_view_point_change()
+			{
+				$(".differ_views").html(`<a href="#" class="grid-view btn btn-link " onclick="grid_view_point_change()"><i class="fa fa-th"></i></a><a href="#" class="list-view btn btn-link active" onclick="list_view_point_change()"><i class="fa-solid fa-bars"></i></a>`)
+				$(".diside_view").html(`
+				<div class="list_view" >
+				<div class="row">
+					<div class="col-md-12">
+						<div class="table-responsive">
+							<table class="table table-striped custom-table datatable">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Employee ID</th>
+										<th>Mobile</th>
+										<th class="text-nowrap">Join Date</th>
+										<th>Department</th>
+										<th class="text-end no-sort">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for Employee in emp %}
+									<tr>
+										<td>
+											<h2 class="table-avatar">
+												<a href="#" class="avatar"><img src="/templates/assets/uploaded_files/{{Employee.Photo}}" alt="User Image"></a>
+												<a href="#">{{Employee.First_Name}} {{Employee.Last_Name}}
+													{% for k in depart_data %}
+														{% if Employee.Department_id |int == k.id|int %}
+														<span>{{k.Name}}</span>
+														{% endif %}
+													{% endfor %}
+													</a>
+											</h2>
+										</td>
+										<td>{{Employee.Employee_ID}}</td>
+										<td>{{Employee.Phone }}</td>
+										<td class="dateformate">{{Employee.Joining_Date }}</td>
+										<td>
+											{% for k in depart_data %}
+												{% if Employee.Department_id |int == k.id|int %}
+													<a href="#" class="btn btn-white btn-sm btn-rounded "  aria-expanded="false">{{k.Name}} </a>
+												{% endif %}
+											{% endfor %}
+										</td>
+										<td class="text-end">
+											<div class="dropdown dropdown-action">
+												<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+												<div class="dropdown-menu dropdown-menu-right">
+													<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee" onclick="Guest_value('{{Employee.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+													<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_employee" onclick="deletingid('{{Employee.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+												</div>
+											</div>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>`)
+			}
+		</script>
+		<!-- Add Employee Modal -->
+		<div id="add_employee" class="modal custom-modal fade" role="dialog">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Add Employee</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form enctype="multipart/form-data" name="add_employeee" action="/HrmTool/Employee/add_employee" method="POST">
+							<span id="message"></span>
+							<div class="profile-img-wrap edit-img">	
+								<img class="inline-block" src="/templates/assets/img/profile1.png" id="add_photo"
+									alt="User Image">
+								<div class="fileupload btn">
+									<span class="btn-text">Add</span>
+									<input class="upload" type="file" id="image" name="image" required onchange="add_photo.src=window.URL.createObjectURL(this.files[0])">
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">First Name <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" id="fname" name="fname" required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Last Name</label>
+										<input class="form-control" type="text" id="lname" name="lname" required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Username <span
+												class="text-danger">*</span></label>
+										<input class="form-control" type="text" id="uname" name="uname" required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Email <span class="text-danger">*</span></label>
+										<input class="form-control" type="email" id="email" name="email" required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Password</label>
+										<input class="form-control" type="password" id="password" name="password"
+											required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Confirm Password</label>
+										<input class="form-control check_pass" type="password" id="cpassword" name="cpassword" 
+											required>
+										<span class="error_show"></span>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
+										<input type="text" class="form-control" id="eid" name="eid" value="{{empy_id_gen}}" required readonly>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Joining Date <span
+												class="text-danger">*</span></label>
+											<input class="form-control " type="date" id="jdate" name="jdate" required>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Phone</label>
+										<input class="form-control" type="number" pattern="[0-9]{10}" id="phone"
+											name="phone" required>
+
+									</div>
+								</div>
+
+								<div class="col-sm-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Company</label>
+										<input type="text" name="company" id="company" value="{{company_data.Company_Name }}" class="form-control" readonly/>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Department <span
+												class="text-danger">*</span></label>
+										<select class="form-select" id="department" name="department" required>
+											<option value="Select Department">Select Department</option>
+											{% for department in depart_data %}
+											<option value="{{ department.id}}">{{ department.Name }}</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Designation <span
+												class="text-danger">*</span></label>
+										<select class="form-select" id="designation" name="designation" required>
+											<option value="">Select Designation</option>
+											{% for designation in d_id %}
+											<option value="{{designation.id}}">{{designation.Name}}
+											</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Birth Date</label>
+											<input class="form-control " type="date" id="bdate" value="2000-01-01"
+												name="bdate" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Gender</label>
+										<select class="form-select" id="gender" name="gender">
+											<option value="Choose the Gender">Select Gender</option>
+											<option value="male">Male</option>
+											<option value="female">Female</option>
+											<option value="others">Others</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Address</label>
+										<input type="text" class="form-control" id="address" name="address" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">State</label>
+										<input type="text" class="form-control" id="state" name="state" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Country</label>
+										<input type="text" class="form-control" id="country" name="country" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Pin Code</label>
+										<input type="number" class="form-control" id="pincode" name="pincode"
+											minlength="6" maxlength="6" required>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Reports To <span
+												class="text-danger">*</span></label>
+										<select class="form-select" id="report" name="report" required>
+											<option>-</option>
+											<option value="Wilmer Deluna">Wilmer Deluna</option>
+											<option value="Lesley Grauer">Lesley Grauer</option>
+											<option value="Jeffery Lalor">Jeffery Lalor</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="submit-section">
+								<button class="btn btn-primary submit-btn" type="Submit"
+									onclick="add_Guest('Add','')">Submit</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		function search_by_name(data) {
+			alert(data)
+			$.get('/search_name/' + data, function (res) {
+				alert(res)
+			})
+		}
+
+		function add_Guest(action, id) {
+			if (action = "Add") {
+				$("form").submit(function (event) {
+					let limage = $('#image')[0].files;
+					var formData = {
+						image: limage,
+						fname: $("#fname").val(),
+						lname: $("#lname").val(),
+						uname: $("#uname").val(),
+						email: $("#email").val(),
+						password: $("#password").val(),
+						cpassword: $("#cpassword").val(),
+						jdate: $("#jdate").val(),
+						phone: $("#phone").val(),
+						company: $("#company").val(),
+						department: $("#department").val(),
+						designation: $("#designation").val(),
+						bdate: $("#bdate").val(),
+						gender: $("#gender").val(),
+						address: $("#address").val(),
+						state: $("#state").val(),
+						country: $("#country").val(),
+						pincode: $("#pincode").val(),
+						report: $("#report").val(),
+
+					};
+					console.log(formData);
+					$.ajax({
+						type: "POST",
+						url: "/add_employee",
+						data: formData,
+						dataType: "json",
+						encode: true,
+					}).done(function (data1) {
+						if (data1 === "Done") {
+							// Reload the page upon successful addition
+							console.log("data stored");
+							window.location.reload();
+						} else if (data1 === "Already this name Exist") {
+							alert(data1);
+							window.location.reload();
+						}
+					}).fail(function () {
+						console.error('Error occurred during form submission.');
+					});
+
+					event.preventDefault();
+				});
+
+			}
+		}
+
+		$(".check_pass").on('keyup',function(){
+			let ans = $(this).val()
+			let org = $('#password').val();
+			if (org != ans){
+				$('.error_show').html(`<h5 class="text-danger">Incorrect Password</h5>`)
+			}else{
+				$('.error_show').html(``)
+			}
+		})
+	</script>
+	<script>
+		document.getElementById('pincode').addEventListener('input', function (e) {
+			const input = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+			if (input.length > 6) {
+				e.target.value = input.slice(0, 6); // Limit input to 10 characters
+			}
+			else if (input.length < 6) {
+				e.target.value = input.slice(0, 6);
+			}
+		});
+		document.getElementById('phone').addEventListener('input', function (e) {
+			const input = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+			if (input.length > 10) {
+				e.target.value = input.slice(0, 10); // Limit input to 10 characters
+			}
+		});
+		var promotionDateInput1 = document.getElementById('jdate');
+		promotionDateInput1.addEventListener('input', function (event) {
+			var inputValue = event.target.value;
+			var dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+			if (!dateFormat.test(inputValue)) {
+				event.target.value = '';
+			}
+		});
+		var promotionDateInput2 = document.getElementById('bdate');
+		promotionDateInput2.addEventListener('input', function (event) {
+			var inputValue = event.target.value;
+			var dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+			if (!dateFormat.test(inputValue)) {
+				event.target.value = '';
+			}
+		});
+
+		// Get the form element
+		function printError(elemId, hintMsg) {
+			document.getElementById(elemId).innerHTML = hintMsg;
+		}
+		function validate() {
+			var fname = document.add_employeee.fname.value;
+			var fname = document.add_employeee.lname.value;
+			var email = document.add_employeee.email.value;
+			var createpassword = document.add_employeee.password.value;
+			var confirmpassword = document.add_employeee.phone.value;
+
+			let nameErr = emailErr = crpErr = copErr = true;
+			if (name.trim() === "") {
+				printError("nameErr", "Please enter your name");
+			}
+			else {
+				var regex = /^[a-zA-Z\s]+$/;
+				if (regex.test(name) === false) {
+					alert("nameErr", "Please enter a valid name");
+				}
+				else {
+					alert("nameErr", "");
+					nameErr = false;
+				}
+			}
+			if (email.trim() === "") {
+				printError("emailErr", "Please enter your email address");
+			}
+			else {
+				var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				if (regex.test(email) === false) {
+					printError("emailErr", "Please enter a valid email address");
+				} else {
+					printError("emailErr", ""); emailErr = false;
+				}
+			}
+			if (createpassword === "") {
+				return "Please enter your password";
+			} else {
+				var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
+				if (!regex.test(createpassword)) {
+					alert("Password should contain at least 8 characters, including one uppercase letter, one lowercase letter, one digit, and one special character.");
+				}
+			}
+
+			if (phone === "") {
+				alert("copErr", "Phone is Empty");
+
+			}
+			else {
+
+				if (createpassword !== confirmpassword) {
+					printError("copErr", "Password should be same");
+
+				}
+				else {
+					printError("copErr", ""); copErr = false;
+				}
+			}
+
+			if (nameErr || emailErr || crpErr || copErr) {
+				return false;
+			}
+			else {
+				console.log(nameErr, emailErr, crpErr, copErr);
+				return true;
+			}
+		}
+	</script>
+
+
+
+	<!-- /Add Employee Modal -->
+
+	<!-- Edit Employee Modal -->
+	<div id="edit_employee" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Employee</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form enctype="multipart/form-data" action="/HrmTool/Employee/update" method="POST">
+						<span id="message"></span>
+						<input id="edit_idz" name="edit_id" type="hidden">
+						<div class="profile-img-wrap edit-img">
+							<div class="image_show"> 
+								<img class="inline-block " src="/templates/assets/img/profile1.png" alt="User Image" id="edit_photo"  >
+							</div>
+							<div class="fileupload btn">
+								<span class="btn-text">edit</span>
+								<input class="upload" type="file" id="eimage" name="eimage" onchange="edit_photo.src=window.URL.createObjectURL(this.files[0])">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">First Name <span class="text-danger">*</span></label>
+									<input class="form-control" type="text" id="efname" name="efname" required>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Last Name</label>
+									<input class="form-control" type="text" id="elname" name="elname" required>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Username <span class="text-danger">*</span></label>
+									<input class="form-control" type="text" id="euname" name="euname" required>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Email <span class="text-danger">*</span></label>
+									<input class="form-control" type="email" id="eemail" name="eemail" required>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Password</label>
+									<input class="form-control" type="password" id="epassword" name="epassword" onkeyup="original_pass($(this).val())"
+										required>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Confirm Password</label>
+									<input class="form-control" type="password" id="ecpassword" name="ecpassword" onkeyup="repassword($(this).val())" 
+										required>
+										<span class="edit_errro"></span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
+									<input type="text" readonly class="form-control" id="eeid" name="eeid"
+										required>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Joining Date <span
+											class="text-danger">*</span></label>
+									<input class="form-control" type="date" id="ejdate" name="ejdate" required></div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Phone</label>
+									<input class="form-control" type="number" pattern="[0-9]{10}" id="ephone"
+										name="ephone" required>
+
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Company</label>
+									<input class="form-control" type="" id="ecompany" name="ecompany" value="" readonly />
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Department <span class="text-danger">*</span></label>
+									<select class="form-select" id="edepartment" name="edepartment" required>
+										<option value="Select Department">Select Department</option>
+										{% for department in depart_data %}
+										<option value="{{ department.id}}">{{ department.Name }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Designation <span class="text-danger">*</span></label>
+									<select class="form-select" id="edesignation" name="edesignation" required>
+										<option value="">Select Designation</option>
+										{% for designation in d_id %}
+										<option value="{{designation.id}}">{{designation.Name}}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Birth Date</label>
+									<input class="form-control " type="date" id="ebdate" name="ebdate"
+										required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Gender</label>
+									<select class="form-select" id="egender" name="egender" required>
+										<option value="Choose the Gender">Select Gender</option>
+										<option value="male">Male</option>
+										<option value="female">Female</option>
+										<option value="others">Others</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Address</label>
+									<input type="text" class="form-control" id="eaddress" name="eaddress" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">State</label>
+									<input type="text" class="form-control" id="estate" name="estate" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Country</label>
+									<input type="text" class="form-control" id="ecountry" name="ecountry" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Pin Code</label>
+									<input type="text" class="form-control allow_numbers_only" id="epincode" name="epincode"
+										minlength="6" maxlength="6" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Reports To <span class="text-danger">*</span></label>
+									<select class="form-select" id="ereport" name="ereport" required>
+										<option>-</option>
+										<option value="Wilmer Deluna">Wilmer Deluna</option>
+										<option value="Lesley Grauer">Lesley Grauer</option>
+										<option value="Jeffery Lalor">Jeffery Lalor</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn" type="submit"
+								onclick="edit_master()">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+		document.getElementById('ephone').addEventListener('input', function (e) {
+			const input = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+			if (input.length > 10) {
+				e.target.value = input.slice(0, 10); // Limit input to 10 characters
+			}
+		});
+		function edit_master() {
+			$("form").submit(function (event) {
+				let image = $('#eimage')
+				var formData = {
+					edit_id: $("#edit_idz").val(),
+					eimage: $("#eimage").val(),
+					efname: $('#efname').val(),
+					elname: $("#elname").val(),
+					euname: $("#euname").val(),
+					eemail: $("#eemail").val(),
+					epassword: $("#epassword").val(),
+					ecpassword: $("#epassword").val(),
+					ejdate: $("#ejdate").val(),
+					ephone: $("#ephone").val(),
+					ecompany: $("#ecompany").val(),
+					edepartment: $("#edepartment").val(),
+					edesignation: $("#edesignation").val(),
+					ebdate: $("#ebdate").val(),
+					egender: $("#egender").val(),
+					eaddress: $("#eaddress").val(),
+					estate: $("#estate").val(),
+					ecountry: $("#ecountry").val(),
+					epincode: $("#epincode").val(),
+					ereport: $("#ereport").val(),
+					eimage: image[0].files
+				};
+				console.log(formData)
+				$.ajax({
+					type: "post",
+					url: "/HrmTool/Employee/update",
+					data: formData,
+					dataType: "json",
+					encode: true,
+				}).done(function (data) {
+					if (data == "Already this name Exist") {
+						$("#messages").html(data);
+					}
+					if (data == "Done") {
+						window.location.reload();
+					}
+				});
+				event.preventDefault();
+			});
+		}
+
+
+		function Guest_value(data) {
+			var id = data;
+			$.ajax({
+				type: "put",
+				url: '/HrmTool/Employee/put_data/' + id,
+				id: id,
+				contentType: "application/json",
+
+				success: function (data) {
+					console.log(data);
+					$("#edit_idz").val(data.id),
+					$("#efname").val(data.First_Name),
+					$("#elname").val(data.Last_Name),
+					$("#euname").val(data.Username),
+					$("#eemail").val(data.Email),
+					$("#epassword").val(data.Password),
+					$("#ecpassword").val(data.Password),
+					$("#ejdate").val(data.Joining_Date),
+					$("#ephone").val(data.Phone),
+					$("#ecompany").val(data.Company_id),
+					$("#edepartment").val(data.Department_id),
+					$("#edesignation").val(data.Designation_id),
+					$("#ebdate").val(data.Birth_Date),
+					$("#egender").val(data.Gender),
+					$("#eaddress").val(data.Address),
+					$("#estate").val(data.State),
+					$("#ecountry").val(data.Country),
+					$("#epincode").val(data.Pin_Code),
+					$("#ereport").val(data.Reports_To),
+					$("#eeid").val(data.Employee_ID),
+					$(".image_show").html(`<img class="inline-block image_show" src="/templates/assets/uploaded_files/${data.Photo}" alt="User Image" id="edit_photo" >`),
+					$('#edit_employee').modal('show')
+				},	
+			});
+			return false
+		}
+
+		function original_pass(data){
+			let org = data
+			let dup = $('#ecpassword').val();
+			if (org != dup ){
+				$('.edit_errro').html('<h5 class="text-danger">Incorrect Password</h5>')
+			}else{
+				$('.edit_errro').html('')
+			}
+		}
+
+		function repassword(data){
+			let org = $('#epassword').val();
+			let dup = data;
+			if (org != dup ){
+				$('.edit_errro').html('<h5 class="text-danger">Incorrect Password</h5>')
+			}else{
+				$('.edit_errro').html('')
+			}
+		}
+	</script>
+
+
+	<!-- /Edit Employee Modal -->
+
+	<!-- Delete Employee Modal -->
+	<div class="modal custom-modal fade" id="delete_employee" role="dialog">
+		<div class="modal-dialog modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Employee</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<input type="hidden" id="del_id" />
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+									onclick="conformdel($('#del_id').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+		function deletingid(id) {
+			$('#del_id').val(id)
+		}
+
+		function conformdel(id) {
+			$.get('/HrmTool/Employee/delete/' + id, function () {
+				location.reload();
+			})
+		}
+	</script>
+
+	<!-- /Delete Employee Modal -->
+
+</div>
+<!-- /Page Wrapper -->
+<script>
+	function search_by_eid(data){
+		if (data){
+			$.get('/HrmTool/Employee/searching_emp_id/'+data,function(res){
+				console.log(res)
+				$('.show_search_class').html(function(){
+					h1='';
+					for(let i=0;i<res[0].length;i++){
+						for (let j=0;j<res[1].length;j++){
+							if (res[0][i].Department_id == res[1][j].id ){
+								h1+=`
+								<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 ">
+									<div class="profile-widget">
+										<div class="profile-img">
+											<a href="profile.html" class="avatar"><img src="/templates/assets/uploaded_files/${res[0][i].Photo}" alt="User Image"></a>
+										</div>
+										<div class="dropdown profile-action">
+											<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee" onclick="Guest_value(${res[0][i].id})" ><i class="fa-solid fa-pencil m-r-5" ></i> Edit</a>
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_employee"  onclick="deletingid(${res[0][i].id})"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+											</div>
+										</div>
+										<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="profile.html">${res[0][i].First_Name} ${res[0][i].Last_Name}</a></h4>
+										<div class="small text-muted">${res[1][j].Name}</div>
+									</div>
+								</div>
+								`;
+							}
+						}
+					}
+					return h1;
+				})
+			})
+		}else{
+			window.location.reload();
+		}
+	}
+	function search_desig(data){
+		if (data){
+			$.get('/HrmTool/Employee/searching_designation/'+data,function(res){
+				console.log(res)
+				$('.show_search_class').html(function(){
+					h1='';
+					for(let i=0;i<res[0].length;i++){
+						for (let j=0;j<res[1].length;j++){
+							if (res[0][i].Department_id == res[1][j].id ){
+								h1+=`
+								<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 ">
+									<div class="profile-widget">
+										<div class="profile-img">
+											<a href="profile.html" class="avatar"><img src="/templates/assets/uploaded_files/${res[0][i].Photo}" alt="User Image"></a>
+										</div>
+										<div class="dropdown profile-action">
+											<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee" onclick="Guest_value(${res[0][i].id})" ><i class="fa-solid fa-pencil m-r-5" ></i> Edit</a>
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_employee"  onclick="deletingid(${res[0][i].id})"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+											</div>
+										</div>
+										<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="profile.html">${res[0][i].First_Name} ${res[0][i].Last_Name}</a></h4>
+										<div class="small text-muted">${res[1][i].Name}</div>
+									</div>
+								</div>`;
+							}
+						}
+						
+					}
+					return h1;
+				})
+			})
+		}else{
+			window.location.reload();
+		}
+	}
+</script>
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

@@ -1,0 +1,451 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Interview Questions</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item">Jobs</li>
+						<li class="breadcrumb-item active">Interview Questions</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn mb-1" data-bs-toggle="modal" data-bs-target="#add_question"><i
+							class="fa-solid fa-plus"></i> Add Question</a>
+					<a href="#" class="btn add-btn me-1 mb-1" data-bs-toggle="modal" data-bs-target="#add_cat"><i
+							class="fa-solid fa-plus"></i> Add Category</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0 datatable">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Questions</th>
+								<th>Option A</th>
+								<th>Option B</th>
+								<th>Option C</th>
+								<th>Option D</th>
+								<th class="text-center">Correct Answer</th>
+								<th class="text-center">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for i in add_ques %}
+							<tr>
+								<td>{{loop.index}}</td>
+								<!-- <td>{{i.Category_ID}}</td>
+					                        <td>{{i.Department_ID}}</td> -->
+								<td>{{i.Question}}</td>
+								<td>{{i.OPtion_A}}</td>
+								<td>{{i.OPtion_B}}</td>
+								<td>{{i.OPtion_C}}</td>
+								<td>{{i.OPtion_D}}</td>
+								<td>{{i.Correct_Answer}}</td>
+								<!-- <td>{{i.Code_Snippets}}</td>
+											<td>{{i.Answer_Explanation}}</td>
+											<td>{{i.Video_Link}}</td>
+											<td>{{i.Image}}</td> -->
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#edit_categories" onClick="edit_modal('{{i.id}}')"><i
+													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#delete_job" onClick="delete_question('{{i.id}}')"><i
+													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+
+	<!-- Add Questions Modal -->
+	<div id="add_question" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Questions</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Administration/ques_add" method="POST" enctype="multipart/form-data">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Category</label>
+									<select class="form-select" name="add_category" id="add_category">
+										<option>-</option>
+										<option value="HTML">HTML</option>
+										<option value="CSS">CSS</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Department</label>
+									<select class="form-select" name="department" id="department">
+										<option>-</option>
+										<option value="Web Development">Web Development</option>
+										<option value="Application Development">Application Development</option>
+										<option value="IT Management">IT Management</option>
+										<option value="Accounts Management">Accounts Management</option>
+										<option value="Support Management">Support Management</option>
+										<option value="Marketing">Marketing</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Questions</label>
+									<textarea class="form-control" name="add_question" id="add_question">
+
+												</textarea>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option A</label>
+									<input class="form-control" type="text" name="option_a" id="option_a">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option B</label>
+									<input class="form-control" type="text" name="option_b" id="option_b">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option C</label>
+									<input class="form-control" type="text" name="option_c" id="option_c">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option D</label>
+									<input class="form-control" type="text" name="option_d" id="option_d">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Correct Answer</label>
+									<select class="form-select" name="cor_ans" id="cor_ans">
+										<option>-</option>
+										<option value="Option A">Option A</option>
+										<option value="Option B">Option B</option>
+										<option value="Option C">Option C</option>
+										<option value="Option D">Option D</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Code Snippets</label>
+									<textarea class="form-control" name="code_snippets" id="code_snippets">
+
+												</textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Answer Explanation</label>
+									<textarea class="form-control" name="ans_exp" id="ans_exp">
+
+												</textarea>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Video Link</label>
+									<input class="form-control" type="text" name="vdo_link" id="vdo_link">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Image To Question</label>
+									<input class="form-control" type="file" name="add_image" id="add_image">
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Cancel</button>
+							<button class="btn btn-primary submit-btn" type="submit">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Questions Modal -->
+
+
+	<!-- Add Category Modal -->
+	<div id="add_cat" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Category</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Category</label>
+									<input class="form-control" type="text">
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Cancel</button>
+							<button class="btn btn-primary submit-btn">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Questions Modal -->
+
+	<!-- Edit Job Modal -->
+	<div class="modal custom-modal fade" id="edit_categories" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Questions</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Administration/question_edit" method="POST">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<input id="edit_id" name="edit_id" type="" />
+									<label class="col-form-label">Category</label>
+									<select class="form-select" name="edit_category" id="edit_category">
+										<option>-</option>
+										<option value="HTML">HTML</option>
+										<option value="CSS">CSS</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Department</label>
+									<select class="form-select" name="edit_department" id="edit_department">
+										<option>-</option>
+										<option value="Web Development">Web Development</option>
+										<option value="Application Development">Application Development</option>
+										<option value="IT Management">IT Management</option>
+										<option value="Accounts Management">Accounts Management</option>
+										<option value="Support Management">Support Management</option>
+										<option value="Marketing">Marketing</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Questions</label>
+									<textarea class="form-control" name="edit_question" id="edit_question">
+													<!-- IS management has decided to rewrite a legacy customer relations system using fourth generation languages (4GLs). Which of the following risks is MOST often associated with system development using 4GLs? -->
+												</textarea>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option A</label>
+									<input class="form-control" type="text" name="edit_a" id="edit_a">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option B</label>
+									<input class="form-control" type="text" name="edit_b" id="edit_b">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option C</label>
+									<input class="form-control" type="text" name="edit_c" id="edit_c">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Option D</label>
+									<input class="form-control" type="text" name="edit_d" id="edit_d">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Correct Answer</label>
+									<select class="form-select" name="edit_ans" id="edit_ans">
+										<option>-</option>
+										<option value="Option A">Option A</option>
+										<option value="Option B">Option B</option>
+										<option value="Option C">Option C</option>
+										<option value="Option D">Option D</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Code Snippets</label>
+									<textarea class="form-control" name="edit_snippets" id="edit_snippets">
+
+												</textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Answer Explanation</label>
+									<textarea class="form-control" name="edit_exp" id="edit_exp">
+
+												</textarea>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Video Link</label>
+									<input class="form-control" type="text" name="edit_link" id="edit_link">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Add Image To Question</label>
+									<input class="form-control" type="file" name="edit_image" id="edit_image">
+								</div>
+							</div>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Cancel</button>
+							<button class="btn btn-primary submit-btn">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Edit Job Modal -->
+	<script>
+		function edit_modal(data) {
+			$.get('/HrmTool/Administration/taking_edit_modal/' + data, function (res) {
+				console.log(res)
+
+				$('#edit_id').val(res.id)
+				$('#edit_category').val(res.Category_ID)
+				$('#edit_department').val(res.Department_ID)
+				$('#edit_question').val(res.Question)
+				$('#edit_a').val(res.OPtion_A)
+				$('#edit_b').val(res.OPtion_B)
+				$('#edit_c').val(res.OPtion_C)
+				$('#edit_d').val(res.OPtion_D)
+				$('#edit_ans').val(res.Correct_Answer)
+				$('#edit_snippets').val(res.Code_Snippets)
+				$('#edit_exp').val(res.Answer_Explanation)
+				$('#edit_link').val(res.Video_Link)
+				$('#edit_image').val(res.Image)
+
+
+
+
+			})
+		}
+		function delete_question(data) {
+			$('#delete_item').val(data)
+		}
+
+		function confirm_delete(data) {
+			$.get('/HrmTool/Administration/delete_question/' + data, function (res) {
+				// alert('Deleted Successfully')
+				location.reload()
+			})
+		}
+
+	</script>
+
+	<!-- Delete Job Modal -->
+	<div class="modal custom-modal fade" id="delete_job" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<input name="delete_item" id="delete_item" type="hidden">
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
+									onclick="confirm_delete($('#delete_item').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Job Modal -->
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

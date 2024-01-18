@@ -1,0 +1,354 @@
+{% include "Layout/top.html" %}
+{% include "Layout/settings_sidebar.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<div class="row">
+			<div class="col-md-8 offset-md-2">
+				<!-- Page Header -->
+				<div class="page-header">
+					<div class="row">
+						<div class="col-sm-12">
+							<h3 class="page-title">Salary Settings</h3>
+						</div>
+					</div>
+				</div>
+				<!-- /Page Header -->
+				<form action="/HrmTool/Administration/salary_settings" method="POST" >
+					<!-- DA and HRA Settings -->
+					<div class="settings-widget">
+
+						<div class="h3 card-title with-switch">
+							DA and HRA 											
+							<div class="onoffswitch">
+							{% if da %}
+								<input type="hidden" id="dh_button" name="dh_button" value="{{da.DA_HRA_Switch}}"/>
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  id="switch_hra" {{da.DA_HRA_Switch}} onchange="dhbutton(this)">
+								<label class="onoffswitch-label" for="switch_hra">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+							{%else%}
+								<input type="hidden" id="dh_button" name="dh_button" value="unchecked"/>
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"  id="switch_hra" unchecked onchange="dhbutton(this)">
+								<label class="onoffswitch-label" for="switch_hra">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+							{%endif%}
+							</div>
+						</div>
+						<div class="row">
+							{% if da %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">DA (%)</label>
+									<input type="number" class="form-control" id="da" value="{{da.DA}}" name="da" required>
+								</div>
+							</div>
+							{% else %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">DA (%)</label>
+									<input type="number" class="form-control" id="da" value="" name="da" required>
+								</div>
+							</div>
+						{% endif %}	
+							{% if da %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">HRA (%)</label>
+									<input class="form-control" type="number" value="{{da.HRA}}" id="hra" name="hra" required>
+								</div>
+							</div>
+							{% else %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">HRA (%)</label>
+									<input class="form-control" type="number" value="" id="hra" name="hra" required>
+								</div>
+							</div>
+							{% endif %} 
+						</div>
+					</div>
+					<!-- /DA and HRA Settings -->
+					
+					<!-- Provident Fund Settings -->
+					<div class="settings-widget">
+						<div class="h3 card-title with-switch">
+							Provident Fund Settings 											
+							<div class="onoffswitch">
+								{% if da %}
+								<input type="hidden" id="fund_button" name="fund_button" value="{{da.Fund_Settings_switch}}"/>
+								<input type="checkbox" name="onoffswitch" value="" class="onoffswitch-checkbox" id="switch_pf" {{da.Fund_Settings_switch}} onchange="fundbutton(this)">
+								<label class="onoffswitch-label" for="switch_pf">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+								{% else %}
+								<input type="hidden" id="fund_button" name="fund_button" value="unchecked"/>
+								<input type="checkbox" name="onoffswitch" value="" class="onoffswitch-checkbox" id="switch_pf" unchecked onchange="fundbutton(this)">
+								<label class="onoffswitch-label" for="switch_pf">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+								{% endif %}
+							</div>
+						</div>
+						<div class="row">
+							{% if da %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Employee Share (%)</label>
+									<input class="form-control" type="number" value="{{da.Employee_Share}}" id="peshare" name="peshare" required>
+								</div>
+							</div>
+							{% else %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Employee Share (%)</label>
+									<input class="form-control" type="number" value="" id="peshare" name="peshare" required>
+								</div>
+							</div>
+							{% endif %}
+							{% if da %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Organization Share (%)</label>
+									<input class="form-control" type="number" value="{{da.Organization_Share}}" id="poshare" name="poshare" required>
+								</div>
+							</div>
+							{%else%}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Organization Share (%)</label>
+									<input class="form-control" type="number" value="" id="poshare" name="poshare" required>
+								</div>
+							</div>										
+							{% endif %}
+						</div>
+					</div>
+					<!-- /Provident Fund Settings -->
+					
+					<!-- ESI Settings -->
+					<div class="settings-widget">
+						<div class="h3 card-title with-switch">
+							ESI Settings 											
+							<div class="onoffswitch">
+								{% if da %}
+								<input type="hidden" id="esi_button" name="esi_button" value="{{da.ESI_Switch}}"/>
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="switch_esi" {{da.ESI_Switch}} onchange="esibutton(this)">
+								<label class="onoffswitch-label" for="switch_esi">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+								{% else %}
+								<input type="hidden" id="esi_button" name="esi_button" value="unchecked"/>
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="switch_esi" unchecked onchange="esibutton(this)">
+								<label class="onoffswitch-label" for="switch_esi">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+								{% endif %}
+							</div>
+						</div>
+						<div class="row">
+							{% if da %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Employee Share (%)</label>
+									<input class="form-control" value="{{da.Employee_ESI}}" type="number" id="eeshare" name="eeshare" required>
+								</div>
+							</div>
+							{%else%}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Employee Share (%)</label>
+									<input class="form-control" value="" type="number" id="eeshare" name="eeshare" required>
+								</div>
+							</div>
+							{% endif %}
+							{% if da %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Organization Share (%)</label>
+									<input class="form-control" value="{{da.Organization_ESI}}" type="number" id="eoshare" name="eoshare" required>
+								</div>
+							</div>
+							{%else %}
+							<div class="col-sm-6">
+								<div class="input-block mb-3">
+									<label class="col-form-label">Organization Share (%)</label>
+									<input class="form-control" value="" type="number" id="eoshare" name="eoshare" required>
+								</div>
+							</div>
+							{% endif %}
+						</div>
+					</div>
+					<!-- /ESI Settings -->
+					
+					<!-- TDS Settings -->
+					
+					<div class="settings-widget">
+						<div class="h3 card-title with-switch">
+							TDS&nbsp; <small class="form-text text-muted">Annual Salary</small>
+							<div class="onoffswitch">
+								{% if anual %}
+								<input type="hidden" id="tds_button" name="tds_button" value="{{anual[0].TDS_Switch}}"/>
+								<input type="checkbox" name="onoffswitch"  class="onoffswitch-checkbox" id="switch_tds" {{anual.TDS_Switch}} onchange="tdsbutton(this)">
+								<label class="onoffswitch-label" for="switch_tds">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+								{% else %}
+								<input type="hidden" id="tds_button" name="tds_button" value="unchecked"/>
+								<input type="checkbox" name="onoffswitch"  class="onoffswitch-checkbox" id="switch_tds" unchecked onchange="tdsbutton(this)">
+								<label class="onoffswitch-label" for="switch_tds">
+									<span class="onoffswitch-inner"></span>
+									<span class="onoffswitch-switch"></span>
+								</label>
+								{% endif %}
+							</div>
+						</div>
+						<div class="input-set" >
+							{% if anual %}
+								{% for k in anual %}
+								<div class="row row-sm new_class">
+									<div class="col-sm-4">
+										<input class="form-control" type="hidden" id="edit_ids" name="edit_ids" value="{{k.id}}" />
+										<div class="input-block mb-3">
+											<label class="col-form-label">Salary From</label>
+											<input class="form-control" type="number" value="{{k.Salary_From}}" id="sfrom" name="sfrom">
+										</div>
+									</div>
+									<div class="col-sm-4">
+										<div class="input-block mb-3">
+											<label class="col-form-label">Salary To</label>
+											<input class="form-control" type="number" value="{{k.Salary_To}}" id="sto" name="sto">
+										</div>
+									</div>
+									
+									<div class="col-sm-2">
+										<div class="input-block mb-3">
+											<label class="col-form-label">%</label>
+											<input class="form-control" type="number" value="{{k.Percentage}}" id="tdsp" name="tdsp">
+										</div>
+									</div>
+									<div class="col-sm-2">
+										<div class="input-block mb-3">
+											<label class="col-form-label">&nbsp;</label>
+											{% if loop.index == 1 %}
+											<button class="btn btn-primary w-100" type="button" onclick="addSet()"><i class="fa-solid fa-plus" ></i></button>
+											{% else %}
+											<button class="btn btn-danger w-100 set-btn" type="button" onclick="removeSet(this)"><i class="fa-regular fa-trash-can" ></i></button>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							{% else %}
+								<div class="row row-sm new_class">
+									<div class="col-sm-4">
+										<div class="input-block mb-3">
+											<label class="col-form-label">Salary From</label>
+											<input class="form-control" type="number" value="" id="sfrom" name="sfrom">
+										</div>
+									</div>
+									<div class="col-sm-4">
+										<div class="input-block mb-3">
+											<label class="col-form-label">Salary To</label>
+											<input class="form-control" type="number" value="" id="sto" name="sto">
+										</div>
+									</div>
+									
+									<div class="col-sm-2">
+										<div class="input-block mb-3">
+											<label class="col-form-label">%</label>
+											<input class="form-control" type="number" value="" id="tdsp" name="tdsp">
+										</div>
+									</div>
+									<div class="col-sm-2">
+										<div class="input-block mb-3">
+											<label class="col-form-label">&nbsp;</label>
+											<button class="btn btn-primary w-100" type="button" onclick="addSet()"><i class="fa-solid fa-plus" ></i></button>
+											<!-- <button class="btn btn-danger w-100 set-btn" type="button" onclick="removeSet(this)"><i class="fa-regular fa-trash-can" ></i></button> -->
+										</div>
+									</div>
+									
+								</div>
+							{% endif %}
+						</div>
+						<div class="row row-sm">
+							<div class="col-sm-2 ms-auto">
+								<div class="input-block mb-3">
+								</div>
+							</div>
+						</div>
+					<!-- /TDS Settings -->
+					
+					<!-- Submit Button -->
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn" type="submit">Save</button>
+					</div>
+					<!-- /Submit Button -->
+					
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<!-- /Page Content -->
+	
+</div>
+<!-- /Page Wrapper -->
+
+<script>
+	function addSet() {
+		$(".input-set").append(function(){
+			innerData = `
+			<div class="row row-sm new_class">
+			<div class="col-sm-4">
+				<div class="input-block mb-3">
+					<label class="col-form-label">&nbsp;</label>
+					<input class="form-control" type="number" value="" id="sfrom" name="sfrom">
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="input-block mb-3">
+					<label class="col-form-label">&nbsp;</label>
+					<input class="form-control" type="number" value="" id="sto" name="sto">
+				</div>
+			</div>
+			
+			<div class="col-sm-2">
+				<div class="input-block mb-3">
+					<label class="col-form-label">&nbsp;</label>
+					<input class="form-control" type="number" value="" id="tdsp" name="tdsp">
+				</div>
+			</div>
+			<div class="col-sm-2">
+				<div class="input-block mb-3">
+					<label class="col-form-label">&nbsp;</label>
+					<button class="btn btn-danger w-100 set-btn" type="button" onclick="removeSet(this)"><i class="fa-regular fa-trash-can" ></i></button>
+				</div>
+			</div>
+		</div> `
+		return innerData;
+		})
+	}
+
+	function removeSet(btn) {
+		btn.closest('.new_class').remove();
+	}
+	function dhbutton(data){if (data.checked){$('#dh_button').val('checked')}else{$('#dh_button').val('unchecked')}}
+	function fundbutton(data){if (data.checked){$('#fund_button').val('checked')}else{$('#fund_button').val('unchecked')}}
+	function esibutton(data){if (data.checked){$('#esi_button').val('checked')}else{$('#esi_button').val('unchecked')}}
+	function tdsbutton(data){if (data.checked){$('#tds_button').val('checked')}else{$('#tds_button').val('unchecked')}}
+
+</script>
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

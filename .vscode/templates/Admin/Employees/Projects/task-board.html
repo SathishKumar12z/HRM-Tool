@@ -1,0 +1,673 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row">
+				<div class="col-sm-12">
+					<h3 class="page-title">Hospital Admin</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item">
+							<a href="admin-dashboard.html">Dashboard</a>
+						</li>
+						<li class="breadcrumb-item active">Task Board</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row board-view-header">
+			<div class="col-4">
+				<div class="pro-teams">
+					<div class="pro-team-lead">
+						<h4>Lead</h4>
+						<div class="avatar-group">
+							<div class="avatar">
+								<img class="avatar-img rounded-circle border border-white" alt="User Image"
+									src="templates/assets/img/profiles/avatar-11.jpg" />
+							</div>
+							<div class="avatar">
+								<img class="avatar-img rounded-circle border border-white" alt="User Image"
+									src="templates/assets/img/profiles/avatar-01.jpg" />
+							</div>
+							<div class="avatar">
+								<img class="avatar-img rounded-circle border border-white" alt="User Image"
+									src="templates/assets/img/profiles/avatar-16.jpg" />
+							</div>
+							<div class="avatar">
+								<a href="#" class="avatar-title rounded-circle border border-white"
+									data-bs-toggle="modal" data-bs-target="#assign_leader"><i
+										class="fa-solid fa-plus"></i></a>
+							</div>
+						</div>
+					</div>
+					<div class="pro-team-members">
+						<h4>Team</h4>
+						<div class="avatar-group">
+							<div class="avatar">
+								<img class="avatar-img rounded-circle border border-white" alt="User Image"
+									src="templates/assets/img/profiles/avatar-02.jpg" />
+							</div>
+							<div class="avatar">
+								<img class="avatar-img rounded-circle border border-white" alt="User Image"
+									src="templates/assets/img/profiles/avatar-09.jpg" />
+							</div>
+							<div class="avatar">
+								<img class="avatar-img rounded-circle border border-white" alt="User Image"
+									src="templates/assets/img/profiles/avatar-12.jpg" />
+							</div>
+							<div class="avatar">
+								<a href="#" class="avatar-title rounded-circle border border-white"
+									data-bs-toggle="modal" data-bs-target="#assign_user"><i
+										class="fa-solid fa-plus"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-8 text-end">
+				<a href="#" class="btn btn-white float-end ms-2" data-bs-toggle="modal"
+					data-bs-target="#add_task_board"><i class="fa-solid fa-plus"></i> Create List</a>
+				<a href="project-view.html" class="btn btn-white float-end" title="View Board"><i
+						class="fa fa-link"></i></a>
+			</div>
+
+			<div class="col-12">
+				<div class="pro-progress">
+					<div class="pro-progress-bar">
+						<h4>Progress</h4>
+						<div class="progress">
+							<div class="progress-bar bg-success w-20" role="progressbar"></div>
+						</div>
+						<span>20%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="kanban-board card mb-0">
+			<div class="card-body">
+				<div class="kanban-cont">
+					{% for i in taskBoardData %}
+
+					<div class="kanban-list kanban-{{i.Colour}}">
+						<div class="kanban-header">
+							<span class="status-title">{{i.Name}}</span>
+							<div class="dropdown kanban-action">
+								<a href="#" data-bs-toggle="dropdown">
+									<i class="fa-solid fa-ellipsis-vertical"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right">
+									<a class="dropdown-item" href="#" data-bs-toggle="modal"
+										data-bs-target="#edit_task_board" onclick="editgetting_id('{{i.id}}')">Edit</a>
+									<a class="dropdown-item" href="#" onClick="getDeleteId('{{i.id}}')">Delete</a>
+								</div>
+							</div>
+						</div>
+						<div class="kanban-wrap">
+							{% for j in addNewTask %}
+							<!-- <h4>j.task_id} -->
+							{% if j.task_id|int==i.id|int %}
+							<div class="card panel">
+								<div class="kanban-box">
+									<div class="task-board-header">
+										<span class="status-title"><a href="javascript:void(0);">{{j.Name}}</a></span>
+										<div class="dropdown kanban-task-action">
+											<a href="#" data-bs-toggle="dropdown">
+												<i class="fa-solid fa-angle-down"></i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-right">
+												<a class="dropdown-item" href="#" data-bs-toggle="modal"
+													data-bs-target="#edit_task_modal"
+													onclick="gettingTask_id('{{j.id}}')">Edit</a>
+												<a class="dropdown-item" href="#"
+													onclick="gettingTaskDelete_id('{{j.id}}')">Delete</a>
+											</div>
+										</div>
+									</div>
+									<div class="task-board-body">
+										<div class="kanban-info">
+											<div class="progress progress-xs">
+												<div class="progress-bar w-20" role="progressbar" aria-valuenow="20"
+													aria-valuemin="0" aria-valuemax="100"></div>
+											</div>
+											<span>70%</span>
+										</div>
+										<div class="kanban-footer">
+											<span class="task-info-cont">
+												<span class="task-date"><i class="fa-regular fa-clock due"></i><span
+														class="task-dates"
+														style="margin-left: 4px">{{j.Due_Date}}</span></span>
+												<span
+													class="task-priority badge bg-inverse-danger">{{j.Priority}}</span>
+											</span>
+											<span class="task-users">
+												{% for k in employeeData %} {% if
+												k.Employee_ID|int == j.Task_Followers|int %}
+												<img src="{{k.Photo}}" class="task-avatar" width="24" height="24"
+													alt="User Image" />
+												{% endif %} {% endfor %}
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							{% endif %} {% endfor %}
+						</div>
+						<div class="add-new-task" onclick="getting_id('{{i.id}}')"
+							style="border: none; background: transparent">
+							<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#add_task_modal">Add
+								New Task</a>
+						</div>
+					</div>
+
+					{% endfor %}
+				</div>
+				<!-- HHHHH -->
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+	<script>
+		function getting_id(data) {
+			$("#edit_id").val(data);
+		}
+		function gettingTask_id(data) {
+			console.log(data);
+			$.get("/getTaskid/" + data, function (res) {
+				$("#editTaskNewid").val(res.taskeditDatas.id);
+				$("#editTaskName").val(res.taskeditDatas.Name);
+				$("#editTaskPriority").val(res.taskeditDatas.Priority);
+				$("#editDuedate").val(res.taskeditDatas.Due_Date);
+				$("#editFollowers").val(res.taskeditDatas.Task_Followers);
+			});
+		}
+		function getDeleteId(id) {
+			console.log(id);
+			$.get("/del_data/" + id, function (res) {
+				location.reload();
+			});
+		}
+
+		function gettingTaskDelete_id(id) {
+			console.log(id);
+			$.get("/deltask_data/" + id, function (res) {
+				location.reload();
+			});
+		}
+
+		function editgetting_id(data) {
+			console.log(data);
+			$.get("/getid/" + data, function (res) {
+				const check = res.task_datas[0].Colour;
+				console.log(check);
+				console.log(res.task_datas);
+				let primary = document.querySelector(".primary");
+				let success = document.querySelector(".success");
+				let info = document.querySelector(".info");
+				let purple = document.querySelector(".purple");
+				let warning = document.querySelector(".warning");
+				let danger = document.querySelector(".danger");
+				console.log(primary);
+
+				if (primary.value === check) {
+					primary.checked = true;
+				}
+				if (success.value === check) {
+					success.checked = true;
+				}
+				if (info.value === check) {
+					info.checked = true;
+				}
+				if (purple.value === check) {
+					purple.checked = true;
+				}
+				if (warning.value === check) {
+					warning.checked = true;
+				}
+				if (danger.value === check) {
+					danger.checked = true;
+				}
+				$("#editTaskid").val(res.task_datas[0].id);
+				$("#editTask").val(res.task_datas[0].Name);
+				$("#editTaskColor").val(res.task_datas[0].Colour);
+			});
+		}
+
+		// Edit Task Board
+	</script>
+
+	<!-- To Edit -->
+
+	<div id="add_task_board" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Add Task Board</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Employee/createData" method="post">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Board Name</label>
+							<input type="text" class="form-control" name="taskboard" />
+						</div>
+						<div class="input-block mb-3 task-board-color">
+							<label class="col-form-label">Task Board Color</label>
+							<div class="board-color-list">
+								<label class="board-control board-primary">
+									<input name="radio" type="radio" class="board-control-input" value="primary"
+										checked="" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-success">
+									<input name="radio" type="radio" class="board-control-input" value="success" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-info">
+									<input name="radio" type="radio" class="board-control-input" value="info" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-purple">
+									<input name="radio" type="radio" class="board-control-input" value="purple" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-warning">
+									<input name="radio" type="radio" class="board-control-input" value="warning" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-danger">
+									<input name="radio" type="radio" class="board-control-input" value="danger" />
+									<span class="board-indicator"></span>
+								</label>
+							</div>
+						</div>
+						<div class="m-t-20 text-center">
+							<button class="btn btn-primary btn-lg">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="edit_task_board" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Edit Task Board</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Employee/updateTaskData" method="post">
+						<div class="input-block mb-3">
+							<input id="editTaskid" name="editTaskid" hidden />
+							<label class="col-form-label">Task Board Name</label>
+							<input type="text" class="form-control" name="editTask" id="editTask" />
+						</div>
+						<div class="input-block mb-3 task-board-color">
+							<label class="col-form-label">Task Board Color</label>
+							<div class="board-color-list">
+								<label class="board-control board-primary">
+									<input name="radio" type="radio" class="board-control-input primary" value="primary"
+										id="editTaskColor" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-success">
+									<input name="radio" type="radio" class="board-control-input success"
+										value="success" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-info">
+									<input name="radio" type="radio" class="board-control-input info" value="info" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-purple">
+									<input name="radio" type="radio" class="board-control-input purple"
+										value="purple" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-warning">
+									<input name="radio" type="radio" class="board-control-input warning"
+										value="warning" />
+									<span class="board-indicator"></span>
+								</label>
+								<label class="board-control board-danger">
+									<input name="radio" type="radio" class="board-control-input danger"
+										value="danger" />
+									<span class="board-indicator"></span>
+								</label>
+							</div>
+						</div>
+						<div class="m-t-20 text-center">
+							<button class="btn btn-primary btn-lg" onclick="">
+								Submit
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="new_project" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Create New Project</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Project Name</label>
+							<input class="form-control" type="text" />
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">
+								Create Project
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Assign Leader Modal -->
+	<div id="assign_leader" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Assign Leader to this project</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="input-group m-b-30">
+						<input placeholder="Search to add a leader" class="form-control search-input" type="text" />
+						<button class="btn btn-primary">Search</button>
+					</div>
+					<div>
+						<ul class="chat-user-list">
+							<li>
+								<a href="#">
+									<div class="chat-block d-flex">
+										<span class="avatar flex-shrink-0"><img
+												src="templates/assets/img/profiles/avatar-09.jpg"
+												alt="User Image" /></span>
+										<div class="media-body align-self-center text-nowrap">
+											<div class="user-name">Richard Miles</div>
+											<span class="designation">Web Developer</span>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<div class="chat-block d-flex">
+										<span class="avatar flex-shrink-0"><img
+												src="templates/assets/img/profiles/avatar-10.jpg"
+												alt="User Image" /></span>
+										<div class="media-body align-self-center text-nowrap">
+											<div class="user-name">John Smith</div>
+											<span class="designation">Android Developer</span>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<div class="chat-block d-flex">
+										<span class="avatar flex-shrink-0">
+											<img src="templates/assets/img/profiles/avatar-16.jpg" alt="User Image" />
+										</span>
+										<div class="media-body align-self-center text-nowrap">
+											<div class="user-name">Jeffery Lalor</div>
+											<span class="designation">Team Leader</span>
+										</div>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Assign Leader Modal -->
+
+	<!-- Assign User Modal -->
+	<div id="assign_user" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Assign the user to this project</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="input-group m-b-30">
+						<input placeholder="Search a user to assign" class="form-control search-input" type="text" />
+						<button class="btn btn-primary">Search</button>
+					</div>
+					<div>
+						<ul class="chat-user-list">
+							<li>
+								<a href="#">
+									<div class="chat-block d-flex">
+										<span class="avatar flex-shrink-0"><img
+												src="templates/assets/img/profiles/avatar-09.jpg"
+												alt="User Image" /></span>
+										<div class="media-body align-self-center text-nowrap">
+											<div class="user-name">Richard Miles</div>
+											<span class="designation">Web Developer</span>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<div class="chat-block d-flex">
+										<span class="avatar flex-shrink-0"><img
+												src="templates/assets/img/profiles/avatar-10.jpg"
+												alt="User Image" /></span>
+										<div class="media-body align-self-center text-nowrap">
+											<div class="user-name">John Smith</div>
+											<span class="designation">Android Developer</span>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<div class="chat-block d-flex">
+										<span class="avatar flex-shrink-0">
+											<img src="templates/assets/img/profiles/avatar-16.jpg" alt="User Image" />
+										</span>
+										<div class="media-body align-self-center text-nowrap">
+											<div class="user-name">Jeffery Lalor</div>
+											<span class="designation">Team Leader</span>
+										</div>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Assign User Modal -->
+
+	<!-- Add Task Modal -->
+	<div id="add_task_modal" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Add Task</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/createTaskData" method="post">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Name</label>
+							<input type="text" name="edit_id" id="edit_id" hidden />
+							<input type="text" class="form-control" name="taskName" />
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Priority</label>
+							<select class="form-control" name="taskPriority">
+								<option>Select</option>
+								<option>High</option>
+								<option>Normal</option>
+								<option>Low</option>
+							</select>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Due Date</label>
+							<div class="cal-icon">
+								<input class="form-control datetimepicker" type="text" name="dueDate" />
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Followers</label>
+
+							<select class="form-control task-followers" name="taskFollowers">
+								<option>Select</option>
+								<option value="1">John Doe</option>
+								<option value="2">Richard Miles</option>
+								<option value="3">John Smith</option>
+								<option value="4">Mike Litorus</option>
+							</select>
+
+							<div class="task-follower-list">
+								<span data-bs-toggle="tooltip" title="John Doe">
+									<img src="templates/assets/img/profiles/avatar-02.jpg" class="avatar" alt="John Doe"
+										width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+								<span data-bs-toggle="tooltip" title="Richard Miles">
+									<img src="templates/assets/img/profiles/avatar-09.jpg" class="avatar"
+										alt="Richard Miles" width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+								<span data-bs-toggle="tooltip" title="John Smith">
+									<img src="templates/assets/img/profiles/avatar-10.jpg" class="avatar"
+										alt="John Smith" width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+								<span data-bs-toggle="tooltip" title="Mike Litorus">
+									<img src="templates/assets/img/profiles/avatar-05.jpg" class="avatar"
+										alt="Mike Litorus" width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+							</div>
+						</div>
+						<div class="submit-section text-center">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Task Modal -->
+
+	<!-- Edit Task Modal -->
+	<div id="edit_task_modal" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Edit Task</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/updateTaskNewData" method="post">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Name</label>
+							<input name="editTaskNewid" id="editTaskNewid" hidden />
+							<input type="text" class="form-control" name="editTaskName" id="editTaskName" />
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Priority</label>
+							<select class="form-control" name="editTaskPriority" id="editTaskPriority">
+								<option>Select</option>
+								<option>High</option>
+								<option>Normal</option>
+								<option>Low</option>
+							</select>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Due Date</label>
+							<div class="cal-icon">
+								<input class="form-control datetimepicker" type="text" name="editDuedate"
+									id="editDuedate" />
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Task Followers</label>
+							<input type="text" class="form-control" placeholder="Search to add" name="editFollowers"
+								id="editFollowers" />
+							<div class="task-follower-list">
+								<span data-bs-toggle="tooltip" title="John Doe">
+									<img src="templates/assets/img/profiles/avatar-02.jpg" class="avatar" alt="John Doe"
+										width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+								<span data-bs-toggle="tooltip" title="Richard Miles">
+									<img src="templates/assets/img/profiles/avatar-09.jpg" class="avatar"
+										alt="Richard Miles" width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+								<span data-bs-toggle="tooltip" title="John Smith">
+									<img src="templates/assets/img/profiles/avatar-10.jpg" class="avatar"
+										alt="John Smith" width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+								<span data-bs-toggle="tooltip" title="Mike Litorus">
+									<img src="templates/assets/img/profiles/avatar-05.jpg" class="avatar"
+										alt="Mike Litorus" width="20" height="20" />
+									<i class="fa-solid fa-xmark"></i>
+								</span>
+							</div>
+						</div>
+						<div class="submit-section text-center">
+							<button class="btn btn-primary submit-btn" type="submit">
+								Submit
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Edit Task Modal -->
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

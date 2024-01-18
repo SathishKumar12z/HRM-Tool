@@ -1,0 +1,239 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+	<!-- Page Content -->
+	<div class="content container-fluid">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Resignation</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item active">Resignation</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_resignation"><i
+							class="fa-solid fa-plus"></i> Add Resignation</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0 datatable leave-employee-table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Resigning Employee </th>
+								<th>Department </th>
+								<th>Notice Date </th>
+								<th>Resignation Date </th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for i in resigination_datas %}
+							<tr>
+								<td>{{loop.index}}</td>
+								{% for j in employee_datas %}
+								{% if i.Employee_id|int == j.id|int %}
+								<td>
+									<h2 class="table-avatar blue-link">
+										<a href="profile.html" class="avatar"><img
+												src="/templates/assets/uploaded_files/{{j.Photo}}" alt="User Image"></a>
+										<a href="profile.html">{{j.First_Name}} {{j.Last_Name}}</a>
+									</h2>
+								</td>
+								{% for k in department_datas %}
+								{% if j.Department_id|int == k.id|int %}
+								<td>{{k.Name}}</td>
+								{% endif %}
+								{% endfor %}
+								{% endif %}
+								{% endfor %}
+								<td>{{i.Reason}}</td>
+								<td class="dateformate">{{i.Notice_Date}}</td>
+								<td class="dateformate">{{i.Date}}</td>
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#edit_resignation" onclick="getting_id('{{i.id}}')"><i
+													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal"
+												data-bs-target="#delete_resignation"
+												onclick="gettingDelete_id('{{i.id}}')"><i
+													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+								{% endfor %}
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- /Page Content -->
+	<script>
+		function getting_id(data) {
+			$.get("/HrmTool/Performance/getid/" + data, function (res) {
+				console.log(res.resigination_data.id);
+				$("#edit_id").val(res.resigination_data.id)
+				$("#edit_name").val(res.employee_datas[0].First_Name + ' ' + res.employee_datas[0].Last_Name);
+				$("#edit_notice").val(res.resigination_data.Notice_Date);
+				$("#edit_date").val(res.resigination_data.Date)
+				$("#edit_reason").val(res.resigination_data.Reason)
+			});
+		}
+	</script>
+
+	<script>
+		function gettingDelete_id(data) {
+			$("#delete_id").val(data);
+		}
+	</script>
+
+	<!-- Add Resignation Modal -->
+	<div id="add_resignation" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Resignation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div style="padding-left: 77px; color: #971212;">
+					<h6>Note If Resignation Employee Remove From Employee Also</h6>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Performance/resiginationSave" method="post">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Resigning Employee <span class="text-danger">*</span></label>
+							<!-- <input class="form-control" type="text" name="employeeName"> -->
+							<select class="form-select" name="employeeName">
+								<option>select</option>
+								{% for i in employee_datas %}
+								<option value="{{i.id}}">{{i.First_Name}}{{i.Last_Name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Notice Date <span class="text-danger">*</span></label>
+							<div>
+								<input type="date" class="form-control" name="noticeDate">
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Resignation Date <span class="text-danger">*</span></label>
+							<div>
+								<input type="date" class="form-control" name="resignationDate">
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Reason <span class="text-danger">*</span></label>
+							<textarea class="form-control" rows="4" name="reason"></textarea>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Resignation Modal -->
+
+	<!-- Edit Resignation Modal -->
+	<div id="edit_resignation" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Resignation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form action="/HrmTool/Performance/updateData" method="post">
+						<input id="edit_id" name="edit_id" hidden>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Resigning Employee <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" name="edit_name" id="edit_name" readonly>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Notice Date <span class="text-danger">*</span></label>
+							<div class="cal-icon">
+								<input type="text" class="form-control datetimepicker" 
+									name="edit_notice" id="edit_notice">
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Resignation Date <span class="text-danger">*</span></label>
+							<div class="cal-icon">
+								<input type="text" class="form-control datetimepicker" 
+									name="edit_date" id="edit_date">
+							</div>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Reason <span class="text-danger">*</span></label>
+							<textarea class="form-control" rows="4" name="edit_reason" id="edit_reason"></textarea>
+						</div>
+						<div class="submit-section">
+							<button class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Edit Resignation Modal -->
+
+	<!-- Delete Resignation Modal -->
+	<div class="modal custom-modal fade" id="delete_resignation" role="dialog">
+		<div class="modal-dialog modal-dialog">
+			<div class="modal-content">
+				<form action="/HrmTool/Performance/delete" method="post">
+					<input id="delete_id" name="delete_id" type="hidden" />
+					<div class="modal-body">
+						<div class="form-header">
+							<h3>Delete Resignation</h3>
+							<p>Are you sure want to delete?</p>
+						</div>
+						<div class="modal-btn delete-action">
+							<div class="row">
+								<div class="col-6">
+									<button href="javascript:void(0);" class="btn btn-primary continue-btn"
+										style="width: 200px;" type="submit">Delete</a>
+								</div>
+								<div class="col-6">
+									<a href="javascript:void(0);" data-bs-dismiss="modal"
+										class="btn btn-primary cancel-btn">Cancel</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Resignation Modal -->
+
+</div>
+<!-- /Page Wrapper -->
+
+
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

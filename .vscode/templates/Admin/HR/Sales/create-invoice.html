@@ -1,0 +1,413 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row">
+				<div class="col-sm-12">
+					<h3 class="page-title">Create Invoice</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item active">Create Invoice</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+		<div class="row">
+			<div class="col-sm-12">
+				<form action="/HrmTool/HR/new-invoice" method="post">
+					<div class="row">
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label" for="Client_id">Client <span
+										class="text-danger">*</span></label>
+								<select class="select" name="Client_id" id="Client_id"
+									onchange="getProjects($(this).val())" required>
+									<option>Please Select</option>
+									{% for i in client_data %}
+									<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3" id="projectsList">
+								<label class="col-form-label" for="Project_id">Project <span
+										class="text-danger">*</span></label>
+								<div class="auto_fill_project">
+									<input placeholder="select a client" class="form-control" readonly />
+								</div>
+								<!-- <select class="select" name="Project_id" id="Project_id" required>
+									<option>Select Project</option>
+									<option selected>Office Management</option>
+									<option>Project Management</option>
+								</select> -->
+							</div>
+						</div>
+
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Email</label>
+								<div class="auto_fill_mail">
+									<input placeholder="select a client" class="form-control" readonly />
+								</div>
+								<!-- <input class="form-control " type="email" name="Email" required> -->
+							</div>
+						</div>
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Tax</label>
+								<select class="select" name="Tax" id="taxDropdown" required onchange="setTaxvalue($(this).val())">
+									<option>Select Tax</option>
+									{% for i in tax_data %}
+									<option value="{{i.id}}">{{i.Tax_Name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Client Address</label>
+								<div class="auto_fill_adres">
+									<input placeholder="select a client" class="form-control" readonly />
+								</div>
+								<!-- <textarea class="form-control" rows="3" name="Client_address" required></textarea> -->
+							</div>
+						</div>
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Billing Address</label>
+								<textarea class="form-control" rows="3" name="Biling_address" style="height: 46px;" required></textarea>
+							</div>
+						</div>
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Invoice date <span class="text-danger">*</span></label>
+								<div class="cal-icon">
+									<input class="form-control datetimepicker" type="text" name="Estimate_Date"
+										required>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-md-3">
+							<div class="input-block mb-3">
+								<label class="col-form-label">Due Date <span class="text-danger">*</span></label>
+								<div class="cal-icon">
+									<input class="form-control datetimepicker" type="text" name="Expiry_Date" required>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6 col-md-3">
+						<div class="input-block mb-3">
+							<label class="col-form-label">Status</label>
+							<select class="select" name="status" id="status" required>
+								<option>Select Status</option>
+								<option>Paid</option>
+								<option>Not Paid</option>
+								<option>Pending</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<div class="table-responsive">
+								<table class="table table-hover table-white" id="addTable">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th class="col-sm-2">Item</th>
+											<th class="col-md-6">Description</th>
+											<th>Unit Cost</th>
+											<th>Qty</th>
+											<th>Amount</th>
+											<th> </th>
+										</tr>
+									</thead>
+									<tbody class="tbodyone">
+										<tr>
+											<td>1</td>
+											<td>
+												<input class="form-control" type="text" id="Item1" name="Item" required>
+											</td>
+											<td>
+												<input class="form-control" type="text" id="Description1"
+													name="Description" required>
+											</td>
+											<td>
+												<input class="form-control" type="text" id="UnitCost1" name="UnitCost"
+													required>
+											</td>
+											<td>
+												<input class="form-control" type="text" id="Qty1" name="Qty" required>
+											</td>
+											<td>
+												<input class="form-control" readonly type="text" id="Amount1"
+													name="Amount" required>
+											</td>
+											<!-- <td><a href="javascript:void(0)" class="text-success font-18"  onclick="addRow()" id="addProduct" title="Add"><i class="fa-solid fa-plus"></i></a></td> -->
+											<td><a href="javascript:void(0)" class="text-success font-18"
+													onclick="addRow()" title="Add"><i class="fa-solid fa-plus"></i></a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="table-responsive">
+								<table class="table table-hover table-white">
+									<tbody>
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td class="text-end">Total </td>
+											<!--<td class="text-end pe-4" value="0" readonly type="text" name="Total" id="total"></td>-->
+											<td class="text-end pe-4">
+												<input class="form-control text-end" value="0" readonly type="text"
+													id="total" name="Total">
+											</td>
+										</tr>
+										<tr>
+											<td colspan="5" class="text-end">Tax</td>
+											<td class="text-end pe-4">
+												<input class="form-control text-end" placeholder="select Tax" readonly type="text"
+													id="taxAmount" name="item_Tax">
+											</td>
+										</tr>
+										<tr>
+											<td colspan="5" class="text-end">
+												Discount %
+											</td>
+											<td class="text-end pe-4">
+												<input class="form-control text-end" type="text" name="Discount"
+													id="discount">
+											</td>
+										</tr>
+										<tr>
+											<td colspan="5" class="text-end pe-4">
+												<b>Grand Total</b>
+											</td>
+											<td class="text-end tdata-width pe-4">
+												<input class="form-control text-end" value="$0.00" readonly type="text"
+													name="Grand_Total" id="grandtotal">
+
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="input-block mb-3">
+										<label class="col-form-label">Other Information</label>
+										<textarea class="form-control" name="Information"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="submit-section">
+						<button class="btn btn-primary submit-btn m-r-10">Save & Send</button>
+						<button class="btn btn-primary submit-btn" type="submit">Save</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+</div>
+<!-- /Page Wrapper -->
+<script>
+	function setTaxvalue(data){
+		$.get(`/HrmTool/HR/Taxvalue/${data}`,function(res){
+			$('#taxAmount').val(res.Tax_Percentage)
+		})
+	}
+</script>
+
+<script>
+	function getProjects(data) {
+		fetch(`/HrmTool/HR/projects/${data}`)
+			.then(res => res.json())
+			.then(res => {
+				console.log(res)
+				if (res == 'empty') {
+					console.log('no projets')
+					$(".auto_fill_mail").html(`<input placeholder="Project Unavailable! ..."  class="form-control" readonly/>`)
+					$(".auto_fill_project").html(`<input placeholder="Project Unavailable! ..."  class="form-control" readonly/>`)
+					$(".auto_fill_adres").html(`<input placeholder="Project Unavailable! ..."  class="form-control" readonly/>`)
+				} else {
+					$(".auto_fill_mail").html(`<input type="email" name="Email" value="${res[1].Email}"  class="form-control" readonly/>`)
+					$(".auto_fill_adres").html(`<textarea class="form-control" rows="3" name="Client_address" style="height: 46px;" readonly>Client Address</textarea>`)
+					$(".auto_fill_project").html(function () {
+						let fir = `<select class="form-select" name="Project_id" id="Project_id" required><option>select Project</option>`
+						let sec = ``
+						let las = `</select>`
+						for (let i = 0; i < res[0].length; i++) {
+							sec += `<option value="${res[0][i].id}">${res[0][i].Project_Name}</option>`
+						}
+						return fir + sec + las;
+					})
+				}
+			})
+	}
+</script>
+<script>
+
+	function calculateAmount(row) {
+		var unitCost = parseFloat(row.querySelector('[name="UnitCost[]"]').value) || 0;
+		var qty = parseFloat(row.querySelector('[name="Qty[]"]').value) || 0;
+		var amount = unitCost * qty;
+		row.querySelector('[name="Amount[]"]').value = isNaN(amount) ? 0 : amount.toFixed(2);
+
+	}
+
+
+	function calculateAmountForRow(row) {
+		let unitCost = parseFloat(row.querySelector('input[id^="UnitCost"]').value) || 0;
+		let qty = parseFloat(row.querySelector('input[id^="Qty"]').value) || 0;
+		let amountField = row.querySelector('input[id^="Amount"]');
+		let amount = unitCost * qty;
+		amountField.value = isNaN(amount) ? 0 : amount.toFixed(2);
+		calculateTotal();
+	}
+
+	function calculateTotal() {
+		let total = 0;
+		document.querySelectorAll('input[id^="Amount"]').forEach(amountField => {
+			total += parseFloat(amountField.value) || 0;
+		});
+		document.getElementById('total').value = total.toFixed(2);
+		calculateGrandTotal();
+	}
+
+	function calculateGrandTotal() {
+		let total = parseFloat(document.getElementById('total').value) || 0;
+		let taxAmount = parseFloat(document.getElementById('taxAmount').value) || 0 ;
+		let discount = parseFloat(document.getElementById('discount').value) || 0;
+		let fx = (total-(total*(taxAmount/100)));
+		console.log(fx)
+		let grandTotal = total + taxAmount - (total * (discount / 100));
+		document.getElementById('grandtotal').value = grandTotal.toFixed(2);
+	}
+
+	function addRow() {
+		let table = document.getElementById('addTable').getElementsByTagName('tbody')[0];
+		let newRow = table.insertRow(-1);
+		let rowNumber = table.rows.length;
+
+		let newRowContent = `
+	<td>${rowNumber}</td>
+	<td><input class="form-control" type="text" id="Item${rowNumber}" name="Item" required></td>
+	<td><input class="form-control" type="text" id="Description${rowNumber}" name="Description" required></td>
+	<td><input class="form-control" type="text" id="UnitCost${rowNumber}" name="UnitCost" oninput="calculateAmountForRow(this.parentElement.parentElement)"></td>
+	<td><input class="form-control" type="text" id="Qty${rowNumber}" name="Qty" oninput="calculateAmountForRow(this.parentElement.parentElement)"></td>
+	<td><input class="form-control" readonly type="text" id="Amount${rowNumber}" name="Amount" required></td>
+	<td><a href="javascript:void(0)" class="text-danger font-18 remove" title="Remove" onclick="removeRow(this.parentElement.parentElement)"><i class="fa-regular fa-trash-can"></i></a></td>
+`;
+
+		newRow.innerHTML = newRowContent;
+	}
+
+
+	document.getElementById('taxAmount').addEventListener('click', function () {
+		var selectedTax = document.getElementById('taxDropdown').value;
+		var taxAmountInput = this;
+
+		if (selectedTax === 'VAT') {
+			taxAmountInput.value = 10;
+		} else if (selectedTax === 'GST') {
+			taxAmountInput.value = 5;
+		} else {
+			taxAmountInput.value = 0;
+		}
+	});
+
+	function removeRow(row) {
+		let index = row.rowIndex;
+		document.getElementById('addTable').deleteRow(index);
+		calculateTotal();
+	}
+
+	document.querySelectorAll('input[id^="UnitCost"]').forEach(input => {
+		input.addEventListener('input', function () {
+			calculateAmountForRow(this.parentElement.parentElement);
+		});
+	});
+
+	document.querySelectorAll('input[id^="Qty"]').forEach(input => {
+		input.addEventListener('input', function () {
+			calculateAmountForRow(this.parentElement.parentElement);
+		});
+	});
+
+	document.getElementById('taxAmount').addEventListener('input', function () {
+		calculateGrandTotal();
+	});
+
+	document.getElementById('discount').addEventListener('input', function () {
+		calculateGrandTotal();
+	});
+
+	document.querySelector('form').addEventListener('submit', function (event) {
+		event.preventDefault();
+	});
+
+
+
+	fetch("/Client_list")
+		.then(response => response.json())
+		.then(ClientList => {
+			const ClientDropdown = document.getElementById("Client_id");
+
+			ClientDropdown.innerHTML = "";
+
+			ClientList.forEach(ClientID => {
+				const option = document.createElement("option");
+				option.value = ClientID;
+				option.text = ClientID;
+				ClientDropdown.add(option);
+			});
+		})
+		.catch(error => console.error("Error fetching Client list:", error));
+
+	// fetch("/Client_list_with_projects")
+	// 	.then(response => response.json())
+	// 	.then(ClientProjectList => {
+	// 		const ClientDropdown = document.getElementById("Client_id");
+	// 		const Project_id = document.getElementById("Project_id");
+
+	// 		ClientDropdown.addEventListener("change", (event) => {
+	// 			const selectedClientId = event.target.value;
+	// 			Project_id.innerHTML = ""; // Clear existing options
+
+	// 			const associatedProjects = ClientProjectList[selectedClientId] || [];
+	// 			if (associatedProjects.length === 0) {
+	// 				const defaultOption = document.createElement("option");
+	// 				defaultOption.text = "No projects found";
+	// 				Project_id.add(defaultOption);
+	// 			} else {
+	// 				associatedProjects.forEach(projectID => {
+	// 					const option = document.createElement("option");
+	// 					option.value = projectID;
+	// 					option.text = projectID;
+	// 					Project_id.add(option);
+	// 				});
+	// 			}
+	// 		});
+	// 	})
+	// 	.catch(error => console.error("Error fetching Client and Project list:", error));	
+</script>
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}
