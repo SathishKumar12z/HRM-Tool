@@ -53,7 +53,7 @@ async def getting(request:Request,db:Session=Depends(get_db)):
                 else:
                     return RedirectResponse('/HrmTool/login/login',status_code=302)
             except:
-                return RedirectResponse('/HrmTool/login/login',status_code=302)
+                return RedirectResponse('Error',status_code=302)
         except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
     else:

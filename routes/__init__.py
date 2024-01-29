@@ -14,6 +14,7 @@ from resources.Employee.designationController import router as designationRouter
 from resources.Employee.ticketsController import router as ticketRouter  
 from resources.Employee.holidayController import router as holidayRouter  
 from resources.Employee.leaveEmployeeController import router as leaveEmployeeRouter  
+from resources.Employee.employeeprofileController import router as employeeprofileRouter  
 #----------------------->>>>>> HR  
 from resources.HR.budgetexpenseController import router as budgetexpenseRouter  
 from resources.HR.payrollitemsController import router as payrollitemsRouter  
@@ -58,6 +59,7 @@ router.include_router(designationRouter, prefix='/Employee', tags=['Designation'
 router.include_router(ticketRouter, prefix='/Employee', tags=['Tickets'])
 router.include_router(holidayRouter, prefix='/Employee', tags=['Holidays'])
 router.include_router(leaveEmployeeRouter, prefix='/Employee', tags=['Leave Employee'])
+router.include_router(employeeprofileRouter, prefix='/Employee', tags=['Employee Profile'])
 #------------------------------>>>> HR 
 router.include_router(payrollitemsRouter, prefix='/PayrollItems', tags=['PayrollItems'])
 router.include_router(policiesRouter, prefix='/HR', tags=['Policies'])

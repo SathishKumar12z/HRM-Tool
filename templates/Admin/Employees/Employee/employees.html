@@ -43,8 +43,8 @@
 				</div>
 			</div>
 			<div class="col-sm-6 col-md-3">
-				<div class="input-block mb-3 ">
-					<select class="form-select" name="selectdesignation" id="selectdesignation"
+				<div class="input-block mb-3 form-focus select-focus">
+					<select class="select floating" name="selectdesignation" id="selectdesignation"
 						onchange="search_desig($(this).val())">
 						<option>Select Designation</option>
 						{% for i in depart_data %}
@@ -53,6 +53,7 @@
  					</select>
 				</div>
 			</div>
+			
 			<div class="col-sm-6 col-md-3">
 				<div class="d-grid">
 					<a href="#" class="btn btn-success w-100"> Search </a>
@@ -66,7 +67,7 @@
 				<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3 ">
 					<div class="profile-widget">
 						<div class="profile-img">
-							<a href="profile.html" class="avatar"><img
+							<a href="/HrmTool/Employee/emplyee_profile/{{Employee.id}}" class="avatar"><img
 									src="/templates/assets/uploaded_files/{{Employee.Photo}}" alt="User Image"></a>
 						</div>
 						<div class="dropdown profile-action">
@@ -80,7 +81,7 @@
 									Delete</a>
 							</div>
 						</div>
-						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="profile.html">{{Employee.First_Name}} {{Employee.Last_Name}}</a>
+						<h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="/HrmTool/Employee/emplyee_profile/{{Employee.id}}">{{Employee.First_Name}} {{Employee.Last_Name}}</a>
 						</h4>
 						{% for k in depart_data %}
 							{% if Employee.Department_id |int == k.id|int %}

@@ -1290,8 +1290,87 @@ class Employee_Leave(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-                            
+class Employee_Personal_Info(Base):
+   
+    __tablename__ = "employee_personal_info"
 
+    id = Column(Integer, primary_key=True, index=True)
+
+    Employee_ID   = Column(String(255), nullable=False, index=True)
+    Passport_No   = Column(String(255), nullable=False, index=True)
+    Passport_Exp_Date   = Column(String(255), nullable=False, index=True)
+    Tel  = Column(String(255), nullable=False, index=True)
+    Nationality = Column(String(255), nullable=False, index=True)
+    Religion = Column(String(255), nullable=False, index=True)
+    Marital_status = Column(String(255), nullable=False,index=True) 
+    spouse = Column(String(255), nullable=False,index=True) 
+    No_children = Column(String(255), nullable=False,index=True) 
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+class Emergency_Contact(Base):
+   
+    __tablename__ = "emergency_contact"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    Employee_ID   = Column(String(255), nullable=False, index=True)
+    Primary_Name    = Column(String(255), nullable=False, index=True)
+    Primary_Relationship     = Column(String(255), nullable=False, index=True)
+    Primary_Phone    = Column(String(255), nullable=False, index=True)
+    Primary_Phone_II = Column(String(255), nullable=False, index=True)
+    Secondary_Name = Column(String(255), nullable=False, index=True)
+    Secondary_Relationship = Column(String(255), nullable=False,index=True) 
+    Secondary_Phone = Column(String(255), nullable=False,index=True) 
+    Secondary_Phone_II = Column(String(255), nullable=False,index=True) 
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+    
+class Education_Informations(Base):
+   
+    __tablename__ = "education_informations"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    Employee_ID   = Column(String(255), nullable=False, index=True)
+    Institution    = Column(String(255), nullable=False, index=True)
+    Subject     = Column(String(255), nullable=False, index=True)
+    Starting_Date    = Column(String(255), nullable=False, index=True)
+    Complete_Date = Column(String(255), nullable=False, index=True)
+    Degree = Column(String(255), nullable=False, index=True)
+    Grade = Column(String(255), nullable=False,index=True) 
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+    
 Base.metadata.create_all(bind=engine)
 
 
+    
+class Experience_Informations(Base):
+   
+    __tablename__ = "experience_informations"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    Employee_ID   = Column(String(255), nullable=False, index=True)
+    Company_Name    = Column(String(255), nullable=False, index=True)
+    Location     = Column(String(255), nullable=False, index=True)
+    Job_Position    = Column(String(255), nullable=False, index=True)
+    Period_From = Column(String(255), nullable=False, index=True)
+    Period_To = Column(String(255), nullable=False, index=True)
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+                        
