@@ -34,6 +34,7 @@ from resources.administration.interviewquestionController import router as inter
 from resources.administration.emailsettingsController import router as emailsettingsRouter  
 from resources.administration.invoicesettingsController import router as invoicessettingsRouter  
 from resources.administration.salarysettingController import router as salarysettingsRouter  
+from resources.administration.jobsController import router as jobsRouter  
 #----------------------->>>>>> Performance  
 from resources.performance.trainersController import router as trainersRouter  
 from resources.performance.resignationController import router as resignationRouter  
@@ -80,6 +81,7 @@ router.include_router(interviewquestionsRouter, prefix='/Administration', tags=[
 router.include_router(emailsettingsRouter, prefix='/Administration', tags=['E mail'])
 router.include_router(invoicessettingsRouter, prefix='/Administration', tags=['Invoices Settings'])
 router.include_router(salarysettingsRouter, prefix='/Administration', tags=['Salary Settings'])
+router.include_router(jobsRouter, prefix='/Administration', tags=['Jobs'])
 #----------------------->>>>>> Performance  
 router.include_router(trainersRouter, prefix='/Performance', tags=['Trainers'])
 router.include_router(resignationRouter, prefix='/Performance', tags=['Resignation'])

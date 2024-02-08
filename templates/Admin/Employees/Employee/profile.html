@@ -451,130 +451,7 @@
 			</div>
 			<!-- /Profile Info Tab -->
 
-			<script>
-				function get_education_info(data){
-					fetch(`/HrmTool/Employee/get_education_info/${data}`)
-					.then(res => res.json())
-					.then(res =>{
-						if(res=='None'){
-							$('#education_info').modal('show')
-						}else{
-							let ArrEducation = res;
-							console.log(ArrEducation)
-							$(".after_education_data_add").html(function(){
-								let innerDatas = ''
-								for (let i=0;ArrEducation.length > i;i++)
-								{
-									if(i==0)
-									{
-										innerDatas+=`
-										<div class="card ">
-											<div class="card-body">
-												<h3 class="card-title">Education Informations <a href="javascript:void(0);"
-														class="delete-icon"></a></h3>
-												<div class="row">
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text"  class="form-control floating" id="instute" name="instute">
-															<label class="focus-label">Institution</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text" class="form-control floating" id="sub" name="sub">
-															<label class="focus-label">Subject</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<div class="cal-icon">
-																<input type="text" class="form-control floating datetimepicker" id="s_date" name="s_date">
-															</div>
-															<label class="focus-label">Starting Date</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<div class="cal-icon">
-																<input type="text" class="form-control floating datetimepicker" id="e_date" name="e_date">
-															</div>
-															<label class="focus-label">Complete Date</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text" class="form-control floating" id="deg" name="deg">
-															<label class="focus-label">Degree</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text" class="form-control floating" id="mark" name="mark">
-															<label class="focus-label">Grade</label>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>`
-									}else
-									{
-										innerDatas+=`
-										<div class="card ">
-											<div class="card-body">
-												<h3 class="card-title">Education Informations <a href="javascript:void(0);"
-														class="delete-icon"></a></h3>
-												<div class="row">
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text"  class="form-control floating" id="instute" name="instute">
-															<label class="focus-label">Institution</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text" class="form-control floating" id="sub" name="sub">
-															<label class="focus-label">Subject</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<div class="cal-icon">
-																<input type="text" class="form-control floating datetimepicker" id="s_date" name="s_date">
-															</div>
-															<label class="focus-label">Starting Date</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<div class="cal-icon">
-																<input type="text" class="form-control floating datetimepicker" id="e_date" name="e_date">
-															</div>
-															<label class="focus-label">Complete Date</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text" class="form-control floating" id="deg" name="deg">
-															<label class="focus-label">Degree</label>
-														</div>
-													</div>
-													<div class="col-md-6">
-														<div class="input-block mb-3 form-focus focused">
-															<input type="text" class="form-control floating" id="mark" name="mark">
-															<label class="focus-label">Grade</label>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>`
-									}
-								}
-							})
-							$('#education_info').modal('show')
-						}
-					})
-				}
-			</script>
+			
 
 			<!-- Personal Info Modal -->
 			<div id="personal_info_modal" class="modal custom-modal fade" role="dialog">
@@ -1784,6 +1661,7 @@
 					<form action="/HrmTool/Employee/emplpoyee_education_info" method="post">
 						<input id="employee_id" name="employee_id" value="{{employee_data.id}}" type="hidden" />
 						<div class="form-scroll " id="origin_education_card">
+							<!-- add more and editing area -->
 							<div class="after_education_data_add">
 								<div class="card ">
 									<div class="card-body">
@@ -1834,6 +1712,7 @@
 									</div>
 								</div>
 							</div>
+							<!--/ add more and editing area -->
 						</div>
 						<div class="submit-section">
 							<button class="btn btn-primary submit-btn">Submit</button>
@@ -1900,6 +1779,79 @@
 
 		function delete_current_card(){
 			$(event.target).closest('.card').remove();
+		}
+	</script>
+
+	<script>
+		function get_education_info(data){
+			fetch(`/HrmTool/Employee/get_education_info/${data}`)
+			.then(res => res.json())
+			.then(res =>{
+				if(res=='None'){
+					$('#education_info').modal('show')
+				}else{
+					console.log(res)
+					$('.after_education_data_add').html(function(){
+						let Education_info = res
+						let innerDatas = ``
+						for(let i=0;i<Education_info.length;i++)
+						{
+							innerDatas+=`
+							<div class="card ">
+								<div class="card-body">
+									<h3 class="card-title">Education Informations <a href="javascript:void(0);"
+											class="delete-icon"></a></h3>
+									<div class="row">
+										<input id="card_id" name="card_id" value="${Education_info[i].id}"/>
+										<div class="col-md-6">
+											<div class="input-block mb-3 form-focus focused">
+												<input type="text"  class="form-control floating" id="instute" name="instute" value="${Education_info[i].Institution}" required>
+												<label class="focus-label">Institution</label>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="input-block mb-3 form-focus focused">
+												<input type="text" class="form-control floating" id="sub" name="sub" value="${Education_info[i].Subject}" required>
+												<label class="focus-label">Subject</label>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="input-block mb-3 form-focus focused">
+												<div class="cal-icon">
+													<input type="text" class="form-control floating datetimepicker" id="s_date" name="s_date" value="${Education_info[i].Starting_Date}" required>
+												</div>
+												<label class="focus-label">Starting Date</label>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="input-block mb-3 form-focus focused">
+												<div class="cal-icon">
+													<input type="text" class="form-control floating datetimepicker" id="e_date" name="e_date" value="${Education_info[i].Complete_Date}" required>
+												</div>
+												<label class="focus-label">Complete Date</label>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="input-block mb-3 form-focus focused">
+												<input type="text" class="form-control floating" id="deg" name="deg" value="${Education_info[i].Degree}" required>
+												<label class="focus-label">Degree</label>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="input-block mb-3 form-focus focused">
+												<input type="text" class="form-control floating" id="mark" name="mark" value="${Education_info[i].Grade}" required>
+												<label class="focus-label">Grade</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>`
+						}
+						return innerDatas
+					})
+					$('#education_info').modal('show')
+				}
+			})
 		}
 	</script>
 

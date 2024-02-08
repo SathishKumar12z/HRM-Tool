@@ -34,18 +34,18 @@
 					<div class="input-block mb-3 row">
 						<label class="col-lg-3 col-form-label">Invoice Logo</label>
 						<div class="col-lg-7">
-							<input type="file" class="form-control" name="invoiceFile" onchange="preview_img.src=window.URL.createObjectURL(this.files[0])" >
+							<input type="file" class="form-control" name="invoiceFile" onchange="preview_img.src=window.URL.createObjectURL(this.files[0])"  >
 							<span class="form-text text-muted">Recommended image size is 200px x 40px</span>
 						</div>
 						{% if invocies_data %}
 						<div class="col-lg-2">
 							<div class="img-thumbnail float-end"><img id="preview_img" src="/templates/assets/uploaded_files/{{invocies_data.Invoice_Logo}}"
-									class="img-fluid" alt="Logo" width="140" height="40"></div>
+									class="img-fluid" alt="Logo" width="60" height="60"></div>
 						</div>
 						{% else %}
 						<div class="col-lg-2">
-							<div class="img-thumbnail float-end"><img id="preview_img" src="./templates/assets/img/logo3.png"
-									class="img-fluid" alt="Logo" width="140" height="40"></div>
+							<div class="img-thumbnail float-end"><img id="preview_img" src="/templates/assets/img/profile1.png"
+									class="img-fluid" alt="Logo" width="60" height="60"></div>
 						</div>
 						{% endif %}
 					</div>

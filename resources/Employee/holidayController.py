@@ -1,5 +1,5 @@
 from typing import Dict, List,Optional
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Depends, FastAPI, Request, Form
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Depends, FastAPI, Request, Form,status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse,RedirectResponse,HTMLResponse
@@ -464,140 +464,164 @@ current_datetime = datetime.today()
 #holidays
 @router.get('/holidays')
 def holiday(request:Request,db:Session = Depends(get_db)):
-    if 'loginer_details' in request.session:
-        token = request.session['loginer_details']
-        try:
-            payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
-            loginer_id : int= payload.get("empid") 
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
             try:
-                if loginer_id:
-                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
-                    if emp_data.Lock_screen == 'OFF':
-                        display = db.query(models.Holiday_List).filter(models.Holiday_List.status=='ACTIVE').all()
-                        return templates.TemplateResponse("Admin/Employees/Employee/holidays.html",context={"request":request, "display":display, "get_day_of_week": get_day_of_week, "is_past_date": is_past_date, "format_display_date":format_display_date,'emp_data':emp_data})
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            display = db.query(models.Holiday_List).filter(models.Holiday_List.status=='ACTIVE').all()
+                            return templates.TemplateResponse("Admin/Employees/Employee/holidays.html",context={"request":request, "display":display, "get_day_of_week": get_day_of_week, "is_past_date": is_past_date, "format_display_date":format_display_date,'emp_data':emp_data})
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
-                else:
-                    return RedirectResponse('/HrmTool/login/login',status_code=302)
-            except:
-                return RedirectResponse('/Error',status_code=302)
-        except JWTError:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/Error',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
-    else:
-        return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"})
     
 # create data
 @router.post("/create_holiday")
 def create_data(request: Request, db: Session = Depends(get_db), Name: str = Form(...), Date:str=Form(...)):
-    if 'loginer_details' in request.session:
-        token = request.session['loginer_details']
-        try:
-            payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
-            loginer_id : int= payload.get("empid") 
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
             try:
-                if loginer_id:
-                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
-                    if emp_data.Lock_screen == 'OFF':
-                        existing_date = db.query(models.Holiday_List).filter(models.Holiday_List.Date == Date, models.Holiday_List.status == "ACTIVE").first()
-                        if not existing_date:
-                            body = models.Holiday_List(Name=Name,Date=Date,Current_status="Active",status="ACTIVE",created_by=loginer_id)  
-                            db.add(body)
-                            db.commit()
-                            return RedirectResponse("/HrmTool/Employee/holidays", status_code=303)
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            existing_date = db.query(models.Holiday_List).filter(models.Holiday_List.Date == Date, models.Holiday_List.status == "ACTIVE").first()
+                            if not existing_date:
+                                body = models.Holiday_List(Name=Name,Date=Date,Current_status="Active",status="ACTIVE",created_by=loginer_id)  
+                                db.add(body)
+                                db.commit()
+                                return RedirectResponse("/HrmTool/Employee/holidays", status_code=303)
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
-                else:
-                    return RedirectResponse('/HrmTool/login/login',status_code=302)
-            except:
-                return RedirectResponse('/Error',status_code=302)
-        except JWTError:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/Error',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
-    else:
-        return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"})
     
 # edit
 @router.get("/edit_holidays/{ids}")       
 def edit_holidays(ids:int,request: Request,db: Session = Depends(get_db)):
-    if 'loginer_details' in request.session:
-        token = request.session['loginer_details']
-        try:
-            payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
-            loginer_id : int= payload.get("empid") 
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
             try:
-                if loginer_id:
-                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
-                    if emp_data.Lock_screen == 'OFF':
-                        data = db.query(models.Holiday_List).filter(models.Holiday_List.id==ids).filter(models.Holiday_List.status=='ACTIVE').first()
-                        return data
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            data = db.query(models.Holiday_List).filter(models.Holiday_List.id==ids).filter(models.Holiday_List.status=='ACTIVE').first()
+                            return data
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
-                else:
-                    return RedirectResponse('/HrmTool/login/login',status_code=302)
-            except:
-                return RedirectResponse('/Error',status_code=302)
-        except JWTError:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/Error',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
-    else:
-        return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"})
     
 @router.post("/update_holiday")
 def create_data(request: Request, db: Session = Depends(get_db),edit_id:int=Form(...), edit_name:str=Form(...),edit_date:str=Form(...)):
-    if 'loginer_details' in request.session:
-        token = request.session['loginer_details']
-        try:
-            payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
-            loginer_id : int= payload.get("empid") 
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
             try:
-                if loginer_id:
-                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
-                    if emp_data.Lock_screen == 'OFF':
-                        existing_date = db.query(models.Holiday_List).filter(models.Holiday_List.Date == edit_date, models.Holiday_List.status == "ACTIVE").first()
-                        if existing_date:
-                            return HTMLResponse(
-                                """<script>
-                                    alert("Holiday name already exists.");
-                                    window.location.href = "/holidays";
-                                </script>""")
-                        db.query(models.Holiday_List).filter(models.Holiday_List.id==edit_id).update({"Name":edit_name,"Date":edit_date})
-                        db.commit()
-                        return RedirectResponse("/holidays",status_code=303)
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            existing_date = db.query(models.Holiday_List).filter(models.Holiday_List.Date == edit_date, models.Holiday_List.status == "ACTIVE").first()
+                            if existing_date:
+                                return HTMLResponse(
+                                    """<script>
+                                        alert("Holiday name already exists.");
+                                        window.location.href = "/holidays";
+                                    </script>""")
+                            db.query(models.Holiday_List).filter(models.Holiday_List.id==edit_id).update({"Name":edit_name,"Date":edit_date})
+                            db.commit()
+                            return RedirectResponse("/holidays",status_code=303)
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
-                else:
-                    return RedirectResponse('/HrmTool/login/login',status_code=302)
-            except:
-                return RedirectResponse('/Error',status_code=302)
-        except JWTError:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/Error',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
-    else:
-        return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"})
     
 # delete
 @router.get("/delete_holiday/{ids}")
 def delete_data(request: Request,ids:int,db: Session = Depends(get_db)):
-    if 'loginer_details' in request.session:
-        token = request.session['loginer_details']
-        try:
-            payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
-            loginer_id : int= payload.get("empid") 
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
             try:
-                if loginer_id:
-                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
-                    if emp_data.Lock_screen == 'OFF':
-                        db.query(models.Holiday_List).filter(models.Holiday_List.id == ids).update({"status":"INACTIVE"})
-                        db.commit()
-                        return templates.TemplateResponse("holidays.html",context={"request":request})
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            db.query(models.Holiday_List).filter(models.Holiday_List.id == ids).update({"status":"INACTIVE"})
+                            db.commit()
+                            return templates.TemplateResponse("holidays.html",context={"request":request})
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
-                else:
-                    return RedirectResponse('/HrmTool/login/login',status_code=302)
-            except:
-                return RedirectResponse('/Error',status_code=302)
-        except JWTError:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/Error',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
-    else:
-        return RedirectResponse('/HrmTool/login/login',status_code=303)
-
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"})
 
 #=========================>>> Function Used For Spare ...
 

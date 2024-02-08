@@ -1,5 +1,5 @@
 from typing import Dict, List,Optional
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Depends, FastAPI, Request, Form
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Depends, FastAPI, Request, Form,status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse,RedirectResponse
@@ -27,30 +27,36 @@ current_datetime = datetime.today()
 
 @router.get('/invoices_settings')
 async def home(request:Request,db:Session=Depends(get_db)):
-    if 'loginer_details' in request.session:
-        token = request.session['loginer_details']
-        try:
-            payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
-            loginer_id : int= payload.get("empid") 
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
             try:
-                if loginer_id:
-                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
-                    if emp_data.Lock_screen == 'OFF':
-                        invocies_data = db.query(models.Invoice_Settings).filter(models.Invoice_Settings.status=='ACTIVE').first()
-                        return templates.TemplateResponse("Admin/Administration/Settings/invoice-settings.html",context={"request":request,'emp_data':emp_data,'invocies_data':invocies_data})
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            invocies_data = db.query(models.Invoice_Settings).filter(models.Invoice_Settings.status=='ACTIVE').first()
+                            return templates.TemplateResponse("Admin/Administration/Settings/invoice-settings.html",context={"request":request,'emp_data':emp_data,'invocies_data':invocies_data})
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
-                else:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
                     return RedirectResponse('/HrmTool/login/login',status_code=302)
-            except:
+            except JWTError:
                 return RedirectResponse('/HrmTool/login/login',status_code=302)
-        except JWTError:
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
             return RedirectResponse('/HrmTool/login/login',status_code=302)
-    else:
-        return RedirectResponse('/HrmTool/login/login',status_code=303)
-
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
+    
 @router.post('/invoices_settings')
 async def emailSettings(request:Request,db:Session=Depends(get_db),invoicePrefix:str=Form(...),invoiceFile:UploadFile=Form(...),):
+    try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
             try:
@@ -110,4 +116,7 @@ async def emailSettings(request:Request,db:Session=Depends(get_db),invoicePrefix
                 return RedirectResponse('/HrmTool/login/login',status_code=302)
         else:
             return RedirectResponse('/HrmTool/login/login',status_code=303)
-       
+    except JWTError:
+            return RedirectResponse('/HrmTool/login/login',status_code=302)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 

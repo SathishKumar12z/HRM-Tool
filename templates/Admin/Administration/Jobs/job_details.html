@@ -1,0 +1,233 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <!-- Page Content -->
+    <div class="content container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Job Details</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Job Details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="job-info job-widget">
+                    <h3 class="job-title">{{job_data.Job_Title }}</h3>
+                    {% for i in department_data %}
+                    {% if job_data.Department  |int == i.id |int %}
+                    <span class="job-dept">{{i.Name}}</span>
+                    {% endif %}
+                    {% endfor %}
+                    <ul class="job-post-det">
+                        <li><i class="fa-regular fa-calendar-days"></i> Post Date: <span class="text-blue">{{job_data.Start_Date  }}</span></li>
+                        <li><i class="fa-regular fa-calendar-days"></i> Last Date: <span class="text-blue">{{job_data.Expired_Date  }}</span></li>
+                        <li><i class="fa-regular fa-user"></i> Applications: <span class="text-blue">{{job_data.Applicants }}</span></li>
+                        <li><i class="fa-solid fa-eye"></i> Views: <span class="text-blue">{{job_data.Viewers }}</span></li>
+                    </ul>
+                </div>
+                <div class="job-content job-widget">
+                    <div class="job-desc-title"><h4>Job Description</h4></div>
+                    <div class="job-description">
+                        <p>{{job_data.JD }}</p>
+                    </div>
+                    <!-- <div class="job-desc-title"><h4>Job Description</h4></div>
+                    <div class="job-description">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+                        <ul class="square-list">
+                            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                            <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                        </ul>
+                    </div> -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="job-det-info job-widget">
+                    <a class="btn job-btn" href="#" data-bs-toggle="modal" data-bs-target="#edit_job">Edit</a>
+                    <div class="info-list">
+                        <span><i class="fa-solid fa-chart-column"></i></span>
+                        <h5>Job Type</h5>
+                        <p> {{job_data.Job_Type  }}</p>
+                    </div>
+                    <div class="info-list">
+                        <span><i class="fa-regular fa-money-bill-1"></i></span>
+                        <h5>Salary</h5>
+                        <p>${{job_data.Salary_From  }}k - ${{job_data.Salary_To }}k</p>
+                    </div>
+                    <div class="info-list">
+                        <span><i class="fa-solid fa-suitcase"></i></span>
+                        <h5>Experience</h5>
+                        <p>{{job_data.Experience  }} Years</p>
+                    </div>
+                    <div class="info-list">
+                        <span><i class="fa-solid fa-ticket"></i></span>
+                        <h5>Vacancy</h5>
+                        <p>{{job_data.Vacancies  }}</p>
+                    </div>
+                    <div class="info-list">
+                        <span><i class="fa-solid fa-signs-post"></i></span>
+                        <h5>Location</h5>
+                        <p>{{job_data.Job_Location  }}</p>
+                    </div>
+                    <div class="info-list">
+                        <p class="text-truncate"> {{job_data.Job_Title }}
+                        <!-- <br> <a href="https://smarthr.dreamstechnologies.com/cdn-cgi/l/email-protection#395d5857505c5549564b4d5c4b795c41585449555c175a5654" title="danielporter@example.com"><span class="__cf_email__" data-cfemail="1b7f7a75727e776b74696f7e695b7e637a766b777e35787476">[email&#160;protected]</span></a> -->
+                        <!-- <br> <a href="https://www.example.com/" target="_blank" title="https://www.example.com">https://www.example.com</a> -->
+                        </p>
+                    </div>
+                    <div class="info-list text-center">
+                        <a class="app-ends" href="#">Application ends in 2d 7h 6m</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Content -->
+    
+    <!-- Edit Job Modal -->
+    <div id="edit_job" class="modal custom-modal fade" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Job</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/HrmTool/Administration/edit_post_manage_jobs" method="post">
+                        <input id="edit_id" name="edit_id" value="{{job_data.id}}" type="" />
+                        <input id="page_address" name="page_address" value="/HrmTool/Administration/job_details/" type=""/>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Job Title</label>
+                                    <input class="form-control" type="text" id="edit_title" name="edit_title" value="{{job_data.Job_Title}}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Department</label>
+                                    <select class="form-select" id="edit_depart" name="edit_depart" value="" required>
+                                        {% for i in department_data %}
+                                        <option value="{{i.id}}">{{i.Name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Job Location</label>
+                                    <input class="form-control" type="text" id="edit_location" name="edit_location" value="{{job_data.Job_Location }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">No of Vacancies</label>
+                                    <input class="form-control" type="text" id="edit_vacancy" name="edit_vacancy" value="{{job_data.Vacancies }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Experience</label>
+                                    <input class="form-control" type="text" id="edit_experience" name="edit_experience" value="{{job_data.Experience }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Age</label>
+                                    <input class="form-control" type="text" id="edit_age" name="edit_age" value="{{job_data.Age }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Salary From</label>
+                                    <input type="text" class="form-control" id="edit_from_salary" name="edit_from_salary" value="{{job_data.Salary_From }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Salary To</label>
+                                    <input type="text" class="form-control" id="edit_to_salary" name="edit_to_salary" value="{{job_data.Salary_To }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Job Type</label>
+                                    <select class="form-select" id="edit_type" name="edit_type"  required>
+                                        <option selected>Full Time</option>
+                                        <option>Part Time</option>
+                                        <option>Internship</option>
+                                        <option>Temporary</option>
+                                        <option>Remote</option>
+                                        <option>Others</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Status</label>
+                                    <select class="form-select" id="edit_status" name="edit_status"  required>
+                                        <option selected>Open</option>
+                                        <option>Closed</option>
+                                        <option>Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Start Date</label>
+                                    <input type="text" class="form-control datetimepicker" id="edit_start" name="edit_start" value="{{job_data.Start_Date }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Expired Date</label>
+                                    <input type="text" class="form-control datetimepicker" id="edit_end_date" name="edit_end_date" value="{{job_data.Expired_Date }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-block mb-3">
+                                    <label class="col-form-label">Description</label>
+                                    <textarea class="form-control" id="edit_jd" name="edit_jd" style="height: 185px;" required>{{job_data.JD}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="submit-section">
+                            <button class="btn btn-primary submit-btn">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Edit Job Modal -->
+    
+</div>
+<!-- /Page Wrapper -->
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

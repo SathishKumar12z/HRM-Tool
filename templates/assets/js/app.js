@@ -673,7 +673,7 @@ function dateFormatting(in_values)
 	// change the date formate
 	var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 	let split_date = in_values.split("-")
-	let values = split_date[2]+" "+ monthNames[(split_date[1])-1]+" "+split_date[0]
+	let values = split_date[0]+" "+ monthNames[(split_date[1])-1]+" "+split_date[2]
 	return values
 }
 
@@ -687,7 +687,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Format the date
 		let final_result = dateFormatting(innvalue);
 		// Log the formatted date
-		console.log(final_result);
 		// Update the inner text of the current element with the formatted date
 		element.innerText = final_result;
 	});
@@ -719,9 +718,7 @@ function add_submit(){
 		SubCategory_id:$('#SubCategory_id').val(),
 		cur_state:$('#cur_state').val(),
 	}
-	console.log(forms)
 	$.post('/HrmTool/HR/subcategory',forms,function(res){
-		console.log(res)
 		if (res=='ok'){
 			location.reload();
 		}else{
@@ -734,14 +731,12 @@ function add_submit(){
 function search_by_designation(data)
 {
 	$.get('/HrmTool/Performance/searching_employee/'+data,function(res){
-		console.log(res)
 		$('#promotionfrom').val(res[0].Name)
 		$('#pro_to').html(function(){
 			h1 ='<select class="form-select" id="promotionto" name="promotionto" required><option value="">select<option>';
 			h2='';
 			h3='</select>'
 			for(let i=0;i<res[1].length;i++){
-				console.log('first')
 				h2+=`<option value='${res[1][i].id}'>${res[1][i].Name}<option>`
 			}
 			return h1+h2+h3;
@@ -770,5 +765,6 @@ $(".current_status").on('click',function(){
 	})
 })
 
-//=================================>>>>>> Trainers Current status
+
+
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <input id="im" name="im" type="file" />
+    <button onclick="calculate_end_date()">Calculate End Date</button>
+
+    <script>
+        function calculate_end_date() {
+
+            let img = $('#im')[0];let dsfz = img.files[0]
+
+            const forms = new FormData();
+            forms.append('edit_id', 'Apple');
+            forms.append('imges', dsfz);
+
+            console.log(forms);
+
+            fetch(`/HrmTool/Administration/dummy_2`,{method:'post',body:forms})
+        }
+
+    </script>
+</body>
+</html>

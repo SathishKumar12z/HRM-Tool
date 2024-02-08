@@ -803,6 +803,11 @@ class Asset(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
+    Asset_Image_1 = Column(String(255), nullable=False, index=True)
+    Asset_Image_2 = Column(String(255), nullable=False, index=True)
+    Asset_Image_3 = Column(String(255), nullable=False, index=True)
+    Asset_Image_4 = Column(String(255), nullable=False, index=True)
+
     Asset_Name = Column(String(255), nullable=False, index=True)
     Asset_Id = Column(String(255), nullable=False, index=True)
     Purchase_Date = Column(String(255), nullable=False, index=True)
@@ -811,10 +816,12 @@ class Asset(Base):
     Model = Column(String(255), nullable=False, index=True)
     Serial_Number = Column(String(255), nullable=False, index=True)
     Supplier = Column(String(255), nullable=False, index=True)
-    Condition = Column(String(255), nullable=False, index=True)
-    Warranty = Column(String(255), nullable=False, index=True)
+    Warranty_Months = Column(String(255), nullable=False, index=True)
+    Warranty_end_Date = Column(String(255), nullable=False, index=True)
     Value = Column(String(255), nullable=False, index=True)
     Asset_User_id = Column(String(255), nullable=False, index=True)
+    Description = Column(String(255), nullable=False, index=True)
+    Condition = Column(String(255), nullable=False, index=True)
     Current_status = Column(String(255), nullable=False, index=True)
 
     status = Column(String(255), nullable=False, index=True)
@@ -1265,11 +1272,10 @@ class Question_Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     Name   = Column(String(255), nullable=False, index=True)
     status = Column(String(255), nullable=False, index=True)
+
     created_by = Column(String(255), nullable=False, index=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
-
-
 
 class Employee_Leave(Base):
    
@@ -1350,10 +1356,55 @@ class Education_Informations(Base):
     created_by = Column(String(255), nullable=False, index=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
+
+
+class Manage_Jobs(Base):
+   
+    __tablename__ = "manage_jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    Job_Title   = Column(String(255), nullable=False, index=True)
+    Department    = Column(String(255), nullable=False, index=True)
+    Job_Location     = Column(String(255), nullable=False, index=True)
+    Vacancies    = Column(String(255), nullable=False, index=True)
+    Experience = Column(String(255), nullable=False, index=True)
+    Age = Column(String(255), nullable=False, index=True)
+    Salary_From = Column(String(255), nullable=False, index=True)
+    Salary_To = Column(String(255), nullable=False, index=True)
+    Job_Type = Column(String(255), nullable=False, index=True)
+    Current_Status = Column(String(255), nullable=False, index=True)
+    Start_Date = Column(String(255), nullable=False, index=True)
+    Expired_Date = Column(String(255), nullable=False, index=True)
+    JD = Column(String(255), nullable=False, index=True)
+    Applicants = Column(String(255), nullable=False, index=True)
+    JD = Column(String(255), nullable=False, index=True)
+    Total_days = Column(String(255), nullable=False, index=True)
+    Viewers = Column(String(255), nullable=False, index=True)
+
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
     
-Base.metadata.create_all(bind=engine)
+class Job_Appliers(Base):
+   
+    __tablename__ = "job_appliers"
 
+    id = Column(Integer, primary_key=True, index=True)
 
+    Job_ID   = Column(String(255), nullable=False, index=True)
+    Name    = Column(String(255), nullable=False, index=True)
+    Email     = Column(String(255), nullable=False, index=True)
+    Message    = Column(String(255), nullable=False, index=True)
+    Resume = Column(String(255), nullable=False, index=True)
+    Shortlist = Column(String(255), nullable=False, index=True)   # value ( Yes ...  or No ... )
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
     
 class Experience_Informations(Base):
    
@@ -1361,16 +1412,36 @@ class Experience_Informations(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    Employee_ID   = Column(String(255), nullable=False, index=True)
-    Company_Name    = Column(String(255), nullable=False, index=True)
-    Location     = Column(String(255), nullable=False, index=True)
-    Job_Position    = Column(String(255), nullable=False, index=True)
-    Period_From = Column(String(255), nullable=False, index=True)
-    Period_To = Column(String(255), nullable=False, index=True)
+    Level_Range = Column(String(255), nullable=False, index=True)
+    Current_Status = Column(String(255), nullable=False, index=True)
     
     status = Column(String(255), nullable=False, index=True)
     created_by = Column(String(255), nullable=False, index=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-                        
+class Schedule_Timing(Base):
+   
+    __tablename__ = "schedule_timing"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    Job_Appliers_ID = Column(String(255), nullable=False, index=True)
+    Job_ID = Column(String(255), nullable=False, index=True)
+    Schedule_Date_1 = Column(String(255), nullable=False, index=True)
+    Schedule_Time_1 = Column(String(255), nullable=False, index=True)
+    Schedule_Date_2 = Column(String(255), nullable=False, index=True)
+    Schedule_Time_2 = Column(String(255), nullable=False, index=True)
+    Schedule_Date_3 = Column(String(255), nullable=False, index=True)
+    Schedule_Time_3 = Column(String(255), nullable=False, index=True)
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+Base.metadata.create_all(bind=engine)
+
+
+
+
