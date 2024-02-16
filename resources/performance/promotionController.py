@@ -68,21 +68,16 @@ async def posting(request:Request,db:Session=Depends(get_db),promotionfor:str=Fo
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':   
                             find=db.query(models.Promotion).filter(models.Promotion.Promotion_For==promotionfor,models.Promotion.status=='ACTIVE').first()
-                            body=""
                             if find is None:
-                                    body=models.Promotion(
-                                    Promotion_For=promotionfor,
-                                    Promotion_From=promotionfrom,
-                                    Promotion_To=promotionto,
-                                    Promotion_Date=promotiondate,
-                                    status='ACTIVE',
-                                    created_by=loginer_id
-                                )
-                                    db.add(body)
-                                    db.commit()
-
-                            return RedirectResponse("/HrmTool/Performance/promotion",status_code=302)
-
+                                body=models.Promotion(Promotion_For=promotionfor,Promotion_From=promotionfrom,Promotion_To=promotionto,Promotion_Date=promotiondate,status='ACTIVE',created_by=loginer_id)
+                                db.add(body)
+                                db.commit()
+                                db.refresh(body)
+                                response_data = jsonable_encoder({"Result":"Done"})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({"Result":"Error"})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -99,8 +94,39 @@ async def posting(request:Request,db:Session=Depends(get_db),promotionfor:str=Fo
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
 ###Edit_promotion
+@router.get("/get_pormotion_id/{ids}")
+async def getting(request:Request,ids:int,db:Session=Depends(get_db)):
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
+            try:
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                # try:
+                if loginer_id:
+                    emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                    if emp_data.Lock_screen == 'OFF':    
+                        taking_pormotion_data = db.query(models.Promotion).filter(models.Promotion.id==ids).filter(models.Promotion.status=='ACTIVE').first()
+                        employee_name = db.query(models.Employee).filter(models.Employee.id==int(taking_pormotion_data.Promotion_For)).filter(models.Employee.status=='ACTIVE').first()
+                        current_department = db.query(models.Department).filter(models.Department.id==int(employee_name.Department_id)).filter(models.Department.status=='ACTIVE').first()
+                        response_data = jsonable_encoder({'Result':taking_pormotion_data,"employee_name":employee_name,'current_department':current_department})
+                        return JSONResponse(content=response_data,status_code=200)
+                    else:
+                        return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
+                else:
+                    return RedirectResponse('/HrmTool/login/login',status_code=302)
+                # except:
+                #     return RedirectResponse('/HrmTool/login/login',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
+            return RedirectResponse('/HrmTool/login/login',status_code=302)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
 
-@router.put('/put_data/{id}')
+@router.put('/taking_pormotion_employee/{id}')
 def get_form(id: int, request: Request, db: Session = Depends(get_db)):
     try:
         if 'loginer_details' in request.session:
@@ -112,11 +138,11 @@ def get_form(id: int, request: Request, db: Session = Depends(get_db)):
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':  
-                            print(id)
-                            result1 = db.query(models.Promotion).filter(models.Promotion.id == id and models.Promotion.status == "active").first()
-                            employee_data = db.query(models.Employee).filter(models.Employee.status=='ACTIVE').all()
-                            promotion_data = db.query(models.Promotion).filter(models.Promotion.status=='ACTIVE').all()
-                            return result1,employee_data,promotion_data
+                            employee_data = db.query(models.Employee).filter(models.Employee.id==id).filter(models.Employee.status=='ACTIVE').first()
+                            if employee_data:
+                                department_data = db.query(models.Department).filter(models.Department.id==int(employee_data.Department_id)).filter(models.Department.status=='ACTIVE').first()
+                                response_data = jsonable_encoder({'Result':department_data})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -131,11 +157,9 @@ def get_form(id: int, request: Request, db: Session = Depends(get_db)):
             return RedirectResponse('/HrmTool/login/login',status_code=302)
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
-    
-
 
 @router.post("/update_promotion")
-async def updating(request:Request,db: Session = Depends(get_db),edit_id:int=Form(...),epromotionfor:str=Form(...),epromotionfrom:str=Form(...),epromotionto:str=Form(...),epromotiondate:str=Form(...)):
+async def updating(request:Request,db: Session = Depends(get_db),edit_id:int=Form(...),epromotionto:str=Form(...),epromotiondate:str=Form(...)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -146,15 +170,8 @@ async def updating(request:Request,db: Session = Depends(get_db),edit_id:int=For
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':    
-                            db.query(models.Promotion).filter(models.Promotion.id==edit_id).update({
-                                'Promotion_For':epromotionfor,
-                                'Promotion_From':epromotionfrom,
-                                'Promotion_To':epromotionto,
-                                'Promotion_Date':epromotiondate,
-                                'created_by':loginer_id                            
-                            })
+                            db.query(models.Promotion).filter(models.Promotion.id==edit_id).update({'Promotion_To':epromotionto,'Promotion_Date':epromotiondate,'created_by':loginer_id})
                             db.commit()
-
                             return RedirectResponse("/HrmTool/Performance/promotion",status_code=302)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
@@ -204,7 +221,6 @@ async def deleting(request:Request,id:int,db: Session = Depends(get_db)):
             return RedirectResponse('/HrmTool/login/login',status_code=302)
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
-
     
 ###search
 @router.get("/searching_employee/{data}")

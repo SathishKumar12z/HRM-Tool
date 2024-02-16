@@ -59,16 +59,16 @@ def create_data(
     Employee_ID: str = Form(...),
     Net_Salary: str = Form(...),
     Basic: str = Form(...),
-    TDS: str = Form(...),
     DA_40: str = Form(...),
-    ESI: str = Form(...),
     HRA_15: str = Form(...),
-    PF: str = Form(...),
     Conveyance: str = Form(...),
-    Leave: str = Form(...),
     Allowance: str = Form(...),
-    Prof_Tax: str = Form(...),
     Medical_Allowance: str = Form(...),
+    TDS: str = Form(...),
+    ESI: str = Form(...),
+    PF: str = Form(...),
+    Leave: str = Form(...),
+    Prof_Tax: str = Form(...),
     Labour_Welfare: str = Form(...),
 ):
     try:
@@ -81,27 +81,34 @@ def create_data(
                 if loginer_id:
                     emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                     if emp_data.Lock_screen == 'OFF':
-                        body = models.Employee_Salary(
-                            Employee_id=Employee_ID,
-                            Net_Salary=Net_Salary,
-                            Basic=Basic,
-                            TDS=TDS,
-                            DA_40=DA_40,
-                            ESI=ESI,
-                            HRA_15=HRA_15,
-                            PF=PF,
-                            Conveyance=Conveyance,
-                            Leave=Leave,
-                            Allowance=Allowance,
-                            Prof_Tax=Prof_Tax,
-                            Medical_Allowance=Medical_Allowance,
-                            Labour_Welfare=Labour_Welfare,
-                            status="ACTIVE",
-                            created_by=loginer_id,
-                        )
-                        db.add(body)
-                        db.commit()
-                        return RedirectResponse('/HrmTool/HR/employee_salary',status_code=302)
+                        check_exit_data = db.query(models.Employee_Salary).filter(models.Employee_Salary.Employee_id==Employee_ID).filter(models.Employee_Salary.status=='ACTIVE').all()
+                        if not check_exit_data:
+                            body = models.Employee_Salary(
+                                Employee_id=Employee_ID,
+                                Net_Salary=Net_Salary,
+                                Basic=Basic,
+                                TDS=TDS,
+                                DA_40=DA_40,
+                                ESI=ESI,
+                                HRA_15=HRA_15,
+                                PF=PF,
+                                Conveyance=Conveyance,
+                                Leave=Leave,
+                                Allowance=Allowance,
+                                Prof_Tax=Prof_Tax,
+                                Medical_Allowance=Medical_Allowance,
+                                Labour_Welfare=Labour_Welfare,
+                                status="ACTIVE",
+                                created_by=loginer_id,
+                            )
+                            db.add(body)
+                            db.commit()
+                            db.refresh(body)
+                            response_data = jsonable_encoder({'Result':'Done'})
+                            return JSONResponse(content=response_data,status_code=200)
+                        else:
+                            response_data = jsonable_encoder({'Result':'Error'})
+                            return JSONResponse(content=response_data,status_code=200)
                     else:
                         return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                 else:
@@ -188,7 +195,8 @@ def taking_edit_id(ids:int,request:Request,db: Session = Depends(get_db)):
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
                             single_data = db.query(models.Employee_Salary).filter(models.Employee_Salary.id==ids).filter(models.Employee_Salary.status=='ACTIVE').first()
-                            return single_data
+                            response_data = jsonable_encoder({'Result':single_data})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -234,25 +242,31 @@ def edit_data(
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            db.query(models.Employee_Salary).filter(models.Employee_Salary.id == edit_id).update({
-                                
-                                "Employee_id": edit_Employee_ID,
-                                "Net_Salary": edit_Net_Salary,
-                                "Basic": edit_Basic,
-                                "TDS": edit_TDS,
-                                "DA_40": edit_DA_40,
-                                "ESI": edit_ESI,
-                                "PF": edit_PF,
-                                "HRA_15": edit_HRA_15,
-                                "Conveyance": edit_Conveyance,
-                                "Leave": edit_Leave,
-                                "Allowance": edit_Allowance,
-                                "Prof_Tax": edit_Prof_Tax,
-                                "Medical_Allowance": edit_Medical_Allowance,
-                                "Labour_Welfare": edit_Labour_Welfare,
-                            })
-                            db.commit()
-                            return RedirectResponse("/HrmTool/HR/employee_salary", status_code=303)
+                            check_exit_data = db.query(models.Employee_Salary).filter(models.Employee_Salary.id!=edit_id,models.Employee_Salary.Employee_id==edit_Employee_ID).filter(models.Employee_Salary.status=='ACTIVE').all()
+                            if not check_exit_data:
+                                db.query(models.Employee_Salary).filter(models.Employee_Salary.id == edit_id).update({
+                                    
+                                    "Employee_id": edit_Employee_ID,
+                                    "Net_Salary": edit_Net_Salary,
+                                    "Basic": edit_Basic,
+                                    "TDS": edit_TDS,
+                                    "DA_40": edit_DA_40,
+                                    "ESI": edit_ESI,
+                                    "PF": edit_PF,
+                                    "HRA_15": edit_HRA_15,
+                                    "Conveyance": edit_Conveyance,
+                                    "Leave": edit_Leave,
+                                    "Allowance": edit_Allowance,
+                                    "Prof_Tax": edit_Prof_Tax,
+                                    "Medical_Allowance": edit_Medical_Allowance,
+                                    "Labour_Welfare": edit_Labour_Welfare,
+                                })
+                                db.commit()
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:

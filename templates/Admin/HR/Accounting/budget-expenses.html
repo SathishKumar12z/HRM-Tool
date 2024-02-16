@@ -13,7 +13,7 @@
 				<div class="col">
 					<h3 class="page-title">Budgets Expenses</h3>
 					<ul class="breadcrumb">
-						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
 						<li class="breadcrumb-item active">Accounts</li>
 					</ul>
 				</div>
@@ -44,11 +44,20 @@
 							{% for i in budget_data %}
 							<tr>
 								<td>{{loop.index}}</td>
-								<td>{{i.Notes}}</td>
-								<td>{{i.Category_id}}</td>
-								<td>{{i.Sub_Category_id}}</td>
+								<td>{{i.Notes[:10:]}} ...</td>
+								{% for cat in category_data %}
+								{% if i.Category_id|int == cat.id|int %}
+								<td>{{cat.Name}}</td>
+								{% endif %}
+								{% endfor %}
+
+								{% for sub in sub_category_data %}
+								{% if i.Sub_Category_id|int == sub.id|int %}
+								<td>{{sub.Name}}</td>
+								{% endif %}
+								{% endfor %}
 								<td>{{i.Amount}}.00</td>
-								<td>{{i.Expense_Date}}</td>
+								<td class="dateformate">{{i.Expense_Date}}</td>
 								<td class="text-end">
 									<div class="dropdown dropdown-action">
 										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
@@ -83,22 +92,22 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/budget_expenses" method="POST">
+					<form>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Amount <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-6">
-								<input type="text" class="form-control" placeholder="800.00" name="amount" id="amount">
+								<input type="text" class="form-control allow_numbers_only"  name="amount" id="amount" required>
 							</div>
 							<div class="col-lg-6">
-								<select name="currency_symbol" class="form-control form-select" id="currency_symbol">
+								<select name="currency_symbol" class="form-control form-select" id="currency_symbol" name="currency_symbol" required>
 									<option value="$ - AUD">$ - Australian Dollar</option>
 									<option value="Bs. - VEF">Bs. - Bolívar Fuerte</option>
 									<option value="R$ - BRL">R$ - Brazilian Real</option>
 									<option value="£ - GBP">£ - British Pound</option>
 									<option value="$ - CAD">$ - Canadian Dollar</option>
-
 								</select>
 							</div>
 						</div>
@@ -106,57 +115,45 @@
 							<label class="col-lg-12 control-label col-form-label">Notes <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-12">
-								<textarea class="form-control ta" name="notes" id="notes"></textarea>
+								<textarea class="form-control ta" name="notes" id="notes" placeholder="Enter 255 Character's" required></textarea>
 							</div>
 						</div>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Expense Date <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-12">
-								<input class="datepicker-input form-control" type="text" value="07-05-2021"
-									name="expense_date" id="expense_date" data-date-format="dd-mm-yyyy">
+								<input class="form-control datetimepicker" type="text" name="expense_date" id="expense_date" required >
 							</div>
 						</div>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Category <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-12">
-								<select name="category" class="form-control m-b form-select" id="main_category">
-									<option value="" disabled="" selected="">Choose Category</option>
-									<option value="1">project1</option>
-									<option value="3">test category</option>
-									<option value="4">Hardware</option>
-									<option value="5">Material</option>
-									<option value="6">Vehicle</option>
-									<option value="8">TestctrE</option>
-									<option value="9">Twocatr</option>
-									<option value="10">fesferwf</option>
+								<select  class="form-select" id="main_category" name="main_category" onchange="chosse_sub_cat($(this).val())">
+									<option selected disabled>-select</option>
+									{% for i in category_data%}
+									<option value="{{i.id}}">{{i.Name}}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Sub Category <span
 									class="text-danger">*</span></label>
-							<div class="col-lg-12">
-								<select name="sub_category" class="form-control m-b form-select" id="sub_category">
-									<option value="">Choose Sub-Category</option>
-									<option value="1">project1</option>
-									<option value="3">test category</option>
-									<option value="4">Hardware</option>
-								</select>
+							<div class="col-lg-12" id="selective_sub_data">
+								<input class="form-control" placeholder="Choose Category" readonly/>
 							</div>
 						</div>
 						<div class="input-block mb-3 row  position-relative">
 							<label class="col-lg-12 control-label col-form-label">Attach File</label>
 							<div class="col-lg-12">
-
-								<input type="file" class="form-control" data-buttontext="Choose File" data-icon="false"
-									data-classbutton="btn btn-default" data-classinput="form-control inline input-s"
-									name="receipt" id="receipt">
+								<input type="file" class="form-control" accept="application/pdf" name="receipt" id="receipt" oninput="budget_exp_file.data = window.URL.createObjectURL(this.files[0]);budget_exp_file.style.display='block'">
+								<br>
+								<object id="budget_exp_file" data=""  width="413px" height="300px" style="display:none;"></object>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+							<a class="btn btn-primary submit-btn" type="submit" onclick="add_buget_exp()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -164,6 +161,69 @@
 		</div>
 	</div>
 	<!-- /Add Modal -->
+	<script>
+		function chosse_sub_cat(data){
+			fetch(`/HrmTool/HR/select_subcategory/${data}`)
+			.then(res=>res.json())
+			.then(res=>{
+				console.log(res)
+				$('#selective_sub_data').html(function(){
+					let fir = `<select class="form-select" id="sub_cat_id" name="sub_cat_id" required><option selected disabled>-select</option> `
+					let las = `</select>`
+					let mid = ``
+					for(let i=0;i<res.Result.length;i++){
+						mid+=`<option value="${res.Result[i].id}">${res.Result[i].Name}</option>`
+					}
+					return fir+mid+las;
+				})
+			})
+		}
+
+		function add_buget_exp(){
+			let Amount =$('#amount').val();
+			let Symbol =$('#currency_symbol').val();
+			let Notes =$('#notes').val();
+			let Expense =$('#expense_date').val();
+			let Category =$('#main_category').val();
+			let Sub_cat =$('#sub_cat_id').val();
+			let File =Expense_file();
+
+			function Expense_file(){ let exp_file = $('#receipt')[0].files[0];if(exp_file){ return exp_file }else{ return 'None'}}
+
+			if(Amount===''||Amount===null){ $('#amount').css('border-color','#ff0000') }else{ $('#amount').css('border-color','#00ff00')}
+			if(Symbol===''||Symbol===null){ $('#currency_symbol').css('border-color','#ff0000') }else{ $('#currency_symbol').css('border-color','#00ff00')}
+			if(Notes===''||Notes===null){ $('#notes').css('border-color','#ff0000') }else{ $('#notes').css('border-color','#00ff00')}
+			if(Expense===''||Expense===null){ $('#expense_date').css('border-color','#ff0000') }else{ $('#expense_date').css('border-color','#00ff00')}
+			if(Category===''||Category===null){ $('#main_category').css('border-color','#ff0000') }else{ $('#main_category').css('border-color','#00ff00')}
+			if(Sub_cat===''||Sub_cat===null){ $('#sub_cat_id').css('border-color','#ff0000') }else{ $('#sub_cat_id').css('border-color','#00ff00')}
+			if(File==='None'||File===null){ $('#receipt').css('border-color','#ff0000') }else{ $('#receipt').css('border-color','#00ff00')}
+
+			if(Amount!==null && Symbol!==null && Notes!==null && Expense!==null && Category!==null && Sub_cat!==null && File!=='None'){
+
+				const formData = new FormData();
+				formData.append('amount',Amount)
+				formData.append('currency_symbol',Symbol)
+				formData.append('notes',Notes)
+				formData.append('expense_date',Expense)
+				formData.append('main_category',Category)
+				formData.append('sub_cat_id',Sub_cat)
+				formData.append('Files',File)
+
+				fetch(`/HrmTool/HR/budget_expenses`,{method:'POST',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+
+		}
+	</script>
 
 	<!-- Edit Modal -->
 
@@ -177,25 +237,23 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/budget_update" method="POST">
+					<form>
 						<div class="input-block mb-3 row">
-							<input id="edit_id" name="edit_id" type="" />
+							<input id="edit_idz" name="edit_idz" type="hidden" />
 							<label class="col-lg-12 control-label col-form-label">Amount <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-6">
-								<input type="text" class="form-control" placeholder="800.00" name="edit_amount"
-									id="edit_amount">
+								<input type="text" class="form-control allow_numbers_only" name="edit_amount" id="edit_amount" required>
 							</div>
 							<div class="col-lg-6">
-								<select name="edit_currency_symbol" class="form-control form-select"
-									id="edit_currency_symbol">
+								<select name="edit_currency_symbol" class="form-control form-select" id="edit_currency_symbol" required>
 									<option value="$ - AUD">$ - Australian Dollar</option>
 									<option value="Bs. - VEF">Bs. - Bolívar Fuerte</option>
 									<option value="R$ - BRL">R$ - Brazilian Real</option>
 									<option value="£ - GBP">£ - British Pound</option>
 									<option value="$ - CAD">$ - Canadian Dollar</option>
-
 								</select>
 							</div>
 						</div>
@@ -203,59 +261,45 @@
 							<label class="col-lg-12 control-label col-form-label">Notes <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-12">
-								<textarea class="form-control ta" name="edit_notes" id="edit_notes"></textarea>
+								<textarea class="form-control ta" name="edit_notes" id="edit_notes" placeholder="Enter 255 Character's" required></textarea>
 							</div>
 						</div>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Expense Date <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-12">
-								<input class="datepicker-input form-control" type="text" value="07-05-2021"
-									name="edit_expense_date" id="edit_expense_date" data-date-format="dd-mm-yyyy">
+								<input class="form-control datetimepicker" type="text" name="edit_expense_date" id="edit_expense_date" required>
 							</div>
 						</div>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Category <span
 									class="text-danger">*</span></label>
 							<div class="col-lg-12">
-								<select name="edit_main_category1" class="form-control m-b form-select"
-									id="edit_main_category1">
-									<option value="" disabled="" selected="">Choose Category</option>
-									<option value="1">project1</option>
-									<option value="3">test category</option>
-									<option value="4">Hardware</option>
-									<option value="5">Material</option>
-									<option value="6">Vehicle</option>
-									<option value="8">TestctrE</option>
-									<option value="9">Twocatr</option>
-									<option value="10">fesferwf</option>
+								<select  class="form-select" id="edit_main_categ" name="edit_main_categ" onchange="editSelective_catID($(this).val())" required>
+									<option selected disabled>-select</option>
+									{% for i in category_data%}
+									<option value="{{i.id}}">{{i.Name}}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
 						<div class="input-block mb-3 row">
 							<label class="col-lg-12 control-label col-form-label">Sub Category <span
 									class="text-danger">*</span></label>
-							<div class="col-lg-12">
-								<select name="edit_sub_category1" class="form-control m-b form-select"
-									id="edit_sub_category1">
-									<option value="">Choose Sub-Category</option>
-									<option value="1">project1</option>
-									<option value="3">test category</option>
-									<option value="4">Hardware</option>
-								</select>
+							<div class="col-lg-12" id="edit_selective_sub_data">
+								<input placeholder="Choose Category" class="form-control" readonly/>
 							</div>
 						</div>
 						<div class="input-block mb-3 row  position-relative">
 							<label class="col-lg-12 control-label col-form-label">Attach File</label>
 							<div class="col-lg-12">
-
-								<input type="file" class="form-control" data-buttontext="Choose File" data-icon="false"
-									data-classbutton="btn btn-default" data-classinput="form-control inline input-s"
-									name="edit_receipt" id="edit_receipt">
+								<input type="file" class="form-control" accept="application/pdf" name="edit_receipt" id="edit_receipt" oninput="edit_budget_exp_file.data = window.URL.createObjectURL(this.files[0])">
+								<br>
+								<object id="edit_budget_exp_file" data=""  width="413px" height="300px"></object>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_budget_exp()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -265,30 +309,88 @@
 
 	<script>
 		function edit_modal(data) {
-			$.get('/taking_edit_modal/' + data, function (res) {
-				console.log(res)
-
-				$('#edit_id').val(res.id)
-				$('#edit_amount').val(res.Amount)
-				$('#edit_currency_symbol').val(res.Currency)
-				$('#edit_notes').val(res.Notes)
-				$('#edit_expense_date').val(res.Expense_Date)
-				$('#edit_main_category1').val(res.Category_id)
-				$('#edit_sub_category1').val(res.Sub_Category_id)
-				$('edit_receipt').val(res.File)
-
+			$.get('/HrmTool/HR/selective_budget_expense_id/' + data, function (res) {
+				$('#edit_idz').val(res.Result.id)
+				$('#edit_amount').val(res.Result.Amount)
+				$('#edit_currency_symbol').val(res.Result.Currency)
+				$('#edit_notes').val(res.Result.Notes)
+				$('#edit_expense_date').val(res.Result.Expense_Date)
+				$('#edit_main_categ').val(res.Result.Category_id)
+				$('#edit_budget_exp_file').attr('data',`/templates/assets/uploaded_files/${res.Result.File}`)
+				//sub category
+				$('#edit_selective_sub_data').html(function(){
+					let fir = `<select class="form-select" id="editsub_cat_id" name="editsub_cat_id" required><option selected disabled>-select</option> `
+					let las = `</select>`
+					let mid = ``
+					for(let i=0;i<res.sub_data.length;i++){
+						mid+=`<option value="${res.sub_data[i].id}">${res.sub_data[i].Name}</option>`
+					}
+					return fir+mid+las;
+				})
+				$('#editsub_cat_id').val(res.Result.Sub_Category_id)
 
 			})
 		}
 
-		function action_delete(data) {
-			$('#are_delete').val(data)
+		function editSelective_catID(data){
+			fetch(`/HrmTool/HR/select_subcategory/${data}`)
+			.then(res=>res.json())
+			.then(res=>{
+				$('#edit_selective_sub_data').html(function(){
+					let fir = `<select class="form-select" id="editsub_cat_id" name="editsub_cat_id" required><option selected disabled>-select</option> `
+					let las = `</select>`
+					let mid = ``
+					for(let i=0;i<res.Result.length;i++){
+						mid+=`<option value="${res.Result[i].id}">${res.Result[i].Name}</option>`
+					}
+					return fir+mid+las;
+				})
+			})
 		}
 
-		function action_delete_budget(data) {
-			$.get('/action_delete/' + data, function (res) {
-				location.reload()
-			})
+		function edit_budget_exp(){
+			let Edit_id =$('#edit_idz').val();
+			let Amount =$('#edit_amount').val();
+			let Symbol =$('#edit_currency_symbol').val();
+			let Notes =$('#edit_notes').val();
+			let Expense =$('#edit_expense_date').val();
+			let Category =$('#edit_main_categ').val();
+			let Sub_cat =$('#editsub_cat_id').val();
+			let File =Expense_file();
+
+			function Expense_file(){ let exp_file = $('#edit_receipt')[0].files[0];if(exp_file){ return exp_file }else{ return 'None'}}
+
+			if(Amount===''||Amount===null){ $('#edit_amount').css('border-color','#ff0000') }else{ $('#edit_amount').css('border-color','#00ff00')}
+			if(Symbol===''||Symbol===null){ $('#edit_currency_symbol').css('border-color','#ff0000') }else{ $('#edit_currency_symbol').css('border-color','#00ff00')}
+			if(Notes===''||Notes===null){ $('#edit_notes').css('border-color','#ff0000') }else{ $('#edit_notes').css('border-color','#00ff00')}
+			if(Expense===''||Expense===null){ $('#edit_expense_date').css('border-color','#ff0000') }else{ $('#edit_expense_date').css('border-color','#00ff00')}
+			if(Category===''||Category===null){ $('#edit_main_categ').css('border-color','#ff0000') }else{ $('#edit_main_categ').css('border-color','#00ff00')}
+			if(Sub_cat===''||Sub_cat===null){ $('#editsub_cat_id').css('border-color','#ff0000') }else{ $('#editsub_cat_id').css('border-color','#00ff00')}
+
+			if(Amount!==null && Symbol!==null && Notes!==null && Expense!==null && Category!==null && Sub_cat!==null){
+
+				const formData = new FormData();
+				formData.append('edit_id',Edit_id)
+				formData.append('edit_amount',Amount)
+				formData.append('edit_currency_symbol',Symbol)
+				formData.append('edit_notes',Notes)
+				formData.append('edit_expense_date',Expense)
+				formData.append('edit_main_categ',Category)
+				formData.append('editsub_cat_id',Sub_cat)
+				if(File!='None'){ formData.append('File',File) }
+
+				fetch(`/HrmTool/HR/budget_update`,{method:'POST',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
 		}
 
 	</script>
@@ -323,6 +425,17 @@
 		</div>
 	</div>
 	<!-- /Delete Holiday Modal -->
+	<script>
+		function action_delete(data) {
+			$('#are_delete').val(data)
+		}
+
+		function action_delete_budget(data) {
+			$.get('/HrmTool/HR/budget_expense_delete/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
 
 </div>
 <!-- /Page Wrapper -->

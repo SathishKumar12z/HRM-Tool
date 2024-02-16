@@ -47,29 +47,26 @@
 								<td>{{loop.index}}</td>
 								<td>
 									<h2 class="table-avatar">
-										<a href="profile.html" class="avatar"><img src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
-										<a href="profile.html">{{i.First_Name}} {{i.Last_Name}}</a>
+										<a target="_blank" href="/templates/assets/uploaded_files/{{i.Photo}}" class="avatar"><img src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+										<a target="_blank" href="/templates/assets/uploaded_files/{{i.Photo}}">{{i.First_Name}} {{i.Last_Name}}</a>
 									</h2>
 								</td>
 								<td>{{i.Phone}}</td>
 								<td>{{i.Email}}</td>
-								<td>{{i.Description}}</td>
+								<td>{{i.Description[:10:]}} ...</td>
 								<td>
 									<div class="dropdown action-label">
 										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
 											data-bs-toggle="dropdown" aria-expanded="false">
-											{% if i.Current_status == " Pending"%}
+											{% if i.Current_status == "Pending" %}
 											<i class="fa-regular fa-circle-dot text-danger"></i> {{i.Current_status}}
 											{% else %}
 											<i class="fa-regular fa-circle-dot text-success"></i> {{i.Current_status}}
 											{% endif %}
 										</a>
 										<div class="dropdown-menu">
-											<a class="dropdown-item current_trainer" value="{{i.id}}" href="#"><i
-													class="fa-regular fa-circle-dot text-success "></i> Approved</a>
-											<a class="dropdown-item current_trainer" value="{{i.id}}" href="#"><i
-													class="fa-regular fa-circle-dot text-danger "></i> Pending</a>
-
+											<a class="dropdown-item " onclick="change_status('{{i.id}}','Approved')"><i class="fa-regular fa-circle-dot text-success "></i> Approved</a>
+											<a class="dropdown-item " onclick="change_status('{{i.id}}','Pending')"><i class="fa-regular fa-circle-dot text-danger "></i> Pending</a>
 										</div>
 									</div>
 								</td>
@@ -90,7 +87,6 @@
 									</div>
 								</td>
 							</tr>
-
 						</tbody>
 						{% endfor %}
 					</table>
@@ -100,16 +96,10 @@
 	</div>
 	<!-- /Page Content -->
 	<script>
-		$(".current_trainer").on('click',function(){
-			let c_value = $(this);
-			let data = c_value[0].innerText
-			let ids = c_value[0].attributes[1].nodeValue
-			console.log(data)
-			console.log(ids)
-			$.get('/HrmTool/HR/current_trainer/'+data+'/'+ids,function(){
-				location.reload();
-			})
-		})
+		function change_status(ids,info){
+			fetch(`/HrmTool/Performance/change_status_trainer/${ids}/${info}`)
+			.then(location.reload())
+		}
 	</script>
 
 	<!-- Add Trainers List Modal -->
@@ -200,18 +190,20 @@
 			.then(res => res.json())
 			.then(res => {
 				console.log(res);
-				if(res == 'ok'){
+				if(res.Result == 'Done'){
 					location.reload();
+				}else if (res.Result=='Error'){
+					$("#error").html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
 				}else{
-					$("#error").html(`<h5 class="text-danger" style="padding-left: 216px;">Already Have..</h5>`)
+					$("#error").html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
 				}
 			})
 			.catch(error => {
 				console.error('Fetch error:', error);
 			});
 		}
-
 	</script>
+
 	<!-- Edit Trainers List Modal -->
 	<div id="edit_type" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -222,10 +214,11 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Performance/trainers_update" method="POST" enctype="multipart/form-data">
+					<form>
 						<div class="row">
-
+							<input id="edit_idz" name="edit_idz" type="hidden" />
 							<div class="profile-img-wrap edit-img">
 								<img class="inline-block" src="templates/assets/img/profiles/avatar-02.jpg"
 									alt="User Image" id="edit_trainer_photo">
@@ -236,44 +229,43 @@
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
-									<input id="edit_idz" name="edit_id" type="hidden" />
 									<label class="col-form-label">First Name <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" id="edit_fname" name="edit_fname">
+									<input class="form-control" type="text" id="edit_fname" name="edit_fname" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Last Name</label>
-									<input class="form-control" type="text" id="edit_lname" name="edit_lname">
+									<input class="form-control" type="text" id="edit_lname" name="edit_lname" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Role <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" id="edit_rol" name="edit_rol">
+									<input class="form-control" type="text" id="edit_rol" name="edit_rol" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Email <span class="text-danger">*</span></label>
-									<input class="form-control" type="email" id="edit_mail" name="edit_mail">
+									<input class="form-control" type="email" id="edit_mail" name="edit_mail" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Phone </label>
-									<input class="form-control" type="text" id="edit_ph" name="edit_ph">
+									<input class="form-control" type="text" id="edit_ph" name="edit_ph" required>
 								</div>
 							</div>
 							<div class="col-sm-12">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Description <span class="text-danger">*</span></label>
-									<textarea class="form-control" rows="4" id="edit_des" name="edit_des"></textarea>
+									<textarea class="form-control" rows="4" id="edit_des" name="edit_des" placeholder="Enter 255 Character" required></textarea>
 								</div>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_trainers()">Save</a>
 						</div>
 					</form>
 				</div>
@@ -282,9 +274,7 @@
 	</div>
 	<script>
 		function editing_id(data) {
-			console.log(data)
 			$.get('/HrmTool/Performance/eidt_trainers/' + data, function (res) {
-				console.log(res)
 				$('#edit_idz').val(res.id)
 				$('#edit_fname').val(res.First_Name)
 				$('#edit_lname').val(res.Last_Name)
@@ -292,44 +282,60 @@
 				$('#edit_mail').val(res.Email)
 				$('#edit_ph').val(res.Phone)
 				$('#edit_des').val(res.Description)
-				$('#edit_des').val(res.Description)
 				$('#edit_trainer_photo').attr('src',`/templates/assets/uploaded_files/${res.Photo}`)
-
 			})
 		}
 
-		function delete_action(data) {
-			$('#delete_data').val(data)
+		function edit_trainers()
+		{
+			let Edit_id = $('#edit_idz').val();
+			let First = $('#edit_fname').val();
+			let Last = $('#edit_lname').val();
+			let Role = $('#edit_rol').val();
+			let Mail = $('#edit_mail').val();
+			let Phon = $('#edit_ph').val();
+			let Desc = $('#edit_des').val();
+			function Test_File_1(){let Edit_Img_1 = $('#edit_client_photo')[0]; let Edit_File_1 = Edit_Img_1.files[0];if (Edit_File_1){return Edit_File_1}else{return 'None'}}
+
+			if(First===''||First===null){$('#edit_fname').css('border-color','#ff6666')}else{$('#edit_fname').css('border-color','#00ff00')}
+			if(Last===''||Last===null){$('#edit_lname').css('border-color','#ff6666')}else{$('#edit_lname').css('border-color','#00ff00')}
+			if(Role===''||Role===null){$('#edit_rol').css('border-color','#ff6666')}else{$('#edit_rol').css('border-color','#00ff00')}
+			if(Mail===''||Mail===null){$('#edit_mail').css('border-color','#ff6666')}else{$('#edit_mail').css('border-color','#00ff00')}
+			if(Phon===''||Phon===null){$('#edit_ph').css('border-color','#ff6666')}else{$('#edit_ph').css('border-color','#00ff00')}
+			if(Desc===''||Desc===null){$('#edit_des').css('border-color','#ff6666')}else{$('#edit_des').css('border-color','#00ff00')}
+
+			if(First!==null && Last!==null && Role!==null && Mail!==null && Phon!==null && Desc!==null ){
+
+				const formData = new FormData();
+				formData.append('edit_idz',Edit_id)
+				formData.append('edit_fname',First)
+				formData.append('edit_lname',Last)
+				formData.append('edit_rol',Role)
+				formData.append('edit_mail',Mail)
+				formData.append('edit_ph',Phon)
+				formData.append('edit_des',Desc)
+				let check_image_1 = Test_File_1();
+				if (check_image_1!='None'){formData.append('edit_client_photo',Test_File_1())}
+
+				fetch(`/HrmTool/Performance/trainers_update`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+
 		}
-
-		function conform_delete(data) {
-			$.get('/HrmTool/Performance/delete_trainers/' + data, function (res) {
-				location.reload()
-			})
-		}
-
-		function changeStatus(item_id, new_status) {
-			// Make an AJAX request to update the database
-			const form = {
-				item_id: item_id,
-				new_status: new_status,
-			};
-
-			$.post('/update_status', form, function (res) {
-				// Update the color dynamically based on the new status
-				var statusSpan = $('#status_' + item_id);
-				if (new_status === 'ACTIVE') {
-					statusSpan.removeClass('text-danger').addClass('text-success');
-				} else {
-					statusSpan.removeClass('text-success').addClass('text-danger');
-				}
-
-				// Reload the page after updating the status
-				location.reload();
-			});
-		}
+		
 	</script>
 	<!-- /Edit Trainers List Modal -->
+
 	<!-- Delete Trainers List Modal -->
 	<div class="modal custom-modal fade" id="delete_type" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
@@ -357,7 +363,17 @@
 		</div>
 	</div>
 	<!-- /Delete Trainers List Modal -->
+	<script>
+		function delete_action(data) {
+			$('#delete_data').val(data)
+		}
 
+		function conform_delete(data) {
+			$.get('/HrmTool/Performance/delete_trainers/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
 </div>
 <!-- /Page Wrapper -->
 

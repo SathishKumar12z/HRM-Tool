@@ -43,7 +43,6 @@ async def home(request:Request,db:Session=Depends(get_db)):
                         if emp_data.Lock_screen == 'OFF':
                             department_data = db.query(models.Department).filter(models.Department.status=='ACTIVE').all()
                             job_data = db.query(models.Manage_Jobs).filter(models.Manage_Jobs.status=='ACTIVE').all()
-
                             return templates.TemplateResponse("Admin/Administration/Jobs/jobs.html",context={"request":request,'emp_data':emp_data,'department_data':department_data,'job_data':job_data})
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
@@ -76,6 +75,12 @@ async def emailSettings(request:Request,db:Session=Depends(get_db),j_name:str=Fo
                             db.add(job_data)
                             db.commit()
                             db.refresh(job_data)
+                            # ===============>>>> Graph part work 
+                            department_data = db.query(models.Department).filter(models.Department.id==j_depart).filter(models.Department.status=='ACTIVE').first()
+                            add_graph = models.Job_Graph(Department_id=j_depart,Department_Color=department_data.Colour,Applier_Count='0',Views_Count='0',Jan='0',Feb='0',Mar='0',Apr='0',May='0',Jun='0',Jul='0',Aug='0',Sep='0',Oct='0',Nov='0',Dec='0',status='ACTIVE',created_by=loginer_id)
+                            db.add(add_graph)
+                            db.commit()
+                            db.refresh(add_graph)
                             return RedirectResponse('/HrmTool/Administration/manage_jobs',status_code=302)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
@@ -218,6 +223,64 @@ async def home(request:Request,job_id:int,db:Session=Depends(get_db)):
             return RedirectResponse('/HrmTool/login/login',status_code=302)
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
+  
+@router.get('/change_job_type/{ids}/{info}')
+async def home(request:Request,ids:int,info:str,db:Session=Depends(get_db)):
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
+            try:
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            db.query(models.Manage_Jobs).filter(models.Manage_Jobs.id==ids).update({'Job_Type':info})
+                            db.commit()
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
+                    else:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/HrmTool/login/login',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
+            return RedirectResponse('/HrmTool/login/login',status_code=302)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
+   
+@router.get('/change_job_status/{ids}/{info}')
+async def home(request:Request,ids:int,info:str,db:Session=Depends(get_db)):
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
+            try:
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            db.query(models.Manage_Jobs).filter(models.Manage_Jobs.id==ids).update({'Current_Status':info})
+                            db.commit()
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
+                    else:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/HrmTool/login/login',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
+            return RedirectResponse('/HrmTool/login/login',status_code=302)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
    
 #---------------------------------------------------------------------------------------------#
 #---------------------------------- jobs  Applier portion ------------------------------------#
@@ -261,10 +324,64 @@ async def home(request:Request,db:Session=Depends(get_db),job_id:int=Form(...),a
     db.add(add_applier)
     db.commit()
     db.refresh(add_applier)
+
     # after appliy increase a applier count 
     all_applier_data = len(db.query(models.Job_Appliers).filter(models.Job_Appliers.Job_ID == str(job_id)).filter(models.Job_Appliers.status=='ACTIVE').all())
     db.query(models.Manage_Jobs).filter(models.Manage_Jobs.id==job_id).update({'Applicants':all_applier_data})
     db.commit()
+    ic(current_datetime)
+    print(current_datetime)
+
+    Job_data = db.query(models.Manage_Jobs).filter(models.Manage_Jobs.id==int(job_id)).filter(models.Manage_Jobs.status=='ACTIVE').first()
+
+
+    month = str(current_datetime) #2024-02-09 13:28:24.586655
+    split_month = month.split('-')
+    mon = split_month[1]
+    ic(mon)
+    ic(type(mon))
+
+    ic(all_applier_data)
+
+    def find_which_month():
+        if mon =='01':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Jan':all_applier_data})
+            db.commit()
+        elif mon =='02':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Feb':all_applier_data})
+            db.commit()
+        elif mon =='03':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Mar':all_applier_data})
+            db.commit()
+        elif mon =='04':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Apr':all_applier_data})
+            db.commit()
+        elif mon =='05':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'May':all_applier_data})
+            db.commit()
+        elif mon =='06':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Jun':all_applier_data})
+            db.commit()
+        elif mon =='07':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Jul':all_applier_data})
+            db.commit()
+        elif mon =='08':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Aug':all_applier_data})
+            db.commit()
+        elif mon =='09':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Sep':all_applier_data})
+            db.commit()
+        elif mon =='10':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Oct':all_applier_data})
+            db.commit()
+        elif mon =='11':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Nov':all_applier_data})
+            db.commit()
+        elif mon =='12':
+            db.query(models.Job_Graph).filter(models.Job_Graph.Department_id==Job_data.Department).update({'Dec':all_applier_data})
+            db.commit()
+        
+    find_which_month()
 
     return RedirectResponse(f'/HrmTool/Administration/job_views/{job_id}',status_code=302)
   

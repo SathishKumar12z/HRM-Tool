@@ -1,12 +1,11 @@
 {% include "Layout/top.html" %}
 {% include "Layout/side.html" %}
-
+			
 <!-- Page Wrapper -->
 <div class="page-wrapper">
-
 	<!-- Page Content -->
 	<div class="content container-fluid">
-
+	
 		<!-- Page Header -->
 		<div class="page-header">
 			<div class="row align-items-center">
@@ -18,13 +17,12 @@
 					</ul>
 				</div>
 				<div class="col-auto float-end ms-auto">
-					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_training"><i
-							class="fa-solid fa-plus"></i> Add New </a>
+					<a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_training"><i class="fa-solid fa-plus"></i> Add New </a>
 				</div>
 			</div>
 		</div>
 		<!-- /Page Header -->
-
+		
 		<div class="row">
 			<div class="col-md-12">
 				<div class="table-responsive">
@@ -35,7 +33,8 @@
 								<th>Training Type</th>
 								<th>Trainer</th>
 								<th>Employee</th>
-								<th>Time Duration</th>
+								<th>Time From</th>
+								<th>Time To</th>
 								<th>Description </th>
 								<th>Cost </th>
 								<th>Status </th>
@@ -43,62 +42,59 @@
 							</tr>
 						</thead>
 						<tbody>
+							{% for i in training_data %}
 							<tr>
-								{% for i in training_data %}
-								<td>{{i.id}}</td>
+								<td>{{loop.index}}</td>
+								<!-- Training Type -->
+								{% for j in training_type_data %}
+								{% if i.Training_Type_id|int == j.id|int %}
+								<td>{{j.Name}}</td>
+								{% endif %}
+								{% endfor %}
+								<!-- /Training Type -->
+								<!-- Trainer staff -->
+								{% for k in trainers_data %}
+								{% if i.Trainer_id|int == k.id|int %}
 								<td>
-
 									<h2 class="table-avatar">
-										<!-- <a href="profile.html" class="avatar"><img src="/templates/assets/img/profiles/avatar-02.jpg" alt="User Image"></a> -->
-										<a href="profile.html">{{i.Training_Type_id}} </a>
+										<a target="_blank" href="/templates/assets/uploaded_files/{{k.Photo}}" class="avatar"><img src="/templates/assets/uploaded_files/{{k.Photo}}" alt="User Image"></a>
+										<a target="_blank" href="/templates/assets/uploaded_files/{{k.Photo}}">{{k.First_Name}} {{k.Last_Name}} </a>
 									</h2>
 								</td>
-								<td>{{i.Trainer_id}}</td>
-								<td>{{i.Employees_id}}</td>
+								{% endif %}
+								{% endfor %}
+								<!-- /Trainer staff -->
 
-								<!-- <ul class="team-members">
+								<!-- Our Employess -->
+								<td>
+									<ul class="team-members">
+										{% for emp in training_followers_data %}
+										{% if loop.index <= 2 %}
+										{% if i.id|int == emp.Training_id|int %}
+										{% for org_emp in employee_data %}
+										{% if org_emp.id|int == emp.Employees_id|int %}
 										<li>
-											<a href="#" title="Bernardo Galaviz" data-bs-toggle="tooltip"><img src="/templates/assets/img/profiles/avatar-10.jpg" alt="User Image"></a>
+											<a href="#" title="{{org_emp.First_Name}} {{org_emp.Last_Name}}" data-bs-toggle="tooltip"><img src="/templates/assets/uploaded_files/{{org_emp.Photo}}" alt="User Image"></a>
 										</li>
-										<li>
-											<a href="#" title="Richard Miles" data-bs-toggle="tooltip"><img src="/templates/assets/img/profiles/avatar-09.jpg" alt="User Image"></a>
-										</li> -->
-								<!-- <li class="dropdown avatar-dropdown">
-											<a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
+										{% endif %}
+										{% endfor %}
+										{% endif %}
+										{% endif %}
+										{% endfor %}
+
+										<!-- Other Display -->
+										<!-- <li class="dropdown avatar-dropdown">
+											<a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+</a>
 											<div class="dropdown-menu dropdown-menu-right">
 												<div class="avatar-group">
 													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-02.jpg" alt="User Image">
+														<img src="/templates/assets/uploaded_files/" alt="User Image">
 													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-09.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-10.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-05.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-11.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-12.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-13.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-01.jpg" alt="User Image">
-													</a>
-													<a class="avatar avatar-xs" href="#">
-														<img src="/templates/assets/img/profiles/avatar-16.jpg" alt="User Image">
-													</a> -->
-								<!-- </div> -->
-								<!-- <div class="avatar-pagination">
+												</div>
+												<div class="avatar-pagination">
 													<ul class="pagination">
-														<li class="page-item"> -->
-								<!-- <a class="page-link" href="#" aria-label="Previous">
+														<li class="page-item">
+															<a class="page-link" href="#" aria-label="Previous">
 																<span aria-hidden="true">«</span>
 																<span class="visually-hidden">Previous</span>
 															</a>
@@ -114,83 +110,58 @@
 													</ul>
 												</div>
 											</div>
-										</li> 
-									</ul> -->
-								<!-- </td> -->
-								<td>{{i.Start_Date}}-{{i.End_Date}}</td>
-								<td>{{i.Description}}</td>
-								<td>{{i.Training_Cost}}</td>
+										</li> -->
+										<!-- /Other Display -->
+									</ul>
+								</td>
+								
+								<!-- /Our Employess -->
+
+								<td class="dateformate">{{i.Start_Date}}</td> - <td class="dateformate">{{i.End_Date}}</td>
+								<td>{{i.Description[:10:]}} ...</td>
+								<td>$ {{i.Training_Cost}}</td>
 								<td>
 									<div class="dropdown action-label">
-										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
-											data-bs-toggle="dropdown" aria-expanded="false">
-											<i class="fa-regular fa-circle-dot text-success"></i>{{i.Current_status}}
+										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+											{% if i.Current_status=='Active' %}
+											<i class="fa-regular fa-circle-dot text-success"></i> {{i.Current_status}}
+											{% else %}
+											<i class="fa-regular fa-circle-dot text-danger"></i> {{i.Current_status}}
+											{% endif %}
 										</a>
 										<div class="dropdown-menu">
-											<a class="dropdown-item" href="#"><i
-													class="fa-regular fa-circle-dot text-success"></i> Active</a>
-											<a class="dropdown-item" href="#"><i
-													class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Active')"><i class="fa-regular fa-circle-dot text-success"></i> Active</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Inactive')"><i class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
 										</div>
 									</div>
 								</td>
 								<td class="text-end">
 									<div class="dropdown dropdown-action">
-										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
-											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
 										<div class="dropdown-menu dropdown-menu-right">
-											<a class="dropdown-item" href="#" data-bs-toggle="modal"
-												data-bs-target="#edit_training" onclick="editing_id('{{i.id}}')"><i
-													class="fa-solid fa-pencil m-r-5"></i> Edit</a>
-											<a class="dropdown-item" href="#" data-bs-toggle="modal"
-												data-bs-target="#delete_training"
-												onclick="taking_dlt_dedction('{{i.id}}') "><i
-													class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_training" onclick="collect_edit_id('{{i.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_training" onclick="collect_delete_id('{{i.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
 										</div>
 									</div>
 								</td>
 							</tr>
 							{% endfor %}
 						</tbody>
-
-						<script>
-							function editing_id(data) {
-								$.get('/taking_edit_id/' + data, function (res) {
-									console.log(res)
-									$('#edit_id').val(res.id)
-									$('#edit_ttype').val(res.Training_Type_id)
-									$('#edit_trainer').val(res.Trainer_id)
-									$('#edit_emp').val(res.Employees_id)
-									$('#edit_tcost').val(res.Training_Cost)
-									$('#edit_startdate').val(res.Start_Date)
-									$('#edit_enddate').val(res.End_Date)
-									$('#edit_description').val(res.Description)
-									$('#edit_status').val(res.Current_status)
-								})
-							}
-
-
-
-
-							function taking_dlt_dedction(data) {
-								$('#delete_pop_deduction').val(data)
-
-							}
-
-							function conform_delete_deduction(data) {
-								$.get('/taking_dlt_id_deduction/' + data, function (res) {
-
-									location.reload();
-								})
-							}
-
-						</script>
 					</table>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- /Page Content -->
+
+	<script>
+		function change_status(ids,info){
+			fetch(`/HrmTool/Performance/update_status_training/${ids}/${info}`)
+			location.reload()
+			location.reload()
+			
+		}
+	</script>
 
 	<!-- Add Training List Modal -->
 	<div id="add_training" class="modal custom-modal fade" role="dialog">
@@ -202,78 +173,84 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/training_add" method="POST">
+					<form>
 						<div class="row">
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Training Type</label>
-									<select class="form-select" id="ttype" name="ttype">
-										<option>Node Training</option>
-										<option>Swift Training</option>
+									<select class="form-select" id="t_type" name="t_type" required>
+										<option selected disabled>-select</option>
+										{% for i in  training_type_data %}
+										<option value="{{i.id}}">{{i.Name}}</option>
+										{% endfor %}
 									</select>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Trainer</label>
-									<select class="form-select" id="trainer" name="trainer">
-										<option>Mike Litorus </option>
-										<option>John Doe</option>
+									<select class="form-select" id="staff" name="staff" required >
+										<option selected disabled>-select</option>
+										{% for i in  trainers_data %}
+										<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+										{% endfor %}
 									</select>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Employees</label>
-									<select class="form-select" id="emp" name="emp">
-										<option>Bernardo Galaviz</option>
-										<option>Jeffrey Warden</option>
+									<select class="selectpicker" multiple data-live-search="true" id="emps" name="emps" required>
+										<option selected disabled>-select</option>
+										{% for i in employee_data %}
+										<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+										{% endfor %}
 									</select>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
-									<label class="col-form-label">Training Cost <span
-											class="text-danger">*</span></label>
-									<input class="form-control" type="text" id="tcost" name="tcost" pattern="[0-9]+"
-										title="Please enter only numeric values">
+									<label class="col-form-label">Training Cost <span class="text-danger">*</span></label>
+									<input class="form-control allow_numbers_only" type="text" id="cost" name="cost"  required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Start Date <span class="text-danger">*</span></label>
-									<div class="cal-icon"><input class="form-control datetimepicker" type="text"
-											id="startdate" name="startdate"></div>
+									<div class="cal-icon">
+										<input class="form-control datetimepicker" type="text" id="s_date" name="s_date" required>
+									</div>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">End Date <span class="text-danger">*</span></label>
-									<div class="cal-icon"><input class="form-control datetimepicker" type="text"
-											id="enddate" name="enddate"></div>
+									<div class="cal-icon">
+										<input class="form-control datetimepicker" type="text" id="e_date" name="e_date" required >
+									</div>
 								</div>
 							</div>
-
+							
 							<div class="col-sm-12">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Description <span class="text-danger">*</span></label>
-									<textarea class="form-control" rows="4" id="description"
-										name="description"></textarea>
+									<textarea class="form-control" rows="4" placeholder="Enter 255 Character's" id="desc" name="desc" required></textarea>
 								</div>
 							</div>
 							<div class="col-sm-12">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Status</label>
-									<select class="form-select" id="status" name="status">
-										<option>Active</option>
-										<option>Inactive</option>
+									<select class="form-select" id="c_status" nam="c_status" required>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
 									</select>
 								</div>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_training()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -281,7 +258,60 @@
 		</div>
 	</div>
 	<!-- /Add Training List Modal -->
+	
 
+	<script>
+		function add_training(){
+			let Type = $('#t_type').val();
+			let Trainer = $('#staff').val();
+			let Employee = $('#emps').val();
+			let Cost = $('#cost').val();
+			let Start = $('#s_date').val();
+			let End = $('#e_date').val();
+			let Desc = $('#desc').val();
+			let Stat = $('#c_status').val();
+
+			console.log(Employee)
+
+			if(Type===''||Type===null){$('#t_type').css('border-color','#ff0000')}else{$('#t_type').css('border-color','#00ff00')}
+			if(Trainer===''||Trainer===null){$('#staff').css('border-color','#ff0000')}else{$('#staff').css('border-color','#00ff00')}
+			if(Employee== [] ||Employee===null){$('#emps').css('border-color','#ff0000')}else{$('#emps').css('border-color','#00ff00')}
+			if(Cost===''||Cost===null){$('#cost').css('border-color','#ff0000')}else{$('#cost').css('border-color','#00ff00')}
+			if(Start===''||Start===null){$('#s_date').css('border-color','#ff0000')}else{$('#s_date').css('border-color','#00ff00')}
+			if(End===''||End===null){$('#e_date').css('border-color','#ff0000')}else{$('#e_date').css('border-color','#00ff00')}
+			if(Desc===''||Desc===null){$('#desc').css('border-color','#ff0000')}else{$('#desc').css('border-color','#00ff00')}
+			if(Stat===''||Stat===null){$('#c_status').css('border-color','#ff0000')}else{$('#c_status').css('border-color','#00ff00')}
+
+			if(Type!==null && Trainer!==null && Employee!=[] && Cost!==null && Start!==null && End!==null && Desc!==null && Stat!==null){
+
+				const formData = new FormData();
+				formData.append('t_type',Type)
+				formData.append('staff',Trainer)
+				formData.append('emps',Employee)
+				formData.append('cost',Cost)
+				formData.append('s_date',Start)
+				formData.append('e_date',End)
+				formData.append('desc',Desc)
+				formData.append('c_status',Stat)
+
+				fetch(`/HrmTool/Performance/training_list`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload();
+					}else if (res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left:181px;">Already data Entered</h5>`)
+					}else if(res.Result=='Emp'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left:200px;">Choose Employees</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left:200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
+	
 	<!-- Edit Training List Modal -->
 	<div id="edit_training" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -292,80 +322,86 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/training_update" method="POST">
+					<form>
+						<input id="edit_idz" name="edit_idz" type="hidden" />
 						<div class="row">
-							<input id="edit_id" name="edit_id" type="hidden">
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Training Type</label>
-									<select class="form-select" id="edit_ttype" name="edit_ttype">
-										<option>Node Training</option>
-										<option>Swift Training</option>
-										<option>Git Training</option>
+									<select class="form-select" id="e_t_type" name="e_t_type" required>
+										<option selected disabled>-select</option>
+										{% for i in  training_type_data %}
+										<option value="{{i.id}}">{{i.Name}}</option>
+										{% endfor %}
 									</select>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Trainer</label>
-									<select class="form-select" id="edit_trainer" name="edit_trainer">
-										<option>Mike Litorus </option>
-										<option selected>John Doe</option>
+									<select class="form-select" id="e_staff" name="e_staff" required >
+										<option selected disabled>-select</option>
+										{% for i in  trainers_data %}
+										<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+										{% endfor %}
 									</select>
 								</div>
 							</div>
 							<div class="col-sm-6">
-								<div class="input-block mb-3">
-									<label class="col-form-label">Employees</label>
-									<select class="form-select" id="edit_emp" name="edit_emp">
-										<option>Bernardo Galaviz</option>
-										<option selected>Jeffrey Warden</option>
-									</select>
+								<div class="input-block mb-3 ">
+									<div class="edit_emp_page">
+										<label class="col-form-label">Employees</label>
+										<select class="selectpicker" multiple data-live-search="true" id="e_emps" name="e_emps" required>
+											{% for i in employee_data %}
+											<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+											{% endfor %}
+										</select>
+									</div>
 								</div>
 							</div>
 							<div class="col-sm-6">
-								<div class="input-block mb-3">
-									<label class="col-form-label">Training Cost <span
-											class="text-danger">*</span></label>
-									<input class="form-control" type="text" id="edit_tcost" name="edit_tcost"
-										pattern="[0-9]+" title="Please enter only numeric values">
+								<div class="input-block mb-3 ">
+									<label class="col-form-label">Training Cost <span class="text-danger">*</span></label>
+									<input class="form-control allow_numbers_only" type="text" id="e_cost" name="e_cost"  required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Start Date <span class="text-danger">*</span></label>
-									<div class="cal-icon"><input class="form-control datetimepicker" id="edit_startdate"
-											name="edit_startdate" type="text"></div>
+									<div class="cal-icon">
+										<input class="form-control datetimepicker" type="text" id="e_s_date" name="e_s_date" required>
+									</div>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">End Date <span class="text-danger">*</span></label>
-									<div class="cal-icon"><input class="form-control datetimepicker" id="edit_enddate"
-											name="edit_enddate" type="text"></div>
+									<div class="cal-icon">
+										<input class="form-control datetimepicker" type="text" id="e_e_date" name="e_e_date" required >
+									</div>
 								</div>
 							</div>
-
+							
 							<div class="col-sm-12">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Description <span class="text-danger">*</span></label>
-									<textarea class="form-control" rows="4" id="edit_description"
-										name="edit_description"></textarea>
+									<textarea class="form-control" rows="4" placeholder="Enter 255 Character's" id="e_desc" name="e_desc" required></textarea>
 								</div>
 							</div>
 							<div class="col-sm-12">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Status</label>
-									<select class="form-select" id="edit_status" name="edit_status">
-										<option>Active</option>
-										<option>Inactive</option>
+									<select class="form-select" id="e_c_status" nam="e_c_status" required>
+										<option value="Active">Active</option>
+										<option value="Inactive">Inactive</option>
 									</select>
 								</div>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_training()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -374,6 +410,86 @@
 	</div>
 	<!-- /Edit Training List Modal -->
 
+	<script>
+
+		function collect_edit_id(data){
+			fetch(`/HrmTool/Performance/collect_training_data/${data}`)
+			.then(res=>res.json())
+			.then(res=>{
+				console.log(res)
+				$('#edit_idz').val(res.Training.id)
+				$('#e_t_type').val(res.Training.Training_Type_id)
+				$('#e_staff').val(res.Training.Trainer_id)
+				$('#e_cost').val(res.Training.Training_Cost)
+				$('#e_s_date').val(res.Training.Start_Date)
+				$('#e_e_date').val(res.Training.End_Date)
+				$('#e_desc').val(res.Training.Description)
+				$('#e_c_status').val(res.Training.Current_status)
+				$('#e_emps').val(multiEmployee())
+				// multi select 
+				function multiEmployee(){
+					let list_employee = []
+					for(i=0;i<res.Followers.length;i++){
+						list_employee.push(res.Followers[i].Employees_id)
+					}
+					return list_employee;
+				}
+			})
+		}
+
+		function edit_training(){
+			let Edit_id = $('#edit_idz').val();
+			let Type = $('#e_t_type').val();
+			let Trainer = $('#e_staff').val();
+			let Employee = $('#e_emps').val();
+			let Cost = $('#e_cost').val();
+			let Start = $('#e_s_date').val();
+			let End = $('#e_e_date').val();
+			let Desc = $('#e_desc').val();
+			let Stat = $('#e_c_status').val();
+
+			console.log(Employee)
+
+			if(Type===''||Type===null){$('#e_t_type').css('border-color','#ff0000')}else{$('#e_t_type').css('border-color','#00ff00')}
+			if(Trainer===''||Trainer===null){$('#e_staff').css('border-color','#ff0000')}else{$('#e_staff').css('border-color','#00ff00')}
+			if(Employee== [] ||Employee===null){$('#e_emps').css('border-color','#ff0000')}else{$('#e_emps').css('border-color','#00ff00')}
+			if(Cost===''||Cost===null){$('#e_cost').css('border-color','#ff0000')}else{$('#e_cost').css('border-color','#00ff00')}
+			if(Start===''||Start===null){$('#e_s_date').css('border-color','#ff0000')}else{$('#e_s_date').css('border-color','#00ff00')}
+			if(End===''||End===null){$('#e_e_date').css('border-color','#ff0000')}else{$('#e_e_date').css('border-color','#00ff00')}
+			if(Desc===''||Desc===null){$('#e_desc').css('border-color','#ff0000')}else{$('#e_desc').css('border-color','#00ff00')}
+			if(Stat===''||Stat===null){$('#e_c_status').css('border-color','#ff0000')}else{$('#e_c_status').css('border-color','#00ff00')}
+
+			if(Type!==null && Trainer!==null && Employee!=[] && Cost!==null && Start!==null && End!==null && Desc!==null && Stat!==null){
+
+				const formData = new FormData();
+				formData.append('edit_idz',Edit_id)
+				formData.append('e_t_type',Type)
+				formData.append('e_staff',Trainer)
+				formData.append('e_emps',Employee)
+				formData.append('e_cost',Cost)
+				formData.append('e_s_date',Start)
+				formData.append('e_e_date',End)
+				formData.append('e_desc',Desc)
+				formData.append('e_c_status',Stat)
+
+				fetch(`/HrmTool/Performance/training_list_update`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload();
+					}else if (res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left:181px;">Already data Entered</h5>`)
+					}else if(res.Result=='Emp'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left:200px;">Choose Employees</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left:200px;">Unable To Update</h5>`)
+					}
+				})
+			}
+		}
+	</script>
+	
 	<!-- Delete Training List Modal -->
 	<div class="modal custom-modal fade" id="delete_training" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
@@ -383,17 +499,14 @@
 						<h3>Delete Training List</h3>
 						<p>Are you sure want to delete?</p>
 					</div>
+					<input id="conform_del" name="conform_del" type="hidden" />
 					<div class="modal-btn delete-action">
 						<div class="row">
 							<div class="col-6">
-								<input name="delete_pop_deduction" id="delete_pop_deduction" type="hidden">
-								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
-									onclick="conform_delete_deduction($('#delete_pop_deduction').val())">Delete</a>
-								<!-- <a href="javascript:void(0);" data-bs-dismiss="modal" id="delete_data" class="btn btn-primary continue-btn" onclick="conform_delete($('#delete_data').val())">Delete</a> -->
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn" onclick="conform_delete($('#conform_del').val())">Delete</a>
 							</div>
 							<div class="col-6">
-								<a href="javascript:void(0);" data-bs-dismiss="modal"
-									class="btn btn-primary cancel-btn">Cancel</a>
+								<a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
 							</div>
 						</div>
 					</div>
@@ -402,6 +515,17 @@
 		</div>
 	</div>
 	<!-- /Delete Training List Modal -->
+
+	<script>
+		function collect_delete_id(data){
+			$('#conform_del').val(data)
+		}
+
+		function conform_delete(data){
+			fetch(`/HrmTool/Performance/del_training_data/${data}`)
+			.then(location.reload())
+		}
+	</script>
 
 </div>
 <!-- /Page Wrapper -->

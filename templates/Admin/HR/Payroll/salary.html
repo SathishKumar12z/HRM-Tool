@@ -25,54 +25,54 @@
 
 		<!-- Search Filter -->
 		<div class="row filter-row">
-			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-				<div class="input-block mb-3 form-focus">
-					<input type="text" class="form-control floating">
-					<label class="focus-label">Employee Name</label>
-				</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
+				 <div class="input-block mb-3 form-focus">
+					 <input type="text" class="form-control floating">
+					 <label class="focus-label">Employee Name</label>
+				 </div>
 			</div>
-			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-				<div class="input-block mb-3 form-focus select-focus">
-					<select class="form-select">
-						<option value=""> -- Select -- </option>
-						<option value="">Employee</option>
-						<option value="1">Manager</option>
-					</select>
-					<label class="focus-label">Role</label>
-				</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
+				 <div class="input-block mb-3 form-focus select-focus">
+					 <select class="select floating"> 
+						 <option value=""> -- Select -- </option>
+						 <option value="">Employee</option>
+						 <option value="1">Manager</option>
+					 </select>
+					 <label class="focus-label">Role</label>
+				 </div>
 			</div>
-			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-				<div class="input-block mb-3 form-focus select-focus">
-					<select class="form-select">
-						<option> -- Select -- </option>
-						<option> Pending </option>
-						<option> Approved </option>
-						<option> Rejected </option>
-					</select>
-					<label class="focus-label">Leave Status</label>
-				</div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12"> 
+				 <div class="input-block mb-3 form-focus select-focus">
+					 <select class="select floating"> 
+						 <option> -- Select -- </option>
+						 <option> Pending </option>
+						 <option> Approved </option>
+						 <option> Rejected </option>
+					 </select>
+					 <label class="focus-label">Leave Status</label>
+				 </div>
 			</div>
-			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-				<div class="input-block mb-3 form-focus">
-					<div class="cal-icon">
-						<input class="form-control " type="date">
-					</div>
-					<label class="focus-label">From</label>
-				</div>
-			</div>
-			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-				<div class="input-block mb-3 form-focus">
-					<div class="cal-icon">
-						<input class="form-control floating datetimepicker" type="text">
-					</div>
-					<label class="focus-label">To</label>
-				</div>
-			</div>
-			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">
-				<a href="#" class="btn btn-success w-100"> Search </a>
-			</div>
-		</div>
-		<!-- /Search Filter -->
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
+				 <div class="input-block mb-3 form-focus">
+					 <div class="cal-icon">
+						 <input class="form-control floating datetimepicker" type="text">
+					 </div>
+					 <label class="focus-label">From</label>
+				 </div>
+			 </div>
+			<div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
+				 <div class="input-block mb-3 form-focus">
+					 <div class="cal-icon">
+						 <input class="form-control floating datetimepicker" type="text">
+					 </div>
+					 <label class="focus-label">To</label>
+				 </div>
+			 </div>
+			 <div class="col-sm-6 col-md-3 col-lg-3 col-xl-2 col-12">  
+				 <a href="#" class="btn btn-success w-100"> Search </a>  
+			 </div>     
+		 </div>
+		 <!-- /Search Filter -->
 
 		<div class="row">
 			<div class="col-md-12">
@@ -82,7 +82,6 @@
 							<tr>
 								<th>Employee</th>
 								<th>Employee ID</th>
-								<th>Email</th>
 								<th>Join Date</th>
 								<th>Role</th>
 								<th>Salary</th>
@@ -97,17 +96,13 @@
 									<tr>
 										<td>
 											<h2 class="table-avatar">
-												<a href="profile.html" class="avatar"><img
+												<a target="_blank" href="/templates/assets/uploaded_files/{{j.Photo}}" class="avatar"><img
 														src="/templates/assets/uploaded_files/{{j.Photo}}" alt="User Image"></a>
-												<a href="profile.html"><span>{{j.First_Name}}{{j.Last_Name}}</span></a>
+												<a href="/HrmTool/Employee/emplyee_profile/{{j.id}}"><span>{{j.First_Name}}{{j.Last_Name}}</span></a>
 											</h2>
 										</td>
 										<td>{{j.Employee_ID}}</td>
-										<td><a href="https://smarthr.dreamstechnologies.com/cdn-cgi/l/email-protection"
-												class="__cf_email__"
-												data-cfemail="c8bca9baa9a0bba0baa7b8bba0a1baad88adb0a9a5b8a4ade6aba7a5">[email&#160;protected]</a>
-										</td>
-										<td>{{j.Joining_Date}}</td>
+										<td >{{j.Joining_Date}}</td>
 										<td>
 											<div class="dropdown">
 												<a href="#" class="btn btn-white btn-sm btn-rounded dropdown-toggle"
@@ -157,25 +152,23 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/HR/create_data" method="POST">
+					<form>
 						<div class="row">
 							<div class="col-sm-6">
-								<div class="input-block mb-3" id="Employee_ID" name="Employee_ID">
+								<div class="input-block mb-3">
 									<label class="col-form-label">Select Staff</label><br>
-									<select name="Employee_ID" class="form-select">
+									<select name="Employee_ID" id="Employee_ID" class="form-select" required>
 										{% for employee in employee_data %}
 										<option value="{{ employee.id }}">{{ employee.First_Name}} {{ employee.Last_Name }}</option>
 										{% endfor %}
 									</select>
-
-
 								</div>
-
 							</div>
 							<div class="col-sm-6">
 								<label class="col-form-label">Net Salary</label>
-								<input class="form-control" type="number" id="Net_Salary" name="Net_Salary">
+								<input class="form-control" type="number" id="Net_Salary" name="Net_Salary" required>
 							</div>
 						</div>
 						<div class="row">
@@ -183,74 +176,60 @@
 								<h4 class="text-primary">Earnings</h4>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Basic</label>
-									<input class="form-control" type="number" id="Basic" name="Basic">
+									<input class="form-control allow_numbers_only" type="text" id="add_Basic" name="add_Basic" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">DA(40%)</label>
-									<input class="form-control" type="number" id="DA_40" name="DA_40">
+									<input class="form-control" type="number" id="DA_40" name="DA_40" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">HRA(15%)</label>
-									<input class="form-control" type="number" id="HRA_15" name="HRA_15">
+									<input class="form-control" type="number" id="HRA_15" name="HRA_15" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Conveyance</label>
-									<input class="form-control" type="number" id="Conveyance" name="Conveyance">
+									<input class="form-control" type="number" id="Conveyance" name="Conveyance" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Allowance</label>
-									<input class="form-control" type="number" name="Allowance">
+									<input class="form-control" type="number" name="Allowance" id="Allowance" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Medical Allowance</label>
 									<input class="form-control" type="number" id="Medical_Allowance"
-										name="Medical_Allowance">
-								</div>
-								<div class="input-block mb-3">
-									<label class="col-form-label">Others</label>
-									<input class="form-control" type="text">
-								</div>
-								<div class="add-more">
-									<a href="#"><i class="fa-solid fa-plus-circle"></i> Add More</a>
+										name="Medical_Allowance" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<h4 class="text-primary">Deductions</h4>
 								<div class="input-block mb-3">
 									<label class="col-form-label">TDS</label>
-									<input class="form-control" type="number" id="TDS" name="TDS">
+									<input class="form-control" type="number" id="TDS" name="TDS" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">ESI</label>
-									<input class="form-control" type="number" id="ESI" name="ESI">
+									<input class="form-control" type="number" id="ESI" name="ESI" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">PF</label>
-									<input class="form-control" type="number" id="PF" name="PF">
+									<input class="form-control" type="number" id="PF" name="PF" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Leave</label>
-									<input class="form-control" type="number" id="Leave" name="Leave">
+									<input class="form-control" type="number" id="Leave" name="Leave" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Prof. Tax</label>
-									<input class="form-control" type="number" id="Prof_Tax" name="Prof_Tax">
+									<input class="form-control" type="number" id="Prof_Tax" name="Prof_Tax" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Labour Welfare</label>
-									<input class="form-control" type="number" id="Labour_Welfare" name="Labour_Welfare">
-								</div>
-								<div class="input-block mb-3">
-									<label class="col-form-label">Others</label>
-									<input class="form-control" type="text">
-								</div>
-								<div class="add-more">
-									<a href="#"><i class="fa-solid fa-plus-circle"></i> Add More</a>
+									<input class="form-control" type="number" id="Labour_Welfare" name="Labour_Welfare" required>
 								</div>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button type="submit" class="btn btn-primary submit-btn">Submit</button>
+							<a type="submit" class="btn btn-primary submit-btn" onclick="add_salary()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -258,6 +237,71 @@
 		</div>
 	</div>
 	<!-- /Add Salary Modal -->
+	<script>
+		function add_salary(){
+			let Staff = $('#Employee_ID').val();
+			let Salary = $('#Net_Salary').val();
+			let Basic = $('#add_Basic').val();
+			let DA = $('#DA_40').val();
+			let HRA = $('#HRA_15').val();
+			let Conveyance = $('#Conveyance').val();
+			let Allowance = $('#Allowance').val();
+			let Medical = $('#Medical_Allowance').val();
+			let TDS = $('#TDS').val();
+			let ESI = $('#ESI').val();
+			let PF = $('#PF').val();
+			let Leave = $('#Leave').val();
+			let Tax = $('#Prof_Tax').val();
+			let Welfare = $('#Labour_Welfare').val();
+
+			if(Staff===''||Staff===null){$('#Employee_ID').css('border-color','#ff3300')}else{$('#Employee_ID').css('border-color','#00ff00')}
+			if(Salary===''||Salary===null){$('#Net_Salary').css('border-color','#ff3300')}else{$('#Net_Salary').css('border-color','#00ff00')}
+			if(Basic===''||Basic===null){$('#add_Basic').css('border-color','#ff3300')}else{$('#add_Basic').css('border-color','#00ff00')}
+			if(DA===''||DA===null){$('#DA_40').css('border-color','#ff3300')}else{$('#DA_40').css('border-color','#00ff00')}
+			if(HRA===''||HRA===null){$('#HRA_15').css('border-color','#ff3300')}else{$('#HRA_15').css('border-color','#00ff00')}
+			if(Conveyance===''||Conveyance===null){$('#Conveyance').css('border-color','#ff3300')}else{$('#Conveyance').css('border-color','#00ff00')}
+			if(Allowance===''||Allowance===null){$('#Allowance').css('border-color','#ff3300')}else{$('#Allowance').css('border-color','#00ff00')}
+			if(Medical===''||Medical===null){$('#Medical_Allowance').css('border-color','#ff3300')}else{$('#Medical_Allowance').css('border-color','#00ff00')}
+			if(TDS===''||TDS===null){$('#TDS').css('border-color','#ff3300')}else{$('#TDS').css('border-color','#00ff00')}
+			if(ESI===''||ESI===null){$('#ESI').css('border-color','#ff3300')}else{$('#ESI').css('border-color','#00ff00')}
+			if(PF===''||PF===null){$('#PF').css('border-color','#ff3300')}else{$('#PF').css('border-color','#00ff00')}
+			if(Leave===''||Leave===null){$('#Leave').css('border-color','#ff3300')}else{$('#Leave').css('border-color','#00ff00')}
+			if(Tax===''||Tax===null){$('#Prof_Tax').css('border-color','#ff3300')}else{$('#Prof_Tax').css('border-color','#00ff00')}
+			if(Welfare===''||Welfare===null){$('#Labour_Welfare').css('border-color','#ff3300')}else{$('#Labour_Welfare').css('border-color','#00ff00')}
+
+			if(Staff!==null && Salary!==null && DA!==null && HRA!==null && Conveyance!==null && Allowance!==null && Medical!==null && TDS!==null && ESI!==null && PF!==null && Leave!==null && Tax!==null && Welfare!==null){
+
+				const formData = new FormData()
+				formData.append('Employee_ID',Staff)
+				formData.append('Net_Salary',Salary)
+				formData.append('Basic',Basic)
+				formData.append('DA_40',DA)
+				formData.append('HRA_15',HRA)
+				formData.append('Conveyance',Conveyance)
+				formData.append('Allowance',Allowance)
+				formData.append('Medical_Allowance',Medical)
+				formData.append('TDS',TDS)
+				formData.append('ESI',ESI)
+				formData.append('PF',PF)
+				formData.append('Leave',Leave)
+				formData.append('Prof_Tax',Tax)
+				formData.append('Labour_Welfare',Welfare)
+
+				fetch(`/HrmTool/HR/create_data`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 326px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 346px;">Unable To Add</h5>`)
+					}
+				})
+			}
+			
+		}
+	</script>
 	<!-- edit -->
 	<div id="edit_salary" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -268,14 +312,15 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/HR/edit_data/" method="POST">
+					<form>
 						<div class="row">
 							<div class="col-sm-6">
 								<input id="edit_idz" name="edit_id" type="hidden" />
 								<div class="input-block mb-3">
 									<label class="col-form-label">Select Staff</label>
-									<select class="form-select" name="edit_Employee_ID" id="edit_Employee_ID">
+									<select class="form-select" name="edit_Employee_ID" id="edit_Employee_ID" required>
 										{% for employee in employee_data %}
 										<option value="{{ employee.id }}">{{ employee.First_Name }} {{ employee.Last_Name }}</option>
 										{% endfor %}
@@ -285,7 +330,7 @@
 							<div class="col-sm-6">
 								<label class="col-form-label">Net Salary</label>
 								<input class="form-control" type="text" value="" id="edit_Net_Salary"
-									name="edit_Net_Salary">
+									name="edit_Net_Salary" required>
 							</div>
 						</div>
 						<div class="row">
@@ -294,12 +339,12 @@
 								<div class="input-block mb-3">
 									<label class="col-form-label">Basic</label>
 									<input class="form-control" type="number" value="" id="edit_Basic"
-										name="edit_Basic">
+										name="edit_Basic" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">DA(40%)</label>
 									<input class="form-control" type="number" value="" id="edit_DA_40"
-										name="edit_DA_40">
+										name="edit_DA_40" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">HRA(15%)</label>
@@ -309,61 +354,52 @@
 								<div class="input-block mb-3">
 									<label class="col-form-label">Conveyance</label>
 									<input class="form-control" type="number" value="" id="edit_Conveyance"
-										name="edit_Conveyance">
+										name="edit_Conveyance" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Allowance</label>
 									<input class="form-control" type="number" value="" id="edit_Allowance"
-										name="edit_Allowance">
+										name="edit_Allowance" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Medical Allowance</label>
 									<input class="form-control" type="number" value="" id="edit_Medical_Allowance"
-										name="edit_Medical_Allowance">
-								</div>
-								<div class="input-block mb-3">
-									<label class="col-form-label">Others</label>
-									<input class="form-control" type="text">
+										name="edit_Medical_Allowance" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<h4 class="text-primary">Deductions</h4>
 								<div class="input-block mb-3">
 									<label class="col-form-label">TDS</label>
-									<input class="form-control" type="number" value="" id="edit_TDS" name="edit_TDS">
+									<input class="form-control" type="number" value="" id="edit_TDS" name="edit_TDS" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">ESI</label>
-									<input class="form-control" type="number" value="" id="edit_ESI" name="edit_ESI">
+									<input class="form-control" type="number" value="" id="edit_ESI" name="edit_ESI" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">PF</label>
-									<input class="form-control" type="number" value="" id="edit_PF" name="edit_PF">
+									<input class="form-control" type="number" value="" id="edit_PF" name="edit_PF" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Leave</label>
 									<input class="form-control" type="number" value="" id="edit_Leave"
-										name="edit_Leave">
+										name="edit_Leave" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Prof. Tax</label>
 									<input class="form-control" type="number" value="" id="edit_Prof_Tax"
-										name="edit_Prof_Tax">
+										name="edit_Prof_Tax" required>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Labour Welfare</label>
 									<input class="form-control" type="number" value="" id="edit_Labour_Welfare"
-										name="edit_Labour_Welfare">
-								</div>
-
-								<div class="input-block mb-3">
-									<label class="col-form-label">Others</label>
-									<input class="form-control" type="text" value="">
+										name="edit_Labour_Welfare" required>
 								</div>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_salary()">Save</a>
 						</div>
 					</form>
 				</div>
@@ -374,32 +410,88 @@
 		function editing_id(data) {
 			$.get('/HrmTool/HR/employee_salary_id/' + data, function (res) 
 			{
-				$('#edit_idz').val(res.id)
-				$('#edit_Employee_ID').val(res.Employee_id)
-				$('#edit_Net_Salary').val(res.Net_Salary)
-				$('#edit_Basic').val(res.Basic)
-				$('#edit_TDS').val(res.TDS)
-				$('#edit_DA_40').val(res.DA_40)
-				$('#edit_ESI').val(res.ESI)
-				$('#edit_PF').val(res.PF)
-				$('#edit_HRA_15').val(res.HRA_15)
-				$('#edit_Conveyance').val(res.Conveyance)
-				$('#edit_Leave').val(res.Leave)
-				$('#edit_Allowance').val(res.Allowance)
-				$('#edit_Prof_Tax').val(res.Prof_Tax)
-				$('#edit_Medical_Allowance').val(res.Medical_Allowance)
-				$('#edit_Labour_Welfare').val(res.Labour_Welfare)
-
+				$('#edit_idz').val(res.Result.id)
+				$('#edit_Employee_ID').val(res.Result.Employee_id)
+				$('#edit_Net_Salary').val(res.Result.Net_Salary)
+				$('#edit_Basic').val(res.Result.Basic)
+				$('#edit_TDS').val(res.Result.TDS)
+				$('#edit_DA_40').val(res.Result.DA_40)
+				$('#edit_ESI').val(res.Result.ESI)
+				$('#edit_PF').val(res.Result.PF)
+				$('#edit_HRA_15').val(res.Result.HRA_15)
+				$('#edit_Conveyance').val(res.Result.Conveyance)
+				$('#edit_Leave').val(res.Result.Leave)
+				$('#edit_Allowance').val(res.Result.Allowance)
+				$('#edit_Prof_Tax').val(res.Result.Prof_Tax)
+				$('#edit_Medical_Allowance').val(res.Result.Medical_Allowance)
+				$('#edit_Labour_Welfare').val(res.Result.Labour_Welfare)
 			})
 		}
 
-		function conform_delete(data)
-		{
-			$.get('/HrmTool/HR/employee_salary_delete/' + data, function (res) {
-				location.reload()
-			})
-		}
+		function edit_salary(){
+			let Edit_id = $('#edit_idz').val();
+			let Staff = $('#edit_Employee_ID').val();
+			let Salary = $('#edit_Net_Salary').val();
+			let Basic = $('#edit_Basic').val();
+			let DA = $('#edit_DA_40').val();
+			let HRA = $('#edit_HRA_15').val();
+			let Conveyance = $('#edit_Conveyance').val();
+			let Allowance = $('#edit_Allowance').val();
+			let Medical = $('#edit_Medical_Allowance').val();
+			let TDS = $('#edit_TDS').val();
+			let ESI = $('#edit_ESI').val();
+			let PF = $('#edit_PF').val();
+			let Leave = $('#edit_Leave').val();
+			let Tax = $('#edit_Prof_Tax').val();
+			let Welfare = $('#edit_Labour_Welfare').val();
 
+			if(Staff===''||Staff===null){$('#edit_Employee_ID').css('border-color','#ff3300')}else{$('#edit_Employee_ID').css('border-color','#00ff00')}
+			if(Salary===''||Salary===null){$('#edit_Net_Salary').css('border-color','#ff3300')}else{$('#edit_Net_Salary').css('border-color','#00ff00')}
+			if(Basic===''||Basic===null){$('#edit_Basic').css('border-color','#ff3300')}else{$('#edit_Basic').css('border-color','#00ff00')}
+			if(DA===''||DA===null){$('#edit_DA_40').css('border-color','#ff3300')}else{$('#edit_DA_40').css('border-color','#00ff00')}
+			if(HRA===''||HRA===null){$('#edit_HRA_15').css('border-color','#ff3300')}else{$('#edit_HRA_15').css('border-color','#00ff00')}
+			if(Conveyance===''||Conveyance===null){$('#edit_Conveyance').css('border-color','#ff3300')}else{$('#edit_Conveyance').css('border-color','#00ff00')}
+			if(Allowance===''||Allowance===null){$('#edit_Allowance').css('border-color','#ff3300')}else{$('#edit_Allowance').css('border-color','#00ff00')}
+			if(Medical===''||Medical===null){$('#edit_Medical_Allowance').css('border-color','#ff3300')}else{$('#edit_Medical_Allowance').css('border-color','#00ff00')}
+			if(TDS===''||TDS===null){$('#edit_TDS').css('border-color','#ff3300')}else{$('#edit_TDS').css('border-color','#00ff00')}
+			if(ESI===''||ESI===null){$('#edit_ESI').css('border-color','#ff3300')}else{$('#edit_ESI').css('border-color','#00ff00')}
+			if(PF===''||PF===null){$('#edit_PF').css('border-color','#ff3300')}else{$('#edit_PF').css('border-color','#00ff00')}
+			if(Leave===''||Leave===null){$('#edit_Leave').css('border-color','#ff3300')}else{$('#edit_Leave').css('border-color','#00ff00')}
+			if(Tax===''||Tax===null){$('#edit_Prof_Tax').css('border-color','#ff3300')}else{$('#edit_Prof_Tax').css('border-color','#00ff00')}
+			if(Welfare===''||Welfare===null){$('#edit_Labour_Welfare').css('border-color','#ff3300')}else{$('#edit_Labour_Welfare').css('border-color','#00ff00')}
+
+			if(Staff!==null && Salary!==null && DA!==null && HRA!==null && Conveyance!==null && Allowance!==null && Medical!==null && TDS!==null && ESI!==null && PF!==null && Leave!==null && Tax!==null && Welfare!==null){
+
+				const formData = new FormData()
+				formData.append('edit_id',Edit_id)
+				formData.append('edit_Employee_ID',Staff)
+				formData.append('edit_Net_Salary',Salary)
+				formData.append('edit_Basic',Basic)
+				formData.append('edit_DA_40',DA)
+				formData.append('edit_HRA_15',HRA)
+				formData.append('edit_Conveyance',Conveyance)
+				formData.append('edit_Allowance',Allowance)
+				formData.append('edit_Medical_Allowance',Medical)
+				formData.append('edit_TDS',TDS)
+				formData.append('edit_ESI',ESI)
+				formData.append('edit_PF',PF)
+				formData.append('edit_Leave',Leave)
+				formData.append('edit_Prof_Tax',Tax)
+				formData.append('edit_Labour_Welfare',Welfare)
+
+				fetch(`/HrmTool/HR/edit_data/`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 177px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 197px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
 	</script>
 
 	<div class="modal custom-modal fade" id="delete_salary" role="dialog">
@@ -413,7 +505,7 @@
 					<div class="modal-btn delete-action">
 						<div class="row">
 							<div class="col-6">
-								<input id="del_id" value="" type="hidden" />
+								<input id="del_id" type="hidden" />
 								<a href="javascript:void(0);" class="btn btn-primary continue-btn"
 									onclick="conform_delete($('#del_id').val())">Delete</a>
 							</div>
@@ -427,11 +519,15 @@
 			</div>
 		</div>
 	</div>
-
 	<script>
 		function delete_id(id) {
-			console.log("Deleting ID:", id);
-			conform_delete(id);
+			$('#del_id').val(id)
+		}
+		function conform_delete(data)
+		{
+			$.get('/HrmTool/HR/employee_salary_delete/' + data, function (res) {
+				location.reload()
+			})
 		}
 
 	</script>

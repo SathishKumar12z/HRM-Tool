@@ -45,9 +45,10 @@
 								{% if i.Employee_id|int == j.id|int %}
 								<td>
 									<h2 class="table-avatar blue-link">
-										<a href="profile.html" class="avatar"><img
+										<a href="/HrmTool/Employee/emplyee_profile/{{j.id}}" class="avatar"><img
 												src="/templates/assets/uploaded_files/{{j.Photo}}" alt="User Image"></a>
-										<a href="profile.html">{{j.First_Name}} {{j.Last_Name}}</a>
+										<a href="/HrmTool/Employee/emplyee_profile/{{j.id}}">{{j.First_Name}}
+											{{j.Last_Name}}</a>
 									</h2>
 								</td>
 								{% for k in department_datas %}
@@ -114,16 +115,15 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div style="padding-left: 77px; color: #971212;">
+				<div style="padding-left: 77px; color: #971212;" class="add_error">
 					<h6>Note If Resignation Employee Remove From Employee Also</h6>
 				</div>
 				<div class="modal-body">
-					<form action="/HrmTool/Performance/resiginationSave" method="post">
+					<form>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Resigning Employee <span class="text-danger">*</span></label>
-							<!-- <input class="form-control" type="text" name="employeeName"> -->
-							<select class="form-select" name="employeeName">
-								<option>select</option>
+							<select class="form-select" name="employeeName" id="employeeName" required>
+								<option selected disabled>select</option>
 								{% for i in employee_datas %}
 								<option value="{{i.id}}">{{i.First_Name}}{{i.Last_Name}}</option>
 								{% endfor %}
@@ -132,21 +132,23 @@
 						<div class="input-block mb-3">
 							<label class="col-form-label">Notice Date <span class="text-danger">*</span></label>
 							<div>
-								<input type="date" class="form-control" name="noticeDate">
+								<input type="text" class="form-control datetimepicker" name="noticeDate" id="noticeDate"
+									required>
 							</div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Resignation Date <span class="text-danger">*</span></label>
 							<div>
-								<input type="date" class="form-control" name="resignationDate">
+								<input type="text" class="form-control datetimepicker" name="resignationDate"
+									id="resignationDate" required>
 							</div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Reason <span class="text-danger">*</span></label>
-							<textarea class="form-control" rows="4" name="reason"></textarea>
+							<textarea class="form-control" rows="4" name="reason" id="reason" required></textarea>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_resignation()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -154,6 +156,42 @@
 		</div>
 	</div>
 	<!-- /Add Resignation Modal -->
+
+	<script>
+		function add_resignation() {
+			let Employee = $('#employeeName').val();
+			let Notice = $('#noticeDate').val();
+			let Resign = $('#resignationDate').val();
+			let Reason = $('#reason').val();
+
+			if (Employee === '' || Employee === null) { $('#employeeName').css('border-color', ' #ff4d4d') } else { $('#employeeName').css('border-color', ' #00ff00') }
+			if (Notice === '' || Notice === null) { $('#noticeDate').css('border-color', ' #ff4d4d') } else { $('#noticeDate').css('border-color', ' #00ff00') }
+			if (Resign === '' || Resign === null) { $('#resignationDate').css('border-color', ' #ff4d4d') } else { $('#resignationDate').css('border-color', ' #00ff00') }
+			if (Reason === '' || Reason === null) { $('#reason').css('border-color', ' #ff4d4d') } else { $('#reason').css('border-color', ' #00ff00') }
+
+			if (Employee !== null && Notice !== null && Resign !== null && Reason !== null) {
+
+				const formData = new FormData();
+				formData.append('employeeName', Employee)
+				formData.append('noticeDate', Notice)
+				formData.append('resignationDate', Resign)
+				formData.append('reason', Reason)
+
+				fetch(`/HrmTool/Performance/resiginationSave`, { method: 'post', body: formData })
+					.then(res => res.json())
+					.then(res => {
+						console.log(res)
+						if (res.Result == 'Done') {
+							location.reload()
+						} else if (res.Result == 'Error') {
+							$('.add_error').html('<h5 style="padding-left:102px;">Already Data Entered </h5>')
+						} else {
+							$('.add_error').html('<h5 style="padding-left:102px;>Unable To Add</h5>')
+						}
+					})
+			}
+		}
+	</script>
 
 	<!-- Edit Resignation Modal -->
 	<div id="edit_resignation" class="modal custom-modal fade" role="dialog">
@@ -175,15 +213,14 @@
 						<div class="input-block mb-3">
 							<label class="col-form-label">Notice Date <span class="text-danger">*</span></label>
 							<div class="cal-icon">
-								<input type="text" class="form-control datetimepicker" 
-									name="edit_notice" id="edit_notice">
+								<input type="text" class="form-control datetimepicker" name="edit_notice"
+									id="edit_notice">
 							</div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Resignation Date <span class="text-danger">*</span></label>
 							<div class="cal-icon">
-								<input type="text" class="form-control datetimepicker" 
-									name="edit_date" id="edit_date">
+								<input type="text" class="form-control datetimepicker" name="edit_date" id="edit_date">
 							</div>
 						</div>
 						<div class="input-block mb-3">

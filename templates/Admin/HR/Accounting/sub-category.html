@@ -44,26 +44,16 @@
 								<td>{{ new_id.Name }}</td>
 								<td>
 									<div class="dropdown action-label">
-										{% if new_id.current_status == "Inactive" %}
-										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
-											data-bs-toggle="dropdown" aria-expanded="false">
-											<i class="fa-regular fa-circle-dot text-danger"></i>
-											{{new_id.current_status}}
+										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+											{% if new_id.current_status == "Active" %}
+											<i class="fa-regular fa-circle-dot text-success"></i> {{new_id.current_status}}
+											{% else %}
+											<i class="fa-regular fa-circle-dot text-danger"></i> {{new_id.current_status}}
+											{% endif %}
 										</a>
-										{% else %}
-										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
-											data-bs-toggle="dropdown" aria-expanded="false">
-											<i class="fa-regular fa-circle-dot text-success"></i>
-											{{new_id.current_status}}
-										</a>
-										{% endif %}
 										<div class="dropdown-menu">
-											<a class="dropdown-item " href="#"
-												onclick="state($(this),'{{new_id.id}}')"><i
-													class="fa-regular fa-circle-dot text-success"></i> Active</a>
-											<a class="dropdown-item " href="#"
-												onclick="state($(this),'{{new_id.id}}')"><i
-													class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
+											<a class="dropdown-item " href="#" onclick="change_status('{{new_id.id}}','Active')"><i class="fa-regular fa-circle-dot text-success"></i> Active</a>
+											<a class="dropdown-item " href="#" onclick="change_status('{{new_id.id}}','Inactive')"><i class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
 										</div>
 									</div>
 								</td>
@@ -92,6 +82,12 @@
 		</div>
 	</div>
 	<!-- /Page Content -->
+	<script>
+		function change_status(ids,info){
+			fetch(`/HrmTool/HR/status_change/${ids}/${info}`)
+			.then(location.reload())
+		}
+	</script>
 	<!-- Add Modal -->
 	<div class="modal custom-modal fade" id="add_categories" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -122,7 +118,7 @@
 							</select>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="button" onclick="add_submit()">Submit</button>
+							<a class="btn btn-primary submit-btn" type="button" onclick="add_submit()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -130,6 +126,36 @@
 		</div>
 	</div>
 	<!-- /Add Modal -->
+	<script>
+		function add_submit(){
+			let Name = $('#Name').val();
+			let Sub = $('#SubCategory_id').val();
+			let Status = $('#cur_state').val();
+
+			if(Name===''||Name===null){ $('#Name').css('border-color','#ff0000')}else{$('#Name').css('border-color','#00ff00')}
+			if(Sub===''||Sub===null){ $('#SubCategory_id').css('border-color','#ff0000')}else{$('#SubCategory_id').css('border-color','#00ff00')}
+			if(Status===''||Status===null){ $('#cur_state').css('border-color','#ff0000')}else{$('#cur_state').css('border-color','#00ff00')}
+
+			if(Name!==null && Sub!==null && Status!==null){
+				const formData = new FormData()
+				formData.append('Name',Name)
+				formData.append('SubCategory_id',Sub)
+				formData.append('cur_state',Status)
+
+				fetch(`/HrmTool/HR/subcategory`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 
 	<!-- Edit Modal -->
 	<div class="modal custom-modal fade" id="edit_categories" role="dialog">
@@ -141,8 +167,10 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/subcategory_update" method="POST">
+					<form >
+						<input id="edit_ids" name="edit_ids" type="hidden" />
 						<div class="input-block mb-3">
 							<input id="Name" name="Name" value="{{cat_name.id}}" type="hidden" />
 							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
@@ -154,14 +182,13 @@
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Status <span class="text-danger">*</span></label>
-							<select class="form-select" id="cur_state" name="cur_state" required>
+							<select class="form-select" id="edit_cur_state" name="edit_cur_state" required>
 								<option value="Active">Active</option>
-								<option value="Inactive">InActive</option>
+								<option value="Inactive">Inactive</option>
 							</select>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Edit</button>
-
+							<a class="btn btn-primary submit-btn" onclick="edit_sub_categ()">Edit</a>
 						</div>
 					</form>
 				</div>
@@ -170,6 +197,45 @@
 	</div>
 
 	<!-- /Edit Modal -->
+	<script>
+		function subcatedit(data) {
+			$.get('/HrmTool/HR/subcatedit/' + data, function (res) {
+				console.log(res)
+				$('#edit_ids').val(res.Result.id)
+				$('#edit_SubCategory_id').val(res.Result.Name)
+				$('#edit_cur_state').val(res.Result.current_status)
+			})
+		}
+
+		function edit_sub_categ(){
+			let Edit_id = $('#edit_ids').val();
+			let Sub = $('#edit_SubCategory_id').val();
+			let Status = $('#edit_cur_state').val();
+
+			if(Sub===''||Sub===null){ $('#edit_SubCategory_id').css('border-color','#ff0000')}else{$('#edit_SubCategory_id').css('border-color','#00ff00')}
+			if(Status===''||Status===null){ $('#edit_cur_state').css('border-color','#ff0000')}else{$('#edit_cur_state').css('border-color','#00ff00')}
+
+			if(Name!==null && Sub!==null && Status!==null){
+				const formData = new FormData()
+				formData.append('edit_ids',Edit_id)
+				formData.append('edit_SubCategory_id',Sub)
+				formData.append('edit_cur_state',Status)
+
+				fetch(`/HrmTool/HR/subcategory_update`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 
 	<!-- Delete Holiday Modal -->
 	<div class="modal custom-modal fade" id="delete" role="dialog">
@@ -204,13 +270,7 @@
 <!-- /Page Wrapper -->
 
 <script>
-	function subcatedit(data) {
-		$.get('/HrmTool/HR/subcatedit/' + data, function (res) {
-			console.log(res)
-			$('#edit_id').val(res.id)
-			$('#edit_SubCategory_id').val(res.Name)
-		})
-	}
+	
 
 
 	function deletesub(data) {

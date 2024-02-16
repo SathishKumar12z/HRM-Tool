@@ -32,6 +32,7 @@
 							<tr>
 								<th class="width-thirty">#</th>
 								<th>Department Name</th>
+								<th>Department Colour</th>
 								<th class="text-end">Action</th>
 							</tr>
 						</thead>
@@ -40,6 +41,9 @@
 							<tr>
 								<td>{{loop.index}}</td>
 								<td>{{i.Name}}</td>
+								<td>
+									<div style="background-color:{{i.Colour}};height:17px;width:95px;"></div>
+								</td>
 								<td class="text-end">
 									<div class="dropdown dropdown-action">
 										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
@@ -75,14 +79,19 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Employee/add-dept" method="post">
+					<form action="" method="post">
 						<div class="input-block mb-3">
 							<label class="col-form-label">Department Name <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" name="dept_name">
+							<input class="form-control" type="text" name="dept_name" id="dept_name" required>
+						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Department Colour <span class="text-danger">*</span></label>
+							<input class="form-control" type="color" value="#6a5acd" name="dept_color" id="dept_color" required >
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_department()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -90,7 +99,36 @@
 		</div>
 	</div>
 	<!-- /Add Department Modal -->
+	<script>
+		function add_department(){
+			let Dep_Name = $('#dept_name').val();
+			let Dep_color = $('#dept_color').val();
 
+			if(Dep_Name===''||Dep_Name===null){$('#dept_name').css('border-color','#ff4d00')}else{$('#dept_name').css('border-color','#66ff66')}
+			if(Dep_color===''||Dep_color===null){$('#dept_color').css('border-color','#ff4d00')}else{$('#dept_color').css('border-color','#66ff66')}
+
+			if(Dep_Name!==null && Dep_color!==null){
+
+				const formData = new FormData();
+				formData.append('dept_name',Dep_Name)
+				formData.append('dept_color',Dep_color)
+
+				fetch(`/HrmTool/Employee/add-dept`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left:181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left:181px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
+	
 	<!-- Edit Department Modal -->
 	<div id="edit_department" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -101,16 +139,20 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Employee/dept_update" method="post">
+					<form>
 						<div class="input-block mb-3">
 							<input id="edit_idz" name="edit_id" type="hidden" />
-
 							<label class="col-form-label">Department Name <span class="text-danger">*</span></label>
 							<input class="form-control" type="text" name="edit_name" id="edit_name">
 						</div>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Department Colour <span class="text-danger">*</span></label>
+							<input class="form-control" type="color" value="#6a5acd" name="edit_color" id="edit_color" required >
+						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_department()">Save</a>
 						</div>
 					</form>
 				</div>
@@ -122,19 +164,38 @@
 			$.get('/HrmTool/Employee/department_id/' + data, function (res) {
 				$('#edit_idz').val(res.id)
 				$('#edit_name').val(res.Name)
+				$('#edit_color').val(res.Colour)
 			}
 			)
 		}
+		function edit_department(){
+			let Dep_ID = $('#edit_idz').val();
+			let Dep_Name = $('#edit_name').val();
+			let Dep_color = $('#edit_color').val();
 
-		function delete_modal(data) {
-			$('#delete_data').val(data)
-		}
+			if(Dep_Name===''||Dep_Name===null){$('#edit_name').css('border-color','#ff4d00')}else{$('#edit_name').css('border-color','#66ff66')}
+			if(Dep_color===''||Dep_color===null){$('#edit_color').css('border-color','#ff4d00')}else{$('#edit_color').css('border-color','#66ff66')}
 
-		function conform_delete(data) {
-			$.get('/HrmTool/Employee/delete_modal/' + data, function (res) {
-				alert('Deleted Successfully')
-				location.reload()
-			})
+			if(Dep_Name!==null && Dep_color!==null){
+
+				const formData = new FormData();
+				formData.append('edit_id',Dep_ID)
+				formData.append('edit_name',Dep_Name)
+				formData.append('edit_color',Dep_color)
+
+				fetch(`/HrmTool/Employee/dept_update`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left:181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left:181px;">Unable To Update</h5>`)
+					}
+				})
+			}
 		}
 	</script>
 
@@ -167,6 +228,18 @@
 		</div>
 	</div>
 	<!-- /Delete Department Modal -->
+
+	<script>
+		function delete_modal(data) {
+			$('#delete_data').val(data)
+		}
+
+		function conform_delete(data) {
+			$.get('/HrmTool/Employee/delete_modal/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
 
 </div>
 <!-- /Page Wrapper -->

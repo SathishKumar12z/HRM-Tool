@@ -38,7 +38,7 @@
 						<tbody>
 							{% for new_id in new_id %}
 								<tr>
-									<td>{{ new_id.id }}</td>
+									<td>{{loop.index}}</td>
 									<td>{{ new_id.Name }}</td>
 									{% if sub_cate %}
 										{% for i in sub_cate %}
@@ -55,12 +55,9 @@
 												<i class="material-icons">more_vert</i>
 											</a>
 											<div class="dropdown-menu dropdown-menu-right">
-												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_categories"  onClick="catedit('{{new_id.id}}')">
-													<i class="fa-solid fa-pencil m-r-5"></i> Edit
-												</a>
-												<a href="/HrmTool/HR/subcat/{{new_id.id}}" class="dropdown-item">
-													<i class="fa-solid fa-object-ungroup m-r-5"></i> Sub-Category
-												</a>
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_categories"  onClick="catedit('{{new_id.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+												<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete" onclick="deletecat('{{new_id.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+												<a href="/HrmTool/HR/subcat/{{new_id.id}}" class="dropdown-item"> <i class="fa-solid fa-object-ungroup m-r-5"></i> Sub-Category</a>
 											</div>
 										</div>
 									</td>
@@ -84,14 +81,15 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/HR/category" method="POST">
+					<form>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
 							<input class="form-control" type="text" id="Name" name="Name">
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_category()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -99,6 +97,29 @@
 		</div>
 	</div>
 	<!-- /Add Holiday Modal -->
+	<script>
+		function add_category(){
+			let Name = $('#Name').val()
+
+			if(Name===''||Name===null){ $('#Name').css('border-color','#ff0000')}else{$('#Name').css('border-color','#00ff00')}
+
+			if(Name!==null){
+				const formData = new FormData()
+				formData.append('Name',Name)
+				fetch(`/HrmTool/HR/category`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	
 	<!-- Add Holiday Modal -->
 	<div class="modal custom-modal fade" id="edit_categories" role="dialog">
@@ -110,15 +131,16 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/HR/category_update" method="POST">
+					<form>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Categories Name <span class="text-danger">*</span></label>
 							<input id="edit_idz" name="edit_id" type="hidden" />
 							<input class="form-control" type="text" value="" id="edit_Name" name="edit_Name">
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_categ()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -126,6 +148,70 @@
 		</div>
 	</div>
 	<!-- /Add Holiday Modal -->
+	<script>
+		function edit_categ(){
+			let Edit_id = $('#edit_idz').val()
+			let Name = $('#edit_Name').val()
+
+			if(Name===''||Name===null){ $('#edit_Name').css('border-color','#ff0000')}else{$('#edit_Name').css('border-color','#00ff00')}
+
+			if(Name!==null){
+				const formData = new FormData()
+				formData.append('edit_idz',Edit_id)
+				formData.append('edit_Name',Name)
+
+				fetch(`/HrmTool/HR/category_update`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
+	<!-- Delete Models-->
+	<div class="modal custom-modal fade" id="delete" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete </h3>
+						<p>Are you sure want to delete?</p>
+						<input name="del_id" id="del_id" type="hidden">
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<form>
+									<a href="javascript:void(0);" class="btn btn-primary continue-btn" onclick="delete_conform_cat($('#del_id').val())">Delete</a>
+								</form>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Delete Models-->
+	<script>
+		function delete_conform_cat(data){
+			fetch(`/HrmTool/HR/delete_category/${data}`)
+			.then(location.reload())
+		}
+
+		function deletecat(data){
+			$('#del_id').val(data)
+		}
+	</script>
 </div>
 <!-- /Page Wrapper -->
 

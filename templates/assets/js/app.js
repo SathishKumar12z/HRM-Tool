@@ -703,28 +703,10 @@ $('.allow_numbers_only').on('input',function(){
 })
 
 function state(data,id_value){
-	$.get('/HrmTool/HR/status_change/'+data[0].innerText+'/'+id_value,function(res){
+	$.get(''+data[0].innerText+'/'+id_value,function(res){
 		location.reload(true);
 	})
 
-}
-
-//---------------------------->>>>> Sub Category Add Submit 
-
-function add_submit(){
-
-	const forms = {
-		Name:$('#Name').val(),
-		SubCategory_id:$('#SubCategory_id').val(),
-		cur_state:$('#cur_state').val(),
-	}
-	$.post('/HrmTool/HR/subcategory',forms,function(res){
-		if (res=='ok'){
-			location.reload();
-		}else{
-			$('#error').html('<h6 class="text-danger">Already Entered ...</h6>')
-		}
-	})
 }
 
 //---------------------------->>>>>>> select employee in promotion page 

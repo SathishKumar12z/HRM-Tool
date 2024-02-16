@@ -64,14 +64,21 @@ async def emailSettings(request:Request,db:Session=Depends(get_db),employeeName:
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            body=models.Resignation(Employee_id=employeeName,Notice_Date=noticeDate,Date=resignationDate,Reason=reason,status="ACTIVE",created_by=loginer_id)
-                            db.add(body)
-                            db.commit()
-                            #After resignation employee remove from the table also ... 
-                            db.query(models.Employee).filter(models.Employee.id==employeeName).update({'status':'INACTIVE'})
-                            db.commit()
+                            check_resig_data = db.query(models.Resignation).filter(models.Resignation.Employee_id==employeeName).filter(models.Resignation.status=='ACTIVE').first()
+                            if not check_resig_data:
+                                body=models.Resignation(Employee_id=employeeName,Notice_Date=noticeDate,Date=resignationDate,Reason=reason,status="ACTIVE",created_by=loginer_id)
+                                db.add(body)
+                                db.commit()
 
-                            return  RedirectResponse('/HrmTool/Performance/resignation',status_code=302)
+                                # #After resignation employee remove from the table also ... 
+                                # db.query(models.Employee).filter(models.Employee.id==employeeName).update({'status':'INACTIVE'})
+                                # db.commit()
+
+                                response_data = jsonable_encoder({"Result":"Done"})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({"Result":"Error"})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:

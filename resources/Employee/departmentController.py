@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory="templates")
 
 current_datetime = datetime.today()
 
-#                                                       ***** C L I E N T   P A G E *****
+#                                                       ***** D E P A R T M E N T   P A G E  *****
     
 @router.get('/dept') 
 def get_form(request: Request, db: Session = Depends(get_db)):
@@ -36,7 +36,7 @@ def get_form(request: Request, db: Session = Depends(get_db)):
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
                             dept_name = db.query(models.Department).filter(models.Department.status=='ACTIVE').all()
-                            return templates.TemplateResponse("Admin/Employees/Employee/departments.html", context={"request": request ,'emp_data':emp_data,"dept_name":dept_name})
+                            return templates.TemplateResponse("Admin/Employees/Employee/departments.html", context={"request": request ,'active':'active','emp_data':emp_data,"dept_name":dept_name})
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -56,7 +56,8 @@ def get_form(request: Request, db: Session = Depends(get_db)):
 def dept(
     request: Request,
     db: Session = Depends(get_db),
-    dept_name: str = Form(...),):
+    dept_name: str = Form(...),
+    dept_color: str = Form(...),):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -67,20 +68,17 @@ def dept(
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            existing_dept = db.query(models.Department).filter(models.Department.Name == dept_name).first()
-                            if existing_dept:
-                                return HTMLResponse(
-                                    """
-                                    <script>
-                                        alert("Department name already exists. Please provide a different name.");
-                                        window.location.href = "/HrmTool/Employee/dept"; // Redirect to the department page
-                                    </script>
-                                    """
-                                )
-                            body = models.Department(Name=dept_name, Current_status="ACTIVE",status="ACTIVE",created_by=loginer_id)
-                            db.add(body)
-                            db.commit()
-                            return RedirectResponse("/HrmTool/Employee/dept", status_code=303)
+                            check_department_data = db.query(models.Department).filter(models.Department.Name==dept_name,models.Department.Colour==dept_color).filter(models.Department.status=='ACTIVE').all()
+                            if not check_department_data:
+                                body = models.Department(Name=dept_name,Colour=dept_color,Current_status="ACTIVE",status="ACTIVE",created_by=loginer_id)
+                                db.add(body)
+                                db.commit()
+                                db.refresh(body)
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -128,7 +126,7 @@ def taking_edit_modal(ids:int,request:Request,db: Session = Depends(get_db)):
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"})
     
 @router.post('/dept_update')
-def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= Form(...),edit_name: str =Form(...)):
+def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= Form(...),edit_name: str =Form(...),edit_color:str=Form(...)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -139,10 +137,15 @@ def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= 
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            db.query(models.Department).filter(models.Department.id==edit_id).update({"Name": edit_name})
-                            db.commit()
-                            #return RedirectResponse("/budget-expenses", status_code=303)
-                            return RedirectResponse("/HrmTool/Employee/dept", status_code=303)
+                            check_department_data = db.query(models.Department).filter(models.Department.id!=edit_id,models.Department.Name==edit_name).filter(models.Department.status=='ACTIVE').all()
+                            if not check_department_data:
+                                db.query(models.Department).filter(models.Department.id==edit_id).update({"Name": edit_name,'Colour':edit_color})
+                                db.commit()
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:

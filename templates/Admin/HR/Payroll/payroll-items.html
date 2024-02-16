@@ -101,46 +101,7 @@
 			</div>
 			<!-- Additions Tab -->
 
-			<script>
-				function taking_this_id_addition(data) {
-					$.get('/taking_edit_id_addition/' + data, function (res) {
-						console.log(res)
-						$('#edit_id').val(res.id)
-						$('#edit_name').val(res.Name)
-						$('#edit_category').val(res.Category)
-						$('#edit_unit_Amount').val(res.Unit_Amount)
-						$('#edit_drop').val(res.Assignee_drop)
-						console.log(res.Assignee_radio)
-						if (res.Assignee_radio == 'All employees') {
-							$('#edit_addition_all_emp').attr({ 'checked': 'checked', 'value': 'All employees' })
-						} else if (res.Assignee_radio == 'No assignee') {
-							$('#edit_addition_no_emp').attr({ 'checked': 'checked', 'value': 'No assignee' })
-						} else if (res.Assignee_radio == 'Select Employee') {
-							$('#edit_addition_single_emp').attr({ 'checked': 'checked', 'value': 'Select Employee' })
-						}
-						if (res.Unit_calculation == 'on') {
-							$('#edit_unit_calculation').attr({ 'checked': 'checked', 'value': 'on' })
-						} else {
-							$('#edit_unit_calculation').attr({ 'checked': 'unchecked', 'value': 'off' })
-						}
-					})
-				}
-
-				function taking_dlt_addition(data) {
-					$('#delete_pop').val(data)
-				}
-
-				function conform_delete_addition(data) {
-					$.get('/taking_dlt_id_addition/' + data, function (res) {
-						alert('Deleted Successfully')
-						location.reload()
-					})
-				}
-
-
-
-
-			</script>
+			
 
 			<!-- Overtime Tab -->
 			<div class="tab-pane" id="tab_overtime">
@@ -196,33 +157,7 @@
 			<!-- /Overtime Tab -->
 
 
-			<script>
-				function taking_this_id_overtime(data) {
-					$.get('/taking_edit_id_overtime/' + data, function (res) {
-						console.log(res)
-						$('#edit_id_ovr').val(res.id)
-						$('#edit_ovr_name').val(res.Name)
-						$('#edit_ovr_rate_id').val(res.Rate_type_id)
-						$('#edit_ovr_rate').val(res.Rate)
-					})
-				}
-
-				function taking_dlt_overtime(data) {
-					$('#delete_pop_ovr').val(data)
-				}
-
-				function conform_delete_overtime(data) {
-					$.get('/taking_dlt_id_overtime/' + data, function (res) {
-						alert('Deleted Successfully')
-						location.reload()
-					})
-				}
-
-
-
-
-
-			</script>
+			
 
 
 			<!-- Deductions Tab -->
@@ -286,36 +221,8 @@
 	<!-- /Page Content -->
 
 
-	<script>
-		function taking_this_id_deduction(data) {
-			$.get('/taking_edit_id_deduction/' + data, function (res) {
-				console.log(res)
-				$('#edit_id_deduction').val(res.id)
-				$('#edit_deduction_name').val(res.Name)
-				$('#edit_unit_calculation_deduction').val(res.Unit_calculation)
-				$('#edit_deduction_unit_Amount').val(res.Unit_Amount)
-				$('#edit_deduction_assignee').val(res.Assignee_radio)
-				$('#edit_deduction_dropdwn').val(res.Assignee_drop)
-			})
-		}
-
-		function taking_dlt_dedction(data) {
-			$('#delete_pop_deduction').val(data)
-		}
-
-		function conform_delete_deduction(data) {
-			$.get('/taking_dlt_id_deduction/' + data, function (res) {
-				alert('Deleted Successfully')
-				location.reload()
-			})
-		}
-
-
-	</script>
-
-
-
-
+	
+<!-- **************************************************************  Addition ****************************************************************************-->
 	<!-- Add Addition Modal -->
 	<div id="add_addition" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -326,16 +233,17 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/add_addition" method="POST">
+					<form action="" method="POST">
 						<div class="input-block mb-3">
 							<label class="col-form-label">Name <span class="text-danger">*</span></label>
-							<input class="form-control" id="Name" name="Name" type="text">
+							<input class="form-control" id="Name" name="Name" type="text" required>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Category <span class="text-danger">*</span></label>
-							<select class="form-select" name="Category" id="Category">
-								<option>Select a category</option>
+							<select class="form-select" name="Category" id="Category" required>
+								<option selected disabled>Select a category</option>
 								<option>Monthly remuneration</option>
 								<option>Additional remuneration</option>
 							</select>
@@ -343,8 +251,7 @@
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Unit calculation</label>
 							<div class="status-toggle">
-								<input type="checkbox" id="unit_calculation" name="unit_calculation" class="check"
-									value="ON">
+								<input type="checkbox" id="unit_calculation" name="unit_calculation" class="check" value="ON" >
 								<label for="unit_calculation" class="checktoggle">checkbox</label>
 							</div>
 						</div>
@@ -352,44 +259,35 @@
 							<label class="col-form-label">Unit Amount</label>
 							<div class="input-group">
 								<span class="input-group-text">$</span>
-								<input type="text" id="unit_amount" name="unit_amount" class="form-control">
+								<input type="text" id="unit_amount" name="unit_amount" class="form-control allow_numbers_only" required>
 								<span class="input-group-text">.00</span>
 							</div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Assignee</label>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="addition_assignee"
-									id="addition_no_emp" value="No assignee">
-								<label class="form-check-label" for="addition_no_emp">
-									No assignee
-								</label>
+								<input class="form-check-input" type="radio" name="addition_assignee" id="addition_no_emp" value="No assignee">
+								<label class="form-check-label" for="addition_no_emp"> No assignee </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="addition_assignee"
-									id="addition_all_emp" value="All employees">
-								<label class="form-check-label" for="addition_all_emp">
-									All employees
-								</label>
+								<input class="form-check-input" type="radio" name="addition_assignee" id="addition_all_emp" value="All employees">
+								<label class="form-check-label" for="addition_all_emp"> All employees </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="addition_assignee"
-									id="addition_single_emp" value="Select Employee">
-								<label class="form-check-label" for="addition_single_emp">
-									Select Employee
-								</label>
+								<input class="form-check-input" type="radio" name="addition_assignee" id="addition_single_emp" value="Select Employee">
+								<label class="form-check-label" for="addition_single_emp"> Select Employee </label>
 							</div>
 							<div class="input-block mb-3">
-								<select class="form-select" name="assignee" id="assignee">
-									<option>-</option>
-									<option>Select All</option>
-									<option>John Doe</option>
-									<option>Richard Miles</option>
+								<select class="form-select" name="emp_id" id="emp_id" required>
+									<option selected disabled>-select</option>
+									{% for i in employee_data %}
+									<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_addition()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -397,7 +295,62 @@
 		</div>
 	</div>
 	<!-- /Add Addition Modal -->
+	<script>
+		function add_addition(){
+			// Values category variables 
+			let Name =$('#Name').val();
+			let Category =$('#Category').val();
+			let Amount =$('#unit_amount').val();
+			let employees =$('#emp_id').val();
+			//check box variables 
+			let No_assignee = document.getElementById('addition_no_emp');
+			let All_employees = document.getElementById('addition_all_emp');
+			let Select_Employee = document.getElementById('addition_single_emp');
+			let Unit = document.getElementById('unit_calculation');
+			// Check if it's checked
+			function Radio_value(){ if (No_assignee.checked){return No_assignee.value};if (All_employees.checked){return All_employees.value};if (Select_Employee.checked){return Select_Employee.value}}
+			function Unit_calcu(){if (Unit.checked){return Unit.value}else{ return 'OFF'}}
+			let final_Radio = Radio_value()
+			let final_value = Unit_calcu()
+			if(Name===''||Name===null){$('#Name').css('border-color','#ff3300')}else{$('#Name').css('border-color','#00ff00')}
+			if(Category===''||Category===null){$('#Category').css('border-color','#ff3300')}else{$('#Category').css('border-color','#00ff00')}
+			if(Amount===''||Amount===null){$('#unit_amount').css('border-color','#ff3300')}else{$('#unit_amount').css('border-color','#00ff00')}
+			if(employees===''||employees===null){$('#emp_id').css('border-color','#ff3300')}else{$('#emp_id').css('border-color','#00ff00')}
+			if(final_Radio===undefined||final_Radio===null)
+			{
+				$('#addition_no_emp').css('border-color','#ff3300')
+				$('#addition_all_emp').css('border-color','#ff3300')
+				$('#addition_single_emp').css('border-color','#ff3300')
+			}else{
+				$('#addition_no_emp').css('border-color','#00ff00')
+				$('#addition_all_emp').css('border-color','#00ff00')
+				$('#addition_single_emp').css('border-color','#00ff00')
+			}
+			if(Name!==null && Category!==null && Amount!==null && employees!==null && final_Radio!==undefined){
 
+				const formData = new FormData();
+				formData.append('Name',Name)
+				formData.append('Category',Category)
+				formData.append('unit_amount',Amount)
+				formData.append('emp_id',employees)
+				formData.append('assigne_to',final_Radio)
+				formData.append('unit_calcu',final_value)
+
+				fetch(`/HrmTool/PayrollItems/add_addition`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='ERror'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	<!-- Edit Addition Modal -->
 	<div id="edit_addition" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -408,16 +361,17 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/edit_addition" method="POST">
+					<form>
 						<div class="input-block mb-3">
-							<input id="edit_id" name="edit_id" type="" />
+							<input id="edit_addition_id" name="edit_id" type="hidden" />
 							<label class="col-form-label">Name <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" id="edit_name" value="" name="edit_name">
+							<input class="form-control" type="text" id="edit_name" value="" name="edit_name" required>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Category <span class="text-danger">*</span></label>
-							<select class="form-select" id="edit_category" name="edit_category">
+							<select class="form-select" id="edit_category" name="edit_category" required>
 								<option>Select a category</option>
 								<option>Monthly remuneration</option>
 								<option>Additional remuneration</option>
@@ -426,8 +380,7 @@
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Unit calculation</label>
 							<div class="status-toggle">
-								<input type="checkbox" id="edit_unit_calculation" name="edit_unit_calculation"
-									class="check">
+								<input type="checkbox" id="edit_unit_calculation" name="edit_unit_calculation" class="check" value="ON">
 								<label for="edit_unit_calculation" class="checktoggle">checkbox</label>
 							</div>
 						</div>
@@ -435,61 +388,119 @@
 							<label class="col-form-label">Unit Amount</label>
 							<div class="input-group">
 								<span class="input-group-text">$</span>
-								<input type="text" class="form-control" id="edit_unit_Amount" name="edit_unit_Amount">
+								<input type="text" class="form-control allow_numbers_only" id="edit_unit_Amount" name="edit_unit_Amount" required>
 								<span class="input-group-text">.00</span>
 							</div>
 						</div>
 						<div class="input-block mb-3 display_radio_data">
 							<label class="d-block col-form-label">Assignee</label>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="edit_addition_assignee"
-									id="edit_addition_no_emp" value="No assignee">
-								<label class="form-check-label" for="edit_addition_no_emp">
-									No assignee
-								</label>
+								<input class="form-check-input" type="radio" name="edit_addition_assignee" id="edit_addition_no_emp" value="No assignee">
+								<label class="form-check-label" for="edit_addition_no_emp"> No assignee </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="edit_addition_assignee"
-									id="edit_addition_all_emp" value="All employees">
-								<label class="form-check-label" for="edit_addition_all_emp">
-									All employees
-								</label>
+								<input class="form-check-input" type="radio" name="edit_addition_assignee" id="edit_addition_all_emp" value="All employees">
+								<label class="form-check-label" for="edit_addition_all_emp"> All employees </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="edit_addition_assignee"
-									id="edit_addition_single_emp" value="Select Employee">
-								<label class="form-check-label" for="edit_addition_single_emp">
-									Select Employee
-								</label>
+								<input class="form-check-input" type="radio" name="edit_addition_assignee" id="edit_addition_single_emp" value="Select Employee" >
+								<label class="form-check-label" for="edit_addition_single_emp"> Select Employee </label>
 							</div>
 							<div class="input-block mb-3">
-								<select class="form-select" name="edit_drop" id="edit_drop">
-									<option>-</option>
-									<option>Select All</option>
-									<option>John Doe</option>
-									<option>Richard Miles</option>
+								<select class="form-select" name="edit_Aemp_id" id="edit_Aemp_id" required>
+									<option selected disabled>-select</option>
+									{% for i in employee_data %}
+									<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_addition()">Save</a>
 						</div>
 					</form>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- /Edit Addition Modal -->
 	<script>
-		function func(data) {
-			if ($('#edit_unit_calculation').prop('checked') == true) {
-				$(this).val('on')
-			} else {
-				$(this).val('off')
+		function taking_this_id_addition(data) {
+			$.get('/HrmTool/PayrollItems/taking_edit_id_addition/' + data, function (res) {
+				console.log(res)
+				$('#edit_addition_id').val(res.Result.id)
+				$('#edit_name').val(res.Result.Name)
+				$('#edit_category').val(res.Result.Category)
+				$('#edit_unit_Amount').val(res.Result.Unit_Amount)
+				$('#edit_Aemp_id').val(res.Result.Employee_id)
+				//assigne
+				if(res.Result.Assignee_radio=='No assignee'){ $('#edit_addition_no_emp').attr('checked','checked')}
+				if(res.Result.Assignee_radio=='All employees'){ $('#edit_addition_all_emp').attr('checked','checked')}
+				if(res.Result.Assignee_radio=='Select Employee'){ $('#edit_addition_single_emp').attr('checked','checked')}
+				//unit calculation
+				if(res.Result.Unit_calculation=='ON'){$('#edit_unit_calculation').attr('checked','checked')}
+
+			})
+		}
+
+		function edit_addition(){
+			let Edit_id = $('#edit_addition_id').val()
+			let Name =$('#edit_name').val();
+			let Category =$('#edit_category').val();
+			let Amount =$('#edit_unit_Amount').val();
+			let employees =$('#edit_Aemp_id').val();
+			//check box variables 
+			let No_assignee = document.getElementById('edit_addition_no_emp');
+			let All_employees = document.getElementById('edit_addition_all_emp');
+			let Select_Employee = document.getElementById('edit_addition_single_emp');
+			let Unit = document.getElementById('edit_unit_calculation');
+
+			function Radio_value(){ if (No_assignee.checked){return No_assignee.value};if (All_employees.checked){return All_employees.value};if (Select_Employee.checked){return Select_Employee.value}}
+			function Unit_calcu(){if (Unit.checked){return Unit.value}else{ return 'OFF'}}
+			let final_Radio = Radio_value()
+			let final_value = Unit_calcu()
+			if(Name===''||Name===null){$('#edit_name').css('border-color','#ff3300')}else{$('#edit_name').css('border-color','#00ff00')}
+			if(Category===''||Category===null){$('#edit_category').css('border-color','#ff3300')}else{$('#edit_category').css('border-color','#00ff00')}
+			if(Amount===''||Amount===null){$('#edit_unit_Amount').css('border-color','#ff3300')}else{$('#edit_unit_Amount').css('border-color','#00ff00')}
+			if(employees===''||employees===null){$('#edit_Aemp_id').css('border-color','#ff3300')}else{$('#edit_Aemp_id').css('border-color','#00ff00')}
+			if(final_Radio===undefined||final_Radio===null)
+			{
+				$('#edit_addition_no_emp').css('border-color','#ff3300')
+				$('#edit_addition_all_emp').css('border-color','#ff3300')
+				$('#edit_addition_single_emp').css('border-color','#ff3300')
+			}else{
+				$('#edit_addition_no_emp').css('border-color','#00ff00')
+				$('#edit_addition_all_emp').css('border-color','#00ff00')
+				$('#edit_addition_single_emp').css('border-color','#00ff00')
 			}
+			if(Name!==null && Category!==null && Amount!==null && employees!==null && final_Radio!==undefined){
+
+				const formData = new FormData();
+				formData.append('edit_addition_id',Edit_id)
+				formData.append('edit_name',Name)
+				formData.append('edit_category',Category)
+				formData.append('edit_unit_Amount',Amount)
+				formData.append('edit_Aemp_id',employees)
+				formData.append('edit_assigne_to',final_Radio)
+				formData.append('edit_unit_calcu',final_value)
+
+				fetch(`/HrmTool/PayrollItems/edit_addition`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='ERror'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+
+			
 		}
 	</script>
-
+	<!-- /Edit Addition Modal -->
 	<!-- Delete Addition Modal -->
 	<div class="modal custom-modal fade" id="delete_addition" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
@@ -517,9 +528,20 @@
 			</div>
 		</div>
 	</div>
-
+	<script>
+		function taking_dlt_addition(data) {
+			$('#delete_pop').val(data)
+		}
+		function conform_delete_addition(data) {
+			$.get('/HrmTool/PayrollItems/taking_dlt_id_addition/' + data, function () {
+				location.reload()
+			})
+		}
+	</script>
 	<!-- /Delete Addition Modal -->
+<!-- **************************************************************  /Addition ****************************************************************************-->
 
+<!-- **************************************************************  Overtime ****************************************************************************-->
 	<!-- Add Overtime Modal -->
 	<div id="add_overtime" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -530,26 +552,27 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="over_add_error"></div>
 				<div class="modal-body">
-					<form action="/add_overtime" method="POST">
+					<form>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Name <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" name="name" id="name">
+							<input class="form-control" type="text" name="overtime_name" id="overtime_name" required>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Rate Type <span class="text-danger">*</span></label>
-							<select class="form-select" name="rate_type" id="rate_type">
-								<option>-</option>
+							<select class="form-select" name="overtime_rate_type" id="overtime_rate_type" required>
+								<option selected disabled>-select</option>
 								<option>Daily Rate</option>
 								<option>Hourly Rate</option>
 							</select>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Rate <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" name="rate" id="rate">
+							<input class="form-control allow_numbers_only" type="text" name="overtime_rate" id="overtime_rate" required>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_overtime()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -557,7 +580,37 @@
 		</div>
 	</div>
 	<!-- /Add Overtime Modal -->
+	<script>
+		function add_overtime(){
+			let Name = $('#overtime_name').val();
+			let Type = $('#overtime_rate_type').val();
+			let Rate = $('#overtime_rate').val();
 
+			if(Name===''||Name===null){$('#overtime_name').css('border-color','#ff3300')}else{$('#overtime_name').css('border-color','#00ff00')}
+			if(Type===''||Type===null){$('#overtime_rate_type').css('border-color','#ff3300')}else{$('#overtime_rate_type').css('border-color','#00ff00')}
+			if(Rate===''||Rate===null){$('#overtime_rate').css('border-color','#ff3300')}else{$('#overtime_rate').css('border-color','#00ff00')}
+
+			if(Name!==null && Type!==null && Rate!==null){
+
+				const formData = new FormData()
+				formData.append('overtime_name',Name)
+				formData.append('overtime_rate_type',Type)
+				formData.append('overtime_rate',Rate)
+
+				fetch(`/HrmTool/PayrollItems/add_overtime`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.over_add_error').html(`<h5 class="text-danger" style="padding-left:181px">Already Data Entered</h5>`)
+					}else{
+						$('.over_add_error').html(`<h5 class="text-danger" style="padding-left:200px">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	<!-- Edit Overtime Modal -->
 	<div id="edit_overtime" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -571,13 +624,13 @@
 				<div class="modal-body">
 					<form action="/edit_overtime" method="POST">
 						<div class="input-block mb-3">
-							<input id="edit_id_ovr" name="edit_id_ovr" type="" />
+							<input id="edit_id_ovr" name="edit_id_ovr" type="hidden" />
 							<label class="col-form-label">Name <span class="text-danger">*</span></label>
-							<input class="form-control" name="edit_ovr_name" id="edit_ovr_name" type="text">
+							<input class="form-control" name="edit_ovr_name" id="edit_ovr_name" type="text" required>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Rate Type <span class="text-danger">*</span></label>
-							<select class="form-select" name="edit_ovr_rate_id" id="edit_ovr_rate_id">
+							<select class="form-select" name="edit_ovr_rate_id" id="edit_ovr_rate_id" required>
 								<option>-</option>
 								<option>Daily Rate</option>
 								<option>Hourly Rate</option>
@@ -585,10 +638,10 @@
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Rate <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" name="edit_ovr_rate" id="edit_ovr_rate">
+							<input class="form-control allow_numbers_only" type="text" name="edit_ovr_rate" id="edit_ovr_rate" required>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_overtime()">Save</a>
 						</div>
 					</form>
 				</div>
@@ -596,7 +649,48 @@
 		</div>
 	</div>
 	<!-- /Edit Overtime Modal -->
+	<script>
+		function taking_this_id_overtime(data) {
+			$.get('/HrmTool/PayrollItems/taking_edit_id_overtime/' + data, function (res) {
+				$('#edit_id_ovr').val(res.Result.id)
+				$('#edit_ovr_name').val(res.Result.Name)
+				$('#edit_ovr_rate_id').val(res.Result.Rate_type_id)
+				$('#edit_ovr_rate').val(res.Result.Rate)
+			})
+		}
 
+		function edit_overtime(){
+			let Edit_id = $('#edit_id_ovr').val();
+			let Name = $('#edit_ovr_name').val();
+			let Type = $('#edit_ovr_rate_id').val();
+			let Rate = $('#edit_ovr_rate').val();
+
+			if(Name===''||Name===null){$('#edit_ovr_name').css('border-color','#ff3300')}else{$('#edit_ovr_name').css('border-color','#00ff00')}
+			if(Type===''||Type===null){$('#edit_ovr_rate_id').css('border-color','#ff3300')}else{$('#edit_ovr_rate_id').css('border-color','#00ff00')}
+			if(Rate===''||Rate===null){$('#edit_ovr_rate').css('border-color','#ff3300')}else{$('#edit_ovr_rate').css('border-color','#00ff00')}
+
+			if(Name!==null && Type!==null && Rate!==null){
+
+				const formData = new FormData()
+				formData.append('edit_id_ovr',Edit_id)
+				formData.append('edit_ovr_name',Name)
+				formData.append('edit_ovr_rate_id',Type)
+				formData.append('edit_ovr_rate',Rate)
+
+				fetch(`/HrmTool/PayrollItems/edit_overtime`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.over_add_error').html(`<h5 class="text-danger" style="padding-left:181px">Already Data Entered</h5>`)
+					}else{
+						$('.over_add_error').html(`<h5 class="text-danger" style="padding-left:200px">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	<!-- Delete Overtime Modal -->
 	<div class="modal custom-modal fade" id="delete_overtime" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
@@ -624,9 +718,20 @@
 			</div>
 		</div>
 	</div>
-
 	<!-- /Delete Overtime Modal -->
+	<script>
+		function taking_dlt_overtime(data) {
+			$('#delete_pop_ovr').val(data)
+		}
+		function conform_delete_overtime(data) {
+			$.get('/HrmTool/PayrollItems/taking_dlt_id_overtime/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
+<!-- **************************************************************  /Overtime ****************************************************************************-->
 
+<!-- **************************************************************  Deduction ****************************************************************************-->
 	<!-- Add Deduction Modal -->
 	<div id="add_deduction" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -637,17 +742,17 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="ded_add_error"></div>
 				<div class="modal-body">
-					<form action="/add_deduction" method="POST">
+					<form>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Name <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" name="name" id="name">
+							<input class="form-control" type="text" name="ded_name" id="ded_name" required>
 						</div>
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Unit calculation</label>
 							<div class="status-toggle">
-								<input type="checkbox" id="unit_calculation_deduction" name="unit_calculation_deduction"
-									class="check">
+								<input type="checkbox" id="unit_calculation_deduction" name="unit_calculation_deduction" class="check" value="ON">
 								<label for="unit_calculation_deduction" class="checktoggle">checkbox</label>
 							</div>
 						</div>
@@ -655,44 +760,35 @@
 							<label class="col-form-label">Unit Amount</label>
 							<div class="input-group">
 								<span class="input-group-text">$</span>
-								<input type="text" class="form-control" name="unit_amount_deduction">
+								<input type="text" class="form-control allow_numbers_only" id="unit_amount_deduction" name="unit_amount_deduction" required>
 								<span class="input-group-text">.00</span>
 							</div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Assignee</label>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="deduction_assignee"
-									id="deduction_no_emp" value="option1" checked>
-								<label class="form-check-label" for="deduction_no_emp">
-									No assignee
-								</label>
+								<input class="form-check-input" type="radio" name="deduction_assignee" id="deduction_no_emp" value="No assignee" checked>
+								<label class="form-check-label" for="deduction_no_emp"> No assignee </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="deduction_assignee"
-									id="deduction_all_emp" value="option2">
-								<label class="form-check-label" for="deduction_all_emp">
-									All employees
-								</label>
+								<input class="form-check-input" type="radio" name="deduction_assignee" id="deduction_all_emp" value="All employees">
+								<label class="form-check-label" for="deduction_all_emp"> All employees </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="deduction_assignee"
-									id="deduction_single_emp" value="option3">
-								<label class="form-check-label" for="deduction_single_emp">
-									Select Employee
-								</label>
+								<input class="form-check-input" type="radio" name="deduction_assignee" id="deduction_single_emp" value="Select Employee">
+								<label class="form-check-label" for="deduction_single_emp"> Select Employee </label>
 							</div>
 							<div class="input-block mb-3">
-								<select class="form-select" name="deduction_radio" id="dropdown">
-									<option>-</option>
-									<option>Select All</option>
-									<option>John Doe</option>
-									<option>Richard Miles</option>
+								<select class="form-select" name="ded_emp_id" id="ded_emp_id" required>
+									<option selected disabled>-select</option>
+									{% for i in employee_data %}
+									<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_deduction()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -700,7 +796,59 @@
 		</div>
 	</div>
 	<!-- /Add Deduction Modal -->
+	<script>
+		function add_deduction(){
+			// Values category variables 
+			let Name =$('#ded_name').val();
+			let Amount =$('#unit_amount_deduction').val();
+			let employees =$('#ded_emp_id').val();
+			//check box variables 
+			let No_assignee = document.getElementById('deduction_no_emp');
+			let All_employees = document.getElementById('deduction_all_emp');
+			let Select_Employee = document.getElementById('deduction_single_emp');
+			let Unit = document.getElementById('unit_calculation_deduction');
+			// Check if it's checked
+			function Radio_value(){ if (No_assignee.checked){return No_assignee.value};if (All_employees.checked){return All_employees.value};if (Select_Employee.checked){return Select_Employee.value}}
+			function Unit_calcu(){if (Unit.checked){return Unit.value}else{ return 'OFF'}}
+			let final_Radio = Radio_value()
+			let final_value = Unit_calcu()
 
+			if(Name===''||Name===null){$('#ded_name').css('border-color','#ff3300')}else{$('#ded_name').css('border-color','#00ff00')}
+			if(Amount===''||Amount===null){$('#unit_amount_deduction').css('border-color','#ff3300')}else{$('#unit_amount_deduction').css('border-color','#00ff00')}
+			if(employees===''||employees===null){$('#ded_emp_id').css('border-color','#ff3300')}else{$('#ded_emp_id').css('border-color','#00ff00')}
+			if(final_Radio===undefined||final_Radio===null)
+			{
+				$('#deduction_no_emp').css('border-color','#ff3300')
+				$('#deduction_all_emp').css('border-color','#ff3300')
+				$('#deduction_single_emp').css('border-color','#ff3300')
+			}else{
+				$('#deduction_no_emp').css('border-color','#00ff00')
+				$('#deduction_all_emp').css('border-color','#00ff00')
+				$('#deduction_single_emp').css('border-color','#00ff00')
+			}
+			if(Name!==null && Category!==null && Amount!==null && employees!==null && final_Radio!==undefined){
+
+				const formData = new FormData();
+				formData.append('ded_name',Name)
+				formData.append('unit_amount_deduction',Amount)
+				formData.append('ded_emp_id',employees)
+				formData.append('assigne_to',final_Radio)
+				formData.append('unit_calcu',final_value)
+
+				fetch(`/HrmTool/PayrollItems/add_deduction`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='ERror'){
+						$('.ded_add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.ded_add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	<!-- Edit Deduction Modal -->
 	<div id="edit_deduction" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -711,18 +859,18 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="ded_edit_error"></div>
 				<div class="modal-body">
-					<form action="/edit_deduction" method="POST">
+					<form>
 						<div class="input-block mb-3">
-							<input id="edit_id_deduction" name="edit_id_deduction" type="" />
+							<input id="edit_id_deduction" name="edit_id_deduction" type="hidden" />
 							<label class="col-form-label">Name <span class="text-danger">*</span></label>
 							<input class="form-control" name="edit_deduction_name" id="edit_deduction_name" type="text">
 						</div>
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Unit calculation</label>
 							<div class="status-toggle">
-								<input type="checkbox" name="edit_unit_calculation_deduction"
-									id="edit_unit_calculation_deduction" class="check">
+								<input type="checkbox" name="edit_unit_calculation_deduction" id="edit_unit_calculation_deduction" class="check" value="ON">
 								<label for="edit_unit_calculation_deduction" class="checktoggle">checkbox</label>
 							</div>
 						</div>
@@ -738,37 +886,28 @@
 						<div class="input-block mb-3">
 							<label class="d-block col-form-label">Assignee</label>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="edit_deduction_assignee"
-									id="edit_deduction_no_emp" value="option1" checked>
-								<label class="form-check-label" for="edit_deduction_no_emp">
-									No assignee
-								</label>
+								<input class="form-check-input" type="radio" name="edit_deduction_assignee" id="edit_deduction_no_emp" value="No assignee" checked>
+								<label class="form-check-label" for="edit_deduction_no_emp"> No assignee </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="edit_deduction_assignee"
-									id="edit_deduction_all_emp" value="option2">
-								<label class="form-check-label" for="edit_deduction_all_emp">
-									All employees
-								</label>
+								<input class="form-check-input" type="radio" name="edit_deduction_assignee" id="edit_deduction_all_emp" value="All employees">
+								<label class="form-check-label" for="edit_deduction_all_emp"> All employees </label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="edit_deduction_assignee"
-									id="edit_deduction_single_emp" value="option3">
-								<label class="form-check-label" for="edit_deduction_single_emp">
-									Select Employee
-								</label>
+								<input class="form-check-input" type="radio" name="edit_deduction_assignee" id="edit_deduction_single_emp" value="Select Employee">
+								<label class="form-check-label" for="edit_deduction_single_emp"> Select Employee </label>
 							</div>
 							<div class="input-block mb-3">
-								<select class="form-select" id="edit_deduction_dropdwn" name="edit_deduction_dropdwn">
-									<option>-</option>
-									<option>Select All</option>
-									<option>John Doe</option>
-									<option>Richard Miles</option>
+								<select class="form-select" name="edit_deduction_dropdwn" id="edit_deduction_dropdwn" required>
+									<option selected disabled>-select</option>
+									{% for i in employee_data %}
+									<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_deducation()">Save</a>
 						</div>
 					</form>
 				</div>
@@ -776,7 +915,75 @@
 		</div>
 	</div>
 	<!-- /Edit Addition Modal -->
+	<script>
+		function taking_this_id_deduction(data) {
+			$.get('/HrmTool/PayrollItems/taking_edit_id_deduction/' + data, function (res) {
+				console.log(res)
+				$('#edit_id_deduction').val(res.Result.id)
+				$('#edit_deduction_name').val(res.Result.Name)
+				$('#edit_deduction_unit_Amount').val(res.Result.Unit_Amount)
+				$('#edit_deduction_dropdwn').val(res.Result.Assignee_drop)
+				//
+				if(res.Result.Assignee_radio=='No assignee'){ $('#edit_deduction_no_emp').attr('checked','checked')}
+				if(res.Result.Assignee_radio=='All employees'){ $('#edit_deduction_all_emp').attr('checked','checked')}
+				if(res.Result.Assignee_radio=='Select Employee'){ $('#edit_deduction_single_emp').attr('checked','checked')}
+				//unit calculation
+				if(res.Result.Unit_calculation=='ON'){$('#edit_unit_calculation_deduction').attr('checked','checked')}
+			})
+		}
 
+		function edit_deducation(){
+			let Edit_id = $('#edit_id_deduction').val()
+			let Name =$('#edit_deduction_name').val();
+			let Amount =$('#edit_deduction_unit_Amount').val();
+			let employees =$('#edit_deduction_dropdwn').val();
+			//check box variables 
+			let No_assignee = document.getElementById('edit_deduction_no_emp');
+			let All_employees = document.getElementById('edit_deduction_all_emp');
+			let Select_Employee = document.getElementById('edit_deduction_single_emp');
+			let Unit = document.getElementById('edit_unit_calculation_deduction');
+
+			function Radio_value(){ if (No_assignee.checked){return No_assignee.value};if (All_employees.checked){return All_employees.value};if (Select_Employee.checked){return Select_Employee.value}}
+			function Unit_calcu(){if (Unit.checked){return Unit.value}else{ return 'OFF'}}
+			let final_Radio = Radio_value()
+			let final_value = Unit_calcu()
+			if(Name===''||Name===null){$('#edit_deduction_name').css('border-color','#ff3300')}else{$('#edit_deduction_name').css('border-color','#00ff00')}
+			if(Amount===''||Amount===null){$('#edit_deduction_unit_Amount').css('border-color','#ff3300')}else{$('#edit_deduction_unit_Amount').css('border-color','#00ff00')}
+			if(employees===''||employees===null){$('#edit_deduction_dropdwn').css('border-color','#ff3300')}else{$('#edit_deduction_dropdwn').css('border-color','#00ff00')}
+			if(final_Radio===undefined||final_Radio===null)
+			{
+				$('#edit_deduction_no_emp').css('border-color','#ff3300')
+				$('#edit_deduction_all_emp').css('border-color','#ff3300')
+				$('#edit_deduction_single_emp').css('border-color','#ff3300')
+			}else{
+				$('#edit_deduction_no_emp').css('border-color','#00ff00')
+				$('#edit_deduction_all_emp').css('border-color','#00ff00')
+				$('#edit_deduction_single_emp').css('border-color','#00ff00')
+			}
+			if(Name!==null && Category!==null && Amount!==null && employees!==null && final_Radio!==undefined){
+
+				const formData = new FormData();
+				formData.append('edit_id_deduction',Edit_id)
+				formData.append('edit_deduction_name',Name)
+				formData.append('edit_deduction_unit_Amount',Amount)
+				formData.append('edit_deduction_dropdwn',employees)
+				formData.append('edit_assigne_to',final_Radio)
+				formData.append('edit_unit_calcu',final_value)
+
+				fetch(`/HrmTool/PayrollItems/edit_deduction`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='ERror'){
+						$('.ded_edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.ded_edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	<!-- Delete Deduction Modal -->
 	<div class="modal custom-modal fade" id="delete_deduction" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
@@ -805,7 +1012,16 @@
 		</div>
 	</div>
 	<!-- /Delete Deduction Modal -->
-
+	<script>
+		function taking_dlt_dedction(data) {
+			$('#delete_pop_deduction').val(data)
+		}
+		function conform_delete_deduction(data) {
+			$.get('/HrmTool/PayrollItems/taking_dlt_id_deduction/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
 </div>
 <!-- /Page Wrapper -->
 

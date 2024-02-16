@@ -13,7 +13,8 @@ from jose import jwt, JWTError
 from datetime import datetime 
 from models import get_db, models
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import text,desc
+from icecream import ic
 
 router = APIRouter()
 
@@ -21,7 +22,6 @@ templates = Jinja2Templates(directory="templates")
 
 current_datetime = datetime.today()
 
-#                                                       ***** C L I E N T   P A G E *****
 
 @router.get("/ticket")
 async def getting(request:Request,db: Session = Depends(get_db)):
@@ -90,7 +90,7 @@ def  getSelectId(main_id:int,request:Request,db:Session=Depends(get_db)):
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
 @router.post("/add_ticket")
-async def add(request:Request,db: Session = Depends(get_db),aticketsubject:str=Form(...),aticketid:str=Form(...), aassignstaff:str=Form(...), aclient:str=Form(...), apriority:str=Form(...), acc:str=Form(...), aassign:str=Form(...), aaddfollowers:str=Form(...), adescription:str=Form(...), auploadfiles:UploadFile=Form(...)): 
+async def add(request:Request,db: Session = Depends(get_db),aticketsubject:str=Form(...),aticketid:str=Form(...),aclient:str=Form(...), apriority:str=Form(...), acc:str=Form(...), aassign:str=Form(...), adescription:str=Form(...), aaddfollowers:str=Form(...), auploadfiles:UploadFile=File(...)): 
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -102,39 +102,71 @@ async def add(request:Request,db: Session = Depends(get_db),aticketsubject:str=F
                     emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                     if emp_data.Lock_screen == 'OFF':
 
-                        file_type = auploadfiles.content_type
-                        extention = file_type.split('/')[-1]
-                        if extention != 'routerlication/octet-stream':
+                        file_type = auploadfiles.content_type;extention = file_type.split('/')[-1]
+    
+                        if extention != 'application/octet-stream':
                             token_image = str(uuid.uuid4()) + '.' + str(extention)
                             file_location = f"./templates/assets/uploaded_files/{token_image}"
                             with open(file_location, 'wb+') as file_object:
                                 shutil.copyfileobj(auploadfiles.file,file_object)
-                                print("this is image code:",token_image)
 
-                            body=models.Tickets(
-                                Ticket_Subject=aticketsubject,
-                                Ticket_Id=aticketid,
-                                Employee_id=aassignstaff,
-                                Client_id=aclient,
-                                Priority=apriority,
-                                CC=acc,
-                                Assign_id=aassign,
-                                Description=adescription,
-                                Files=token_image,
-                                Current_status="Active",
-                                status="ACTIVE",
-                                created_by=loginer_id)
-                            db.add(body)
-                            db.commit()
+                        tickets_data = db.query(models.Tickets).filter(models.Tickets.status=='ACTIVE').all()
+
+                        # =====>> First Time Data Entered  
+                        if not tickets_data:
+                            check_exit_data = db.query(models.Tickets).filter(models.Tickets.Ticket_Subject==aticketsubject,models.Tickets.Client_id==aclient).filter(models.Tickets.status=='ACTIVE').all()
+                            if not check_exit_data:
+                                new_tickets = models.Tickets(Ticket_Subject=aticketsubject,Ticket_Id=aticketid,Loginer=loginer_id,Client_id=aclient,Priority=apriority,CC=acc,Assign_id=aassign,Description=adescription,Files=token_image,Today_Tickets=1,Today_Tickets_percent=100,Solved_Tickets=0,Solved_Tickets_percent=0,Open_Tickets=0,Open_Tickets_percent=0,Pending_Tickets=1,Pending_Tickets_percent=100,Current_status='New',status='ACTIVE',created_by=loginer_id)
+                                db.add(new_tickets)
+                                db.commit()
+                                db.refresh(new_tickets)
+
+                                #=====>Followers
+                                ic(aaddfollowers)
+                                splited_data = aaddfollowers.split(',')
+                                ic(splited_data)
+                                for i in splited_data:
+                                    ic(i)
+                                    new_followers = models.Tickets_Followers(Ticket_id=new_tickets.id,Employee_id=str(i),status='ACTIVE',created_by=loginer_id)
+                                    db.add(new_followers)
+                                    db.commit()
+                                    db.refresh(new_followers)
+
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
+                        else:
+                            yesterday_ticket_data = db.query(models.Tickets).filter(models.Tickets.status=='ACTIVE').order_by(desc(models.Tickets.id)).first()
+
+                            new_tickets_count = db.query(models.Tickets).filter(models.Tickets.Current_status=='New').filter(models.Tickets.status=='ACTIVE').all()
+                            solved_ticket_count = db.query(models.Tickets).filter(models.Tickets.Current_status=='Closed').filter(models.Tickets.status=='ACTIVE').all()
+                            open_ticket_count = db.query(models.Tickets).filter(models.Tickets.Current_status=='Open').filter(models.Tickets.status=='ACTIVE').all()
+                            pending_ticket_count = db.query(models.Tickets).filter(models.Tickets.Current_status!='New',models.Tickets.Current_status!='Closed',models.Tickets.Current_status!='Open').filter(models.Tickets.status=='ACTIVE').all()
+
+                            def count_data(datas):
+                                try:
+                                    return len(datas)
+                                except:
+                                    return 0
+                                
+                            # def percent_data(info):
+                            #     try:
+                            #         total_data = len(info)
+
+
+                            # tickets_data = models.Tickets(Ticket_Subject=aticketsubject,Ticket_Id=aticketid,Loginer=loginer_id,Client_id=aclient,Priority=apriority,CC=acc,Assign_id=aassign,Description=adescription,Files=token_image,Today_Tickets=count_data(new_tickets_count),Today_Tickets_percent=,Solved_Tickets,Solved_Tickets_percent,Open_Tickets,Open_Tickets_percent,Current_status='New',status='ACTIVE',created_by=loginer_id)
+
+                            
+
                         return RedirectResponse("/HrmTool/Employee/ticket",status_code=302)
                     else:
                         return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                 else:
                     return RedirectResponse('/HrmTool/login/login',status_code=302)
-                # except:
-                #     return RedirectResponse('/HrmTool/login/login',status_code=302)
             except JWTError:
-                return RedirectResponse('/HrmTool/login/login',status_code=302)
+                return RedirectResponse('/Error',status_code=302)
         else:
             return RedirectResponse('/HrmTool/login/login',status_code=303)
     except JWTError:
@@ -298,9 +330,9 @@ def taking_dlt_id_addition(request: Request,ids:int,db: Session = Depends(get_db
             return RedirectResponse('/HrmTool/login/login',status_code=302)
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
-     
-@router.get("/follower_id/{ids}")
-def taking_dlt_id_addition(request: Request,ids:int,db: Session = Depends(get_db)):
+   
+@router.post("/ticket_followers_data")
+def taking_dlt_id_addition(request: Request,db: Session = Depends(get_db),Followers:str=Form(...)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -311,8 +343,15 @@ def taking_dlt_id_addition(request: Request,ids:int,db: Session = Depends(get_db
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            assigni_id = db.query(models.Employee).filter(models.Employee.id==ids).filter(models.Employee.status=='ACTIVE').first()
-                            return assigni_id
+                            splited_list = Followers.split(',')
+                            followers_data = []
+                            for i in splited_list:
+                                employee_data = db.query(models.Employee).filter(models.Employee.id==int(i)).filter(models.Employee.status=='ACTIVE').first()
+                                if employee_data:
+                                    followers_data.append(employee_data)
+
+                            response_data = jsonable_encoder({'Result':followers_data})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:

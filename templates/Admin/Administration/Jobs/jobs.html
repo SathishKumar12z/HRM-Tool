@@ -56,26 +56,45 @@
 								<td class="text-center">
 									<div class="dropdown action-label">
 										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+											{% if i.Job_Type=='Full Time'%}
+											<i class="fa-regular fa-circle-dot text-info"></i> {{i.Job_Type   }}
+											{% elif i.Job_Type=='Remote' %}
+											<i class="fa-regular fa-circle-dot text-ellipsis"></i> {{i.Job_Type   }}
+											{% elif i.Job_Type=='Part Time' %}
+											<i class="fa-regular fa-circle-dot text-success"></i> {{i.Job_Type   }}
+											{% elif i.Job_Type=='Internship' %}
 											<i class="fa-regular fa-circle-dot text-danger"></i> {{i.Job_Type   }}
+											{% elif i.Job_Type=='Temporary' %}
+											<i class="fa-regular fa-circle-dot text-warning"></i> {{i.Job_Type   }}
+											{% elif i.Job_Type=='Other' %}
+											<i class="fa-regular fa-circle-dot text-warning"></i> {{i.Job_Type   }}
+											{%endif %}
 										</a>
 										<div class="dropdown-menu dropdown-menu-right">
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-info"></i> Full Time</a>
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-success"></i> Part Time</a>
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-danger"></i> Internship</a>
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-warning"></i> Temporary</a>
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-warning"></i> Other</a>
+											<a class="dropdown-item" href="#" onclick="change_type('{{i.id}}','Full Time')"><i class="fa-regular fa-circle-dot text-info"></i> Full Time</a>
+											<a class="dropdown-item" href="#" onclick="change_type('{{i.id}}','Remote')"><i class="fa-regular fa-circle-dot text-ellipsis"></i> Remote </a>
+											<a class="dropdown-item" href="#" onclick="change_type('{{i.id}}','Part Time')"><i class="fa-regular fa-circle-dot text-success"></i> Part Time</a>
+											<a class="dropdown-item" href="#" onclick="change_type('{{i.id}}','Internship')"><i class="fa-regular fa-circle-dot text-danger"></i> Internship</a>
+											<a class="dropdown-item" href="#" onclick="change_type('{{i.id}}','Temporary')"><i class="fa-regular fa-circle-dot text-warning"></i> Temporary</a>
+											<a class="dropdown-item" href="#" onclick="change_type('{{i.id}}','Other')"><i class="fa-regular fa-circle-dot text-warning"></i> Other</a>
 										</div>
 									</div>
 								</td>
 								<td class="text-center">
 									<div class="dropdown action-label">
 										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+											{% if i.Current_Status=='Open'%}
+											<i class="fa-regular fa-circle-dot text-info"></i> {{i.Current_Status}}
+											{% elif i.Current_Status=='Closed'%}
+											<i class="fa-regular fa-circle-dot text-success"></i> {{i.Current_Status}}
+											{% elif i.Current_Status=='Closed'%}
 											<i class="fa-regular fa-circle-dot text-danger"></i> {{i.Current_Status}}
+											{% endif %}
 										</a>
 										<div class="dropdown-menu dropdown-menu-right">
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-info"></i> Open</a>
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-success"></i> Closed</a>
-											<a class="dropdown-item" href="#"><i class="fa-regular fa-circle-dot text-danger"></i> Cancelled</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Open')"><i class="fa-regular fa-circle-dot text-info"></i> Open</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Closed')"><i class="fa-regular fa-circle-dot text-success"></i> Closed</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Cancelled')"><i class="fa-regular fa-circle-dot text-danger"></i> Cancelled</a>
 										</div>
 									</div>
 								</td>
@@ -98,43 +117,18 @@
 		</div>
 	</div>
 	<!-- /Page Content -->
-	
 	<script>
-		function get_job_id(data) {
-			fetch(`/HrmTool/Administration/job_details_id/${data}`)
-				.then(res =>res.json())
-				.then(res => {
-					$('#edit_idz').val(res.job_data.id)
-					$('#edit_title').val(res.job_data.Job_Title)
-					$('#edit_location').val(res.job_data.Job_Location)
-					$('#edit_vacancy').val(res.job_data.Vacancies)
-					$('#edit_experience').val(res.job_data.Experience)
-					$('#edit_age').val(res.job_data.Age)
-					$('#edit_from_salary').val(res.job_data.Salary_From)
-					$('#edit_to_salary').val(res.job_data.Salary_To)
-					$('#edit_start').val(res.job_data.Start_Date)
-					$('#edit_end_date').val(res.job_data.Expired_Date)
-					$('#edit_jd').val(res.job_data.JD)
-					// drop down areas 
-					$('#edit_depart').val(res.job_data.Department)
-					$('#edit_type').val(res.job_data.Job_Type)
-					$('#edit_status').val(res.job_data.Current_Status)
-				})
-				.catch(error => {
-					console.error('Error fetching data:', error);
-				});
+		function change_type(ids,info){
+			fetch(`/HrmTool/Administration/change_job_type/${ids}/${info}`)
+			.then(location.reload())
 		}
-		//delete section
-		function delete_jobdata(data){
-			$('#conform_delete').val(data)
-		}
-		// user conformed to delete 
-		function conformed_delete(id_no){
-			fetch(`/HrmTool/Administration/del_job_details_id/${id_no}`)
-			.then(window.location.reload())
+
+		function change_status(ids,info){
+			fetch(`/HrmTool/Administration/change_job_status/${ids}/${info}`)
+			.then(location.reload())
 		}
 	</script>
-	
+
 	<!-- Add Job Modal -->
 	<div id="add_job" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -396,7 +390,32 @@
 		</div>
 	</div>
 	<!-- /Edit Job Modal -->
-
+	<script>
+		function get_job_id(data) {
+			fetch(`/HrmTool/Administration/job_details_id/${data}`)
+				.then(res =>res.json())
+				.then(res => {
+					$('#edit_idz').val(res.job_data.id)
+					$('#edit_title').val(res.job_data.Job_Title)
+					$('#edit_location').val(res.job_data.Job_Location)
+					$('#edit_vacancy').val(res.job_data.Vacancies)
+					$('#edit_experience').val(res.job_data.Experience)
+					$('#edit_age').val(res.job_data.Age)
+					$('#edit_from_salary').val(res.job_data.Salary_From)
+					$('#edit_to_salary').val(res.job_data.Salary_To)
+					$('#edit_start').val(res.job_data.Start_Date)
+					$('#edit_end_date').val(res.job_data.Expired_Date)
+					$('#edit_jd').val(res.job_data.JD)
+					// drop down areas 
+					$('#edit_depart').val(res.job_data.Department)
+					$('#edit_type').val(res.job_data.Job_Type)
+					$('#edit_status').val(res.job_data.Current_Status)
+				})
+				.catch(error => {
+					console.error('Error fetching data:', error);
+				});
+		}
+	</script>
 	<!-- Delete Job Modal -->
 	<div class="modal custom-modal fade" id="delete_job" role="dialog">
 		<div class="modal-dialog modal-dialog-centered">
@@ -422,6 +441,18 @@
 		</div>
 	</div>
 	<!-- /Delete Job Modal -->
+
+	<script>
+		//delete section
+		function delete_jobdata(data){
+			$('#conform_delete').val(data)
+		}
+		// user conformed to delete 
+		function conformed_delete(id_no){
+			fetch(`/HrmTool/Administration/del_job_details_id/${id_no}`)
+			.then(window.location.reload())
+		}
+	</script>
 	
 </div>
 <!-- /Page Wrapper -->

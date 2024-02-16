@@ -43,12 +43,15 @@
 						<tbody>
 							{% for i in policies_data %}
 							<tr>
-
-								<td>{{i.id}}</td>
+								<td>{{loop.index}}</td>
 								<td>{{i.Name}}</td>
-								<td>{{i.Department}}</td>
-								<td>{{i.Description}}</td>
-								<td>{{i.created_at}}</td>
+								{% for dep in department_data %}
+								{% if i.Department|int == dep.id|int %}
+								<td>{{dep.Name}}</td>
+								{% endif %}
+								{% endfor %}
+								<td>{{i.Description[:10:]}} ...</td>
+								<td>{{i.created_at.strftime('%d %b %Y')}}</td>
 								<td class="text-end">
 									<div class="dropdown dropdown-action">
 										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
@@ -67,50 +70,10 @@
 									</div>
 								</td>
 							</tr>
-
-							<!-- <tr>
-								<td>2</td>
-								<td>Permission Policy</td>
-								<td>Marketing</td>
-								<td>Lorem ipsum dollar</td>
-								<td>20 Feb 2019</td>
-								<td class="text-end">
-									<div class="dropdown dropdown-action">
-										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-										<div class="dropdown-menu dropdown-menu-right">
-											<a class="dropdown-item" href="#"><i class="fa-solid fa-download m-r-5"></i> Download</a>
-											<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_policy"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
-											<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_policy"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
-										</div>
-									</div>
-								</td>
-							</tr> -->
 							{% endfor %}
 						</tbody>
 
-						<script>
-
-							function editing_id(data) {
-								$.get('/HrmTool/HR/taking_edit_id/' + data, function (res) {
-									console.log(res)
-									$('#edit_idz').val(res.id)
-									$('#edit_policyname').val(res.Name)
-									$('#edit_des').val(res.Description)
-									$('#edit_dep').val(res.Department)
-									$('#edit_policy_upload').val(res.File)
-								})
-							}
-
-							function taking_dlt_dedction(data) {
-								$('#delete_pop_deduction').val(data)
-							}
-
-							function conform_delete_deduction(data) {
-								$.get('/HrmTool/HR/taking_dlt_id_deduction/' + data, function (res) {
-									location.reload();
-								})
-							}
-						</script>
+						
 					</table>
 				</div>
 			</div>
@@ -128,31 +91,34 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/HR/add_policies" method="POST">
+					<form >
 						<div class="input-block mb-3">
 							<label class="col-form-label">Policy Name <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" id="pname" name="pname">
+							<input class="form-control" type="text" id="pname" name="pname" required>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Description <span class="text-danger">*</span></label>
-							<textarea class="form-control" rows="4" id="des" name="des"></textarea>
+							<textarea class="form-control" rows="4" id="des" name="des" placeholder="Enter 255 Character's" required></textarea>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Department</label>
-							<select class="form-select" id="dep" name="dep">
-								<option>All Departments</option>
-								<option>Web Development</option>
-								<option>Marketing</option>
-								<option>IT Management</option>
+							<select class="form-select" id="dep" name="dep" required>
+								<option selected disabled>-select</option>
+								{% for dep in department_data %}
+								<option value="{{dep.id}}">{{dep.Name}}</option>
+								{% endfor %}
 							</select>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Upload Policy <span class="text-danger">*</span></label>
-							<input type="file" class="form-control" id="policy_upload" name="policy_upload">
+							<input type="file" class="form-control" id="policy_upload" name="policy_upload" accept="application/pdf" oninput="display_pdf.data=window.URL.createObjectURL(this.files[0]);display_pdf.style.display='block'" required >
+							<br>
+							<object id="display_pdf" data="/templates/assets/img/test.pdf" width="439" height="300" style="display: none;"></object>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_policy()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -160,6 +126,40 @@
 		</div>
 	</div>
 	<!-- /Add Policy Modal -->
+	<script>
+		function add_policy(){
+			let Name = $('#pname').val();
+			let Descrip = $('#des').val();
+			let Department = $('#dep').val();
+			let Policy = $('#policy_upload')[0].files[0]
+
+			if(Name===''||Name===null){ $('#pname').css('border-color','#ff0000') }else{ $('#pname').css('border-color','#00ff00')}
+			if(Descrip===''||Descrip===null){ $('#des').css('border-color','#ff0000') }else{ $('#des').css('border-color','#00ff00')}
+			if(Department===''||Department===null){ $('#dep').css('border-color','#ff0000') }else{ $('#dep').css('border-color','#00ff00')}
+			if(Policy===undefined){ $('#policy_upload').css('border-color','#ff0000') }else{ $('#policy_upload').css('border-color','#00ff00')}
+
+			if(Name!==null && Descrip!==null && Department!==null && Policy!==undefined){
+
+				const formData = new FormData();
+				formData.append('pname',Name)
+				formData.append('des',Descrip)
+				formData.append('dep',Department)
+				formData.append('policy_upload',Policy)
+
+				fetch(`/HrmTool/HR/add_policies`,{method:'POST',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 
 	<!-- Edit Policy Modal -->
 	<div id="edit_policy" class="modal custom-modal fade" role="dialog">
@@ -171,9 +171,10 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/HR/policies_update" method="post">
-						<input id="edit_idz" name="edit_id" type="hidden" />
+					<form>
+						<input id="edit_idz" name="edit_idz" type="hidden" />
 						<div class="input-block mb-3">
 							<label class="col-form-label">Policy Name <span class="text-danger">*</span></label>
 							<input class="form-control" type="text" id="edit_policyname" name="edit_policyname">
@@ -184,19 +185,21 @@
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Department</label>
-							<select class="fform-select" id="edit_dep" name="edit_dep">
-								<option>All Departments</option>
-								<option>Web Development</option>
-								<option>Marketing</option>
-								<option>IT Management</option>
+							<select class="form-select" id="edit_dep" name="edit_dep" required>
+								<option selected disabled>-select</option>
+								{% for dep in department_data %}
+								<option value="{{dep.id}}">{{dep.Name}}</option>
+								{% endfor %}
 							</select>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Upload Policy <span class="text-danger">*</span></label>
-							<input type="file" class="form-control" id="edit_policy_upload" name="edit_policy_upload">
+							<input type="file" class="form-control" id="edit_policy_upload" name="edit_policy_upload" accept="application/pdf" oninput="edit_display_pdf.data=window.URL.createObjectURL(this.files[0]);edit_display_pdf.style.display='block'" required >
+							<br>
+							<object id="edit_display_pdf" data="/templates/assets/img/test.pdf" width="439" height="300" ></object>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Save</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_policy()">Save</a>
 						</div>
 					</form>
 				</div>
@@ -204,6 +207,53 @@
 		</div>
 	</div>
 	<!-- /Edit Policy Modal -->
+	<script>
+		function editing_id(data) {
+			$.get('/HrmTool/HR/taking_edit_id/' + data, function (res) {
+				console.log(res)
+				$('#edit_idz').val(res.Result.id)
+				$('#edit_policyname').val(res.Result.Name)
+				$('#edit_des').val(res.Result.Description)
+				$('#edit_dep').val(res.Result.Department)
+				//image 
+				$('#edit_display_pdf').attr('data',`/templates/assets/uploaded_files/${res.Result.File}`)
+			})
+		}
+
+		function edit_policy(){
+			let Edit_id = $('#edit_idz').val();
+			let Name = $('#edit_policyname').val();
+			let Descrip = $('#edit_des').val();
+			let Department = $('#edit_dep').val();
+
+			if(Name===''||Name===null){ $('#edit_policyname').css('border-color','#ff0000') }else{ $('#edit_policyname').css('border-color','#00ff00')}
+			if(Descrip===''||Descrip===null){ $('#edit_des').css('border-color','#ff0000') }else{ $('#edit_des').css('border-color','#00ff00')}
+			if(Department===''||Department===null){ $('#edit_dep').css('border-color','#ff0000') }else{ $('#edit_dep').css('border-color','#00ff00')}
+
+			if(Name!==null && Descrip!==null && Department!==null){
+
+				function Image_passing(){ let Policy = $('#edit_policy_upload')[0].files[0] ;if (Policy!=undefined){ return Policy }else{return 'None'}}
+				const formData = new FormData();
+				formData.append('edit_idz',Edit_id)
+				formData.append('edit_policyname',Name)
+				formData.append('edit_des',Descrip)
+				formData.append('edit_dep',Department)
+				if(Image_passing()!='None'){ formData.append('edit_policy_upload',Image_passing())}
+
+				fetch(`/HrmTool/HR/policies_update`,{method:'POST',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 
 	<!-- Delete Policy Modal -->
 	<div class="modal custom-modal fade" id="delete_policy" role="dialog">
@@ -233,7 +283,17 @@
 		</div>
 	</div>
 	<!-- /Delete Policy Modal -->
+	<script>
+		function taking_dlt_dedction(data) {
+			$('#delete_pop_deduction').val(data)
+		}
 
+		function conform_delete_deduction(data) {
+			$.get('/HrmTool/HR/taking_dlt_id_deduction/' + data, function (res) {
+				location.reload();
+			})
+		}
+	</script>
 </div>
 <!-- /Page Wrapper -->
 

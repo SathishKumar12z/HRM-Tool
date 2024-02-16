@@ -66,10 +66,17 @@ def create_data(request: Request, db: Session = Depends(get_db),Name: str =Form(
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            body = models.Categories(Name=Name,SubCategory_id='Add Sub Category',status='ACTIVE',created_by=loginer_id)
-                            db.add(body)
-                            db.commit()
-                            return RedirectResponse("/HrmTool/HR/category", status_code=303)
+                            check_exit_data = db.query(models.Categories).filter(models.Categories.Name==Name).filter(models.Categories.status=='ACTIVE').all()
+                            if not check_exit_data:
+                                body = models.Categories(Name=Name,SubCategory_id='Add Sub Category',status='ACTIVE',created_by=loginer_id)
+                                db.add(body)
+                                db.commit()
+                                db.refresh(body)
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -115,7 +122,7 @@ def catedit(ids:int,request:Request,db: Session = Depends(get_db)):
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
 @router.post('/category_update')
-def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= Form(...),edit_Name: str =Form(...)):
+def create_data(request: Request, db: Session = Depends(get_db),  edit_idz: int= Form(...),edit_Name: str =Form(...)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -126,9 +133,15 @@ def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= 
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            db.query(models.Categories).filter(models.Categories.id==edit_id).update({"Name": edit_Name})
-                            db.commit()
-                            return RedirectResponse("/HrmTool/HR/category", status_code=303)
+                            check_exit_data = db.query(models.Categories).filter(models.Categories.id!=edit_idz,models.Categories.Name==edit_Name).filter(models.Categories.status=='ACTIVE').all()
+                            if not check_exit_data:
+                                db.query(models.Categories).filter(models.Categories.id==edit_idz).update({"Name": edit_Name})
+                                db.commit()
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -143,7 +156,36 @@ def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= 
             return RedirectResponse('/HrmTool/login/login',status_code=302)
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
-    
+     
+@router.get("/delete_category/{ids}")      
+def catedit(ids:int,request:Request,db: Session = Depends(get_db)):
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
+            try:
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            db.query(models.Categories).filter(models.Categories.id==ids).update({'status':'INACTIVE'})
+                            db.commit()
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
+                    else:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/HrmTool/login/login',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
+            return RedirectResponse('/HrmTool/login/login',status_code=302)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
+  
 @router.get('/subcat/{cat_id}') 
 def get_form(request:Request,cat_id:int,db:Session=Depends(get_db)):
     try:
@@ -192,13 +234,18 @@ def create_data(request: Request, db: Session = Depends(get_db),Name: int =Form(
                                 body = models.Sub_Category(Category_id=Name,Name=SubCategory_id,current_status=cur_state,status='ACTIVE',created_by=loginer_id)
                                 db.add(body)
                                 db.commit()
+                                db.refresh(body)
 
                                 if cur_state=='Active':
                                     db.query(models.Sub_Category).filter(models.Sub_Category.Category_id == Name,models.Sub_Category.id != body.id ).update({'current_status':'Inactive'})
                                     db.commit()
-                                return 'ok'
+
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
                             else:
-                                return 'error'
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -227,7 +274,8 @@ def subcatedit(ids:int,request:Request,db: Session = Depends(get_db)):
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
                             single_data = db.query(models.Sub_Category).filter(models.Sub_Category.id==ids).filter(models.Sub_Category.status=='ACTIVE').first()
-                            return single_data
+                            response_data = jsonable_encoder({'Result':single_data})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -244,7 +292,7 @@ def subcatedit(ids:int,request:Request,db: Session = Depends(get_db)):
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
 @router.post('/subcategory_update')
-def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= Form(...),edit_SubCategory_id: str =Form(...)):
+def create_data(request: Request, db: Session = Depends(get_db),  edit_ids: int= Form(...),edit_SubCategory_id: str =Form(...),edit_cur_state:str=Form(...)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -255,13 +303,20 @@ def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= 
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            db.query(models.Sub_Category).filter(models.Sub_Category.id==edit_id).update({"SubCategory_id": edit_SubCategory_id})
-                            db.commit()
-                            return RedirectResponse("/subcat", status_code=303)
+                            check_exit_data = db.query(models.Sub_Category).filter(models.Sub_Category.id!=edit_ids,models.Sub_Category.Name==edit_SubCategory_id).filter(models.Sub_Category.status=='ACTIVE').all()
+                            if not check_exit_data:
+                                db.query(models.Sub_Category).filter(models.Sub_Category.id==edit_ids).update({"Name": edit_SubCategory_id,'current_status':edit_cur_state})
+                                db.commit()
+                                print('herer')
+                                response_data = jsonable_encoder({'Result':'Done'})
+                                return JSONResponse(content=response_data,status_code=200)
+                            else:
+                                response_data = jsonable_encoder({'Result':'Error'})
+                                return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
-                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                        return RedirectResponse('/Error',status_code=302)
                 except:
                     return RedirectResponse('/HrmTool/login/login',status_code=302)
             except JWTError:
@@ -304,7 +359,7 @@ def delete_subcategory(request: Request,ids:int,db: Session = Depends(get_db)):
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
-@router.get("/status_change/{data}/{id_value}")
+@router.get("/status_change/{id_value}/{data}")
 def delete_subcategory(request: Request,data:str,id_value:int,db: Session = Depends(get_db)):
     try:
         if 'loginer_details' in request.session:
@@ -317,7 +372,7 @@ def delete_subcategory(request: Request,data:str,id_value:int,db: Session = Depe
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
                             a = db.query(models.Sub_Category).filter(models.Sub_Category.status=='ACTIVE').all()
-                            db.query(models.Sub_Category).filter(models.Sub_Category.id == id_value).update({"current_status":f"{data}"})
+                            db.query(models.Sub_Category).filter(models.Sub_Category.id == id_value).update({"current_status":data})
                             db.commit()
                             if data ==' Active':
                                 db.query(models.Sub_Category).filter(models.Sub_Category.id !=id_value).update({"current_status":"Inactive"})

@@ -1,6 +1,6 @@
 {% include "Layout/top.html" %}
 {% include "Layout/side.html" %}
-
+<script src="/templates/assets/js/line-chart.js"></script>
 <!-- Page Wrapper -->
 <div class="page-wrapper">
 
@@ -259,13 +259,90 @@
 				</div>
 			</div>
 		</div>
-
-
 	</div>
 	<!-- /Page Content -->
-
 </div>
 <!-- /Page Wrapper -->
+<!-- Chart JS -->
+<script src="/templates/assets/js/Chart.min.js"></script>
+<!-- <script src="/templates/assets/js/line-chart.js"></script> -->
+<script>
+	
+	// Line Chart
+
+	$(document).ready(function(){
+		fetch(`/HrmTool/Job/display_job_graph`)
+		.then(res=>res.json())
+		.then(res=>{
+			console.log(res)
+			let lable_name = []
+			let Applier_data =[]
+			let colour_code =[]
+
+			for(let i=0;i<res.Department.length;i++){
+				for(let j=0;j<res.Result.length;j++){
+					if(res.Department[i].id == res.Result[j].Department_id){
+						lable_name.push(res.Department[i].Name)
+						let single_dep_data =[]
+						async function colloction_data(){
+							single_dep_data.push(res.Result[j].Jan)
+							single_dep_data.push(res.Result[j].Feb)
+							single_dep_data.push(res.Result[j].Mar)
+							single_dep_data.push(res.Result[j].Apr)
+							single_dep_data.push(res.Result[j].May)
+							single_dep_data.push(res.Result[j].Jun)
+							single_dep_data.push(res.Result[j].Jul)
+							single_dep_data.push(res.Result[j].Aug)
+							single_dep_data.push(res.Result[j].Sep)
+							single_dep_data.push(res.Result[j].Oct)
+							single_dep_data.push(res.Result[j].Nov)
+							single_dep_data.push(res.Result[j].Dec)
+						}
+						colloction_data()
+						Applier_data.push(single_dep_data)
+						colour_code.push(res.Department[i].Colour)
+					}
+				}
+			}
+			let set_length = lable_name.length
+			var ctx = document.getElementById("lineChart").getContext('2d');
+			let final = []
+			function dd(){
+				let ArrayDatasetValues = []
+				for(let k=0;k<set_length;k++)
+				{
+					let values_data =
+					{
+						label: lable_name[k] ,
+						data: Applier_data[k],
+						fill: false,
+						borderColor: colour_code[k],
+						backgroundColor: colour_code[k],
+						borderWidth: 1
+					}
+					ArrayDatasetValues.push(values_data)
+				}
+				return ArrayDatasetValues;
+			}
+			var lineChart = new Chart(ctx, 
+			{
+				type: 'line',
+				data: {
+					labels: ["Jan",	"Feb",	"Mar",	"Apr",	"May","Jun", "Jul",	"Aug",	"Sep",	"Oct","Nov", "Dec"],
+					datasets: dd() },
+				options: {
+				responsive: true,
+					legend: {
+						display: false
+					}
+				}
+			});
+		})
+	})
+	
+	
+
+</script>
 
 {% include "Layout/side_style.html" %}
 {% include "Layout/bottom.html" %}

@@ -313,21 +313,20 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Employee/add_ticket" enctype="multipart/form-data" method="POST">
+					<form action="" enctype="multipart/form-data" method="POST">
 						<div class="row">
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Ticket Subject</label>
-									<input class="form-control" type="text" id="aticketsubject" name="aticketsubject"
-										required>
+									<input class="form-control" type="text" id="aticketsubject" name="aticketsubject" required>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Ticket Id</label>
-									<input class="form-control" type="text" id="aticketid" name="aticketid"
-										value="{{gen_id}}" readonly required>
+									<input class="form-control" type="text" id="aticketid" name="aticketid" value="{{gen_id}}" readonly required>
 								</div>
 							</div>
 						</div>
@@ -335,19 +334,14 @@
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Assign Staff</label>
-									<select class="form-select" id="aassignstaff" name="aassignstaff" required>
-										<option>--Select--</option>
-										{% for i in employee_data%}
-										<option value="{{i.id}}">{{i.First_Name}}{{i.Last_Name}}</option>
-										{% endfor %}
-									</select>
+									<input id="aassignstaff" name="aassignstaff" class="form-control" value="{{emp_data.First_Name}} {{emp_data.Last_Name}}" required readonly/>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Client</label>
 									<select class="form-select" id="aclient" name="aclient" required>
-										<option>--Select--</option>
+										<option selected disabled>-select</option>
 										{% for i in client_data %}
 										<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
 										{% endfor %}
@@ -360,10 +354,10 @@
 								<div class="input-block mb-3">
 									<label class="col-form-label">Priority</label>
 									<select class="form-select" id="apriority" name="apriority" required>
-										<option>Select</option>
-										<option>High</option>
-										<option>Medium</option>
-										<option>Low</option>
+										<option selected disabled>-Select</option>
+										<option value="High">High</option>
+										<option value="Medium">Medium</option>
+										<option value="Low">Low</option>
 									</select>
 								</div>
 							</div>
@@ -378,10 +372,9 @@
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Assign</label>
-									<!-- <input type="text" class="form-control" id="aassign" name="aassign" required> -->
 									<select class="form-select" id="aassign" name="aassign"
-										onchange="getId(this)">
-										<option>--Select--</option>
+										onchange="getId(this)" required>
+										<option selected disabled>-Select</option>
 										{% for i in employee_data%}
 										<option value="{{i.id}}">{{i.First_Name}}{{i.Last_Name}}</option>
 										{% endfor %}
@@ -409,10 +402,10 @@
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Add Followers</label>
-									<select class="form-select" id="aaddfollowers" name="aaddfollowers" oninput="follower_id(this)" required>
-										<option>--Select--</option>
-										{% for i in employee_data%}
-										<option value="{{i.id}}">{{i.First_Name}}{{i.Last_Name}}</option>
+									<select class="selectpicker" multiple data-live-search="true"  id="aaddfollowers" name="aaddfollowers" onchange="follower_id($(this).val())" required>
+										<option selected disabled>-select</option>
+										{% for i in employee_data %}
+										<option value="{{i.id}}">{{i.First_Name}} {{i.Last_Name}}</option>
 										{% endfor %}
 									</select>
 								</div>
@@ -420,64 +413,47 @@
 							<div class="col-sm-6">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Ticket Followers</label>
-									<div class="project-members">
-										<a title="Richard Miles" data-bs-toggle="tooltip" href="#" class="avatar">
-											<img src="/templates/assets/img/profile1.png" id="followers" alt="User Image">
-										</a>
-										<!-- <a title="John Smith" data-bs-toggle="tooltip" href="#" class="avatar">
-											<img src="/templates/assets/img/profiles/avatar-10.jpg" alt="User Image">
-										</a>
-										<a title="Mike Litorus" data-bs-toggle="tooltip" href="#" class="avatar">
-											<img src="/templates/assets/img/profiles/avatar-05.jpg" alt="User Image">
-										</a>
-										<a title="Wilmer Deluna" data-bs-toggle="tooltip" href="#" class="avatar">
-											<img src="/templates/assets/img/profiles/avatar-11.jpg" alt="User Image">
-										</a>
-										<span class="all-team">+2</span> -->
+									<div class="project-members followers_section">
+										<a title="Richard Miles" data-bs-toggle="tooltip" href="#" class="avatar"><img src="/templates/assets/img/profile1.png" id="followers_1" alt="User Image"></a>
 									</div>
 								</div>
 							</div>
 						</div>
 						<script>
-							function follower_id(data) {
-								$.get('/HrmTool/Employee/follower_id/' + data.value, function (res) { $('#followers').attr('src', '/templates/assets/uploaded_files/' + res.Photo) })
+							function follower_id(data){
+								const formData = new FormData()
+								formData.append('Followers',data)
+
+								fetch(`/HrmTool/Employee/ticket_followers_data`,{method:'post',body:formData})
+								.then(res=>res.json())
+								.then(res=>{
+									$('.followers_section').html(function(){
+										let txt = ``;
+										for(let i=0;i<res.Result.length;i++){
+											txt+=`<a title="${res.Result[i].First_Name} ${res.Result[i].Last_Name}" data-bs-toggle="tooltip" href="#" class="avatar"><img src="/templates/assets/uploaded_files/${res.Result[i].Photo}" id="followers_1" alt="User Image"></a>`
+										}
+										return txt;
+									})
+								})
 							}
 						</script>
-						<!-- <div class="container">
-							<strong>Select Language:</strong>
-							<select id="multiple-checkboxes" multiple="multiple">
-								<option value="php">Html</option>
-								<option value="javascript">JavaScript</option>
-								<option value="java">Java</option>
-								<option value="sql">SQL</option>
-								<option value="jquery">Jquery</option>
-								<option value=".net">.Net</option>
-							</select>
-						</div>
-						<script type="text/javascript">
-							$(document).ready(function () {
-								$('#multiple-checkboxes').multiselect();
-							});  
-						</script> -->
 						<div class="row">
 							<div class="col-sm-12">
 								<div class="input-block mb-3">
 									<label class="col-form-label">Description</label>
-									<textarea class="form-control" id="adescription" name="adescription"></textarea>
+									<textarea class="form-control" id="adescription" name="adescription" placeholder="Enter 255 Character's" required></textarea>
 								</div>
 								<div class="input-block mb-3">
 									<label class="col-form-label">Upload Files</label>
 									<input class="form-control" type="file" id="auploadfiles" name="auploadfiles" accept="application/pdf"
 										oninput="display_pdf.data = window.URL.createObjectURL(this.files[0]); display_pdf.style.display = 'block';">
 									<br>
-									<br>
-									<br>
 									<object id="display_pdf" data="/templates/assets/img/test.pdf" width="700" height="300" style="display: none;"></object>
 								</div>
 							</div>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+							<a class="btn btn-primary submit-btn" type="submit" onclick="add_tickets()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -485,6 +461,58 @@
 		</div>
 	</div>
 	<!-- /Add Ticket Modal -->
+	<script>
+		function add_tickets(){
+			let Subject =$('#aticketsubject').val();
+			let Ticket_Id =$('#aticketid').val();
+			let Client =$('#aclient').val();
+			let Priority =$('#apriority').val();
+			let CC =$('#acc').val();
+			let Assign =$('#aassign').val();
+			let Followers =$('#aaddfollowers').val();
+			let Description =$('#adescription').val();
+			let Files = Image_process();
+
+			function Image_process(){let img = $('#auploadfiles')[0].files[0];if(img){return img}else{return 'None'}}
+			
+			if(Subject===''||Subject===null){$('#aticketsubject').css('border-color','#ff0000')}else{$('#aticketsubject').css('border-color','#00ff00')}
+			if(Ticket_Id===''||Ticket_Id===null){$('#aticketid').css('border-color','#ff0000')}else{$('#aticketid').css('border-color','#00ff00')}
+			if(Client===''||Client===null){$('#aclient').css('border-color','#ff0000')}else{$('#aclient').css('border-color','#00ff00')}
+			if(Priority===''||Priority===null){$('#apriority').css('border-color','#ff0000')}else{$('#apriority').css('border-color','#00ff00')}
+			if(CC===''||CC===null){$('#acc').css('border-color','#ff0000')}else{$('#acc').css('border-color','#00ff00')}
+			if(Assign===''||Assign===null){$('#aassign').css('border-color','#ff0000')}else{$('#aassign').css('border-color','#00ff00')}
+			if(Followers==[]||Followers===null){$('#aaddfollowers').css('border-color','#ff0000')}else{$('#aaddfollowers').css('border-color','#00ff00')}
+			if(Description===''||Description===null){$('#adescription').css('border-color','#ff0000')}else{$('#adescription').css('border-color','#00ff00')}
+			if(Files==='None'||Files===undefined){$('#auploadfiles').css('border-color','#ff0000')}else{$('#auploadfiles').css('border-color','#00ff00')}
+
+			if(Subject!==null && Ticket_Id!==null && Client!==null && Priority!==null && CC!==null && Assign!==null && Followers!=[] && Description!==null && Files!=='None'){
+
+				const formData = new FormData();
+				formData.append('aticketsubject',Subject)
+				formData.append('aticketid',Ticket_Id)
+				formData.append('aclient',Client)
+				formData.append('apriority',Priority)
+				formData.append('acc',CC)
+				formData.append('aassign',Assign)
+				formData.append('adescription',Description)
+				formData.append('aaddfollowers',Followers)
+				formData.append('auploadfiles',Files)
+
+				fetch(`/HrmTool/Employee/add_ticket`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 329px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 349px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 	<!-- Edit Ticket Modal -->
 	<div id="edit_ticket" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">

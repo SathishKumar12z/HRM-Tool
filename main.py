@@ -21,6 +21,7 @@ app.add_middleware(
 app.add_middleware(SessionMiddleware, secret_key="some-random-string")
 
 app.mount("/templates/assets", StaticFiles(directory="templates/assets"), name="assets")#english
+app.mount("/templates/assets_2", StaticFiles(directory="templates/assets_2"), name="assets_2")#english
 
 
 # GET operation at route '/'

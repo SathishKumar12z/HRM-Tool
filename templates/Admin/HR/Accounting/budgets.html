@@ -11,7 +11,7 @@
 				<div class="col">
 					<h3 class="page-title">Budgets</h3>
 					<ul class="breadcrumb">
-						<li class="breadcrumb-item"><a href="admin-dashboard.html">Dashboard</a></li>
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
 						<li class="breadcrumb-item active">Accounts</li>
 					</ul>
 				</div>
@@ -47,8 +47,8 @@
 								<td>{{loop.index}}</td>
 								<td>{{i.Budget_Title}}</td>
 								<td>{{i.Budget_Type}}</td>
-								<td>{{i.Start_Date}}</td>
-								<td>{{i.End_Date}}</td>
+								<td class="dateformate">{{i.Start_Date}}</td>
+								<td class="dateformate">{{i.End_Date}}</td>
 								<td>{{i.Overall_Revenues}}</td>
 								<td>{{i.Overall_Expense}}</td>
 								<td>{{i.Tax}}</td>
@@ -87,24 +87,22 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
 					<form action="/submit_budget" method="POST">
 						<div class="input-block mb-3">
 							<label class="col-form-label">Budget Title</label>
-							<input class="form-control" type="text" name="budget_title" id="budget_title"
-								placeholder="Budgets Title">
+							<input class="form-control" type="text" name="budget_title" id="budget_title" required>
 						</div>
 
 						<label class="col-form-label">Choose Budget Respect Type</label>
 						<div class="input-block mb-3">
 							<div class="form-check form-check-inline">
-								<input class="form-check-input BudgetType" type="radio" name="budget_type"
-									id="budget_type" value="project">
+								<input class="form-check-input BudgetType" type="radio" name="budget_type" id="budget_type_Project" value="project">
 								<label class="form-check-label" for="project2">Project</label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input BudgetType" type="radio" name="budget_type"
-									id="budget_type" value="category">
+								<input class="form-check-input BudgetType" type="radio" name="budget_type" id="budget_type_Category" value="category">
 								<label class="form-check-label" for="category1">Category</label>
 							</div>
 
@@ -112,15 +110,15 @@
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Start Date</label>
-							<div class="cal-icon"><input class="form-control datetimepicker" type="text"
-									name="budget_start_date" id="budget_start_date" placeholder="Start Date"
-									data-date-format="dd-mm-yyyy"></div>
+							<div class="cal-icon">
+								<input class="form-control datetimepicker" type="text" name="budget_start_date" id="budget_start_date" >
+							</div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">End Date</label>
-							<div class="cal-icon"><input class="form-control datetimepicker" type="text"
-									name="budget_end_date" id="budget_end_date" placeholder="End Date"
-									data-date-format="dd-mm-yyyy"></div>
+							<div class="cal-icon">
+								<input class="form-control datetimepicker" type="text" name="budget_end_date" id="budget_end_date" >
+							</div>
 						</div>
 
 						<div class="input-block mb-3">
@@ -130,35 +128,28 @@
 							<div class="row AlLRevenues">
 								<div class="col-sm-6">
 									<div class="input-block mb-3">
-										<label class="col-form-label">Revenue Title <span
-												class="text-danger">*</span></label>
-										<input type="text" class="form-control RevenuETitle" value=""
-											placeholder="Revenue Title" name="revenue_title" id="revenue_title "
-											autocomplete="off">
+										<label class="col-form-label">Revenue Title <span class="text-danger">*</span></label>
+										<input type="text" class="form-control RevenuETitle" name="revenue_title" id="revenue_title" required>
 									</div>
 								</div>
 								<div class="col-sm-5">
 									<div class="input-block mb-3">
-										<label class="col-form-label">Revenue Amount <span
-												class="text-danger">*</span></label>
-										<input type="text" name="revenue_amount" id="revenue_amount"
-											placeholder="Amount" value="" class="form-control RevenuEAmount"
-											autocomplete="off" onkeyup="calculate_revenve(this)">
+										<label class="col-form-label">Revenue Amount <span class="text-danger">*</span></label>
+										<input type="text" name="revenue_amount" id="revenue_amount"  class="form-control RevenuEAmount allow_numbers_only" onkeyup="calculate_revenve(this)">
 									</div>
 								</div>
-								<div class="col-sm-1">
+								<!-- <div class="col-sm-1">
 									<div class="add-more">
-										<a class="add_more_revenue" title="Add Revenue"><i
-												class="fa-solid fa-plus-circle"></i></a>
+										<a class="add_more_revenue" title="Add Revenue">
+											<i class="fa-solid fa-plus-circle"></i></a>
 									</div>
-								</div>
+								</div> -->
 							</div>
 						</div>
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Overall Revenues <span class="text-danger">(A)</span></label>
-							<input class="form-control" type="text" name="total_revenve" id="total_revenve"
-								placeholder="Overall Revenues" readonly>
+							<input class="form-control" type="text" name="total_revenve" id="total_revenve" readonly>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Expected Expenses</label>
@@ -167,59 +158,49 @@
 							<div class="row AlLExpenses">
 								<div class="col-sm-6">
 									<div class="input-block mb-3">
-										<label class="col-form-label">Expenses Title <span
-												class="text-danger">*</span></label>
-										<input type="text" class="form-control EXpensesTItle" value=""
-											id="expenses_title" placeholder="Expenses Title" name="expenses_title"
-											autocomplete="off">
+										<label class="col-form-label">Expenses Title <span class="text-danger">*</span></label>
+										<input type="text" class="form-control EXpensesTItle" id="expenses_title" name="expenses_title" required>
 									</div>
 								</div>
 								<div class="col-sm-5">
 									<div class="input-block mb-3">
-										<label class="col-form-label">Expenses Amount <span
-												class="text-danger">*</span></label>
-										<input type="text" name="expenses_amount" id="expenses_amount"
-											placeholder="Amount" value="" class="form-control EXpensesAmount"
-											autocomplete="off" onkeyup="calculate_expense(this)">
+										<label class="col-form-label">Expenses Amount <span class="text-danger">*</span></label>
+										<input type="text" name="expenses_amount" id="expenses_amount" class="form-control EXpensesAmount allow_numbers_only" onkeyup="calculate_expense(this)">
 									</div>
 								</div>
-								<div class="col-sm-1">
+								<!-- <div class="col-sm-1">
 									<div class="add-more">
-										<a class="add_more_expenses" title="Add Expenses"><i
-												class="fa-solid fa-plus-circle"></i></a>
+										<a class="add_more_expenses" title="Add Expenses">
+											<i class="fa-solid fa-plus-circle"></i></a>
 									</div>
-								</div>
+								</div> -->
 							</div>
 						</div>
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Overall Expense <span class="text-danger">(B)</span></label>
-							<input class="form-control" type="text" name="total_expense" id="total_expense"
-								placeholder="Overall Expenses" readonly>
+							<input class="form-control" type="text" name="total_expense" id="total_expense"  readonly>
 						</div>
 
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Expected Profit <span class="text-danger">( C = A - B )</span>
 							</label>
-							<input class="form-control" type="text" name="total_profit" id="total_profit"
-								placeholder="Expected Profit" readonly>
+							<input class="form-control" type="text" name="total_profit" id="total_profit"  readonly>
 						</div>
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Tax <span class="text-danger">(D)</span></label>
-							<input class="form-control" type="text" name="tax_amount" id="tax_amount"
-								placeholder="Tax Amount" onkeyup="calculate_amount(this)">
+							<input class="form-control" type="text" name="tax_amount" id="tax_amount" placeholder="Tax Amount" onkeyup="calculate_amount(this)">
 						</div>
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Budget Amount <span class="text-danger">( E = C - D )</span>
 							</label>
-							<input class="form-control" type="text" name="budget_amount" id="budget_amount"
-								placeholder="Budget Amount" readonly>
+							<input class="form-control" type="text" name="budget_amount" id="budget_amount" placeholder="Budget Amount" readonly>
 						</div>
 						<div class=" submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="add_budget()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -240,7 +221,75 @@
 		function calculate_amount(data) {
 			$('#tax_amount').val(data.value)
 			$('#budget_amount').val(Number($('#total_profit').val()) - Number(data.value))
+		}
+	</script>
 
+	<script>
+		function add_budget(){
+			let Title = $('#budget_title').val();
+			let Start = $('#budget_start_date').val();
+			let End = $('#budget_end_date').val();
+			let Revenue_t = $('#revenue_title').val();
+			let Revenue_a = $('#revenue_amount').val();
+			let Overall_Rev = $('#total_revenve').val();
+			let Expenses_t = $('#expenses_title').val();
+			let Expenses_a = $('#expenses_amount').val();
+			let Overall_Exp = $('#total_expense').val();
+			let Profit = $('#total_profit').val();
+			let Tax = $('#tax_amount').val();
+			let Budget = $('#budget_amount').val();
+			//check box
+			let Type = check_box();
+			function check_box()
+			{
+				let Pro = document.getElementById('budget_type_Project')
+				let Cat = document.getElementById('budget_type_Category')
+				if(Pro.checked){ return 'project' }else if (Cat.checked){ return 'category' }else{ return 'None' }
+			}
+
+			if(Title===''||Title===null){ $('#budget_title').css('border-color','#ff3300') }else{ $('#budget_title').css('border-color','#00ff00') }
+			if(Start===''||Start===null){ $('#budget_start_date').css('border-color','#ff3300') }else{ $('#budget_start_date').css('border-color','#00ff00') }
+			if(End===''||End===null){ $('#budget_end_date').css('border-color','#ff3300') }else{ $('#budget_end_date').css('border-color','#00ff00') }
+			if(Revenue_t===''||Revenue_t===null){ $('#revenue_title').css('border-color','#ff3300') }else{ $('#revenue_title').css('border-color','#00ff00') }
+			if(Revenue_a===''||Revenue_a===null){ $('#revenue_amount').css('border-color','#ff3300') }else{ $('#revenue_amount').css('border-color','#00ff00') }
+			if(Overall_Rev===''||Overall_Rev===null){ $('#total_revenve').css('border-color','#ff3300') }else{ $('#total_revenve').css('border-color','#00ff00') }
+			if(Expenses_t===''||Expenses_t===null){ $('#expenses_title').css('border-color','#ff3300') }else{ $('#expenses_title').css('border-color','#00ff00') }
+			if(Expenses_a===''||Expenses_a===null){ $('#expenses_amount').css('border-color','#ff3300') }else{ $('#expenses_amount').css('border-color','#00ff00') }
+			if(Overall_Exp===''||Overall_Exp===null){ $('#total_expense').css('border-color','#ff3300') }else{ $('#total_expense').css('border-color','#00ff00') }
+			if(Profit===''||Profit===null){ $('#total_profit').css('border-color','#ff3300') }else{ $('#total_profit').css('border-color','#00ff00') }
+			if(Tax===''||Tax===null){ $('#tax_amount').css('border-color','#ff3300') }else{ $('#tax_amount').css('border-color','#00ff00') }
+			if(Budget===''||Budget===null){ $('#budget_amount').css('border-color','#ff3300') }else{ $('#budget_amount').css('border-color','#00ff00') }
+			if(Type==='None'||Type===null){ $('#budget_type_Project').css('border-color','#ff3300');$('#budget_type_Category').css('border-color','#ff3300')}else{ $('#budget_type_Project').css('border-color','#00ff00');$('#budget_type_Category').css('border-color','#00ff00') }
+
+			if(Title!==null && Start!==null && End!==null && Revenue_t!==null && Revenue_a!==null && Overall_Rev!==null && Expenses_t!==null && Expenses_a!==null && Overall_Exp!==null && Profit!==null && Tax!==null && Budget!==null && Type!=='None'){
+
+				const formData = new FormData();
+				formData.append('budget_title',Title)
+				formData.append('budget_start_date',Start)
+				formData.append('budget_end_date',End)
+				formData.append('revenue_title',Revenue_t)
+				formData.append('revenue_amount',Revenue_a)
+				formData.append('total_revenve',Overall_Rev)
+				formData.append('expenses_title',Expenses_t)
+				formData.append('expenses_amount',Expenses_a)
+				formData.append('total_expense',Overall_Exp)
+				formData.append('total_profit',Profit)
+				formData.append('tax_amount',Tax)
+				formData.append('budget_amount',Budget)
+				formData.append('budget_type',Type)
+
+				fetch(`/HrmTool/HR/submit_budget`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
 		}
 	</script>
 
@@ -254,41 +303,36 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/budget_edit" method="POST">
+					<form>
 						<div class="input-block mb-3">
-							<input id="edit_id" name="edit_id" type="" />
+							<input id="edit_idz" name="edit_id" type="hidden" />
 							<label class="col-form-label">Budget Title</label>
-							<input class="form-control" type="text" name="edit_budget_title" id="edit_budget_title"
-								placeholder="Budgets Title">
+							<input class="form-control" type="text" name="edit_budget_title" id="edit_budget_title" required>
 						</div>
 
 						<label class="col-form-label">Choose Budget Respect Type</label>
 						<div class="input-block mb-3">
 							<div class="form-check form-check-inline">
-								<input class="form-check-input BudgetType" type="radio" name="edit_budget_type"
-									id="edit_project" value="project">
+								<input class="form-check-input BudgetType" type="radio" name="edit_budget_type" id="edit_project">
 								<label class="form-check-label" for="edit_project">Project</label>
 							</div>
 							<div class="form-check form-check-inline">
-								<input class="form-check-input BudgetType" type="radio" name="edit_budget_type"
-									id="edit_category" value="category">
+								<input class="form-check-input BudgetType" type="radio" name="edit_budget_type" id="edit_category">
 								<label class="form-check-label" for="edit_category">Category</label>
 							</div>
-
 						</div>
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Start Date</label>
-							<div class="cal-icon"><input class="form-control datetimepicker" type="text"
-									name="edit_budget_start_date" id="edit_budget_start_date" placeholder="Start Date"
-									data-date-format="dd-mm-yyyy"></div>
+							<div class="cal-icon">
+								<input class="form-control datetimepicker" type="text" name="edit_budget_start_date" id="edit_budget_start_date" required></div>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">End Date</label>
-							<div class="cal-icon"><input class="form-control datetimepicker" type="text"
-									name="edit_budget_end_date" id="edit_budget_end_date" placeholder="End Date"
-									data-date-format="dd-mm-yyyy"></div>
+							<div class="cal-icon">
+								<input class="form-control datetimepicker" type="text" name="edit_budget_end_date" id="edit_budget_end_date" required></div>
 						</div>
 
 						<div class="input-block mb-3">
@@ -300,18 +344,18 @@
 									<div class="input-block mb-3">
 										<label class="col-form-label">Revenue Title <span
 												class="text-danger">*</span></label>
-										<input type="text" class="form-control RevenuETitle" value=""
-											id="edit_revenue_title" placeholder="Revenue Title"
-											name="edit_revenue_title" autocomplete="off">
+										<input type="text" class="form-control RevenuETitle"
+											id="edit_revenue_title"
+											name="edit_revenue_title">
 									</div>
 								</div>
 								<div class="col-sm-5">
 									<div class="input-block mb-3">
 										<label class="col-form-label">Revenue Amount <span
 												class="text-danger">*</span></label>
-										<input type="text" name="edit_revenue_amount" placeholder="Amount" value=""
-											id="edit_revenue_amount" class="form-control RevenuEAmount"
-											autocomplete="off" onkeyup="calculate_Revenve(this)">
+										<input type="text" name="edit_revenue_amount" 
+											id="edit_revenue_amount" class="form-control RevenuEAmount allow_numbers_only"
+											 onkeyup="calculate_Revenve(this)">
 									</div>
 								</div>
 								<div class="col-sm-1">
@@ -338,8 +382,8 @@
 									<div class="input-block mb-3">
 										<label class="col-form-label">Expenses Title <span
 												class="text-danger">*</span></label>
-										<input type="text" class="form-control EXpensesTItle" value=""
-											id="edit_expenses_title" placeholder="Expenses Title"
+										<input type="text" class="form-control EXpensesTItle" 
+											id="edit_expenses_title" 
 											name="edit_expenses_title" autocomplete="off">
 									</div>
 								</div>
@@ -347,48 +391,39 @@
 									<div class="input-block mb-3">
 										<label class="col-form-label">Expenses Amount <span
 												class="text-danger">*</span></label>
-										<input type="text" name="edit_expenses_amount" placeholder="Amount"
-											id="edit_expenses_amount" value="" class="form-control EXpensesAmount"
-											autocomplete="off" onkeyup="calculate_Expense(this)">
+										<input type="text" name="edit_expenses_amount"
+											id="edit_expenses_amount"  class="form-control EXpensesAmount allow_numbers_only"
+											onkeyup="calculate_Expense(this)">
 									</div>
 								</div>
 								<div class="col-sm-1">
 									<div class="add-more">
-										<a class="add_more_expenses" title="Add Expenses"><i
-												class="fa-solid fa-plus-circle"></i></a>
+										<a class="add_more_expenses" title="Add Expenses">
+											<i class="fa-solid fa-plus-circle"></i></a>
 									</div>
 								</div>
 							</div>
 						</div>
-
 						<div class="input-block mb-3">
 							<label class="col-form-label">Overall Expense <span class="text-danger">(B)</span></label>
-							<input class="form-control" type="text" name="edit_total_expense" id="edit_total_expense"
-								placeholder="Overall Expenses" readonly>
+							<input class="form-control" type="text" name="edit_total_expense" id="edit_total_expense"  readonly>
 						</div>
-
-
 						<div class="input-block mb-3">
 							<label class="col-form-label">Expected Profit <span class="text-danger">( C = A - B )</span>
 							</label>
-							<input class="form-control" type="text" name="edit_total_profit" id="edit_total_profit"
-								placeholder="Expected Profit" readonly>
+							<input class="form-control" type="text" name="edit_total_profit" id="edit_total_profit"  readonly>
 						</div>
-
 						<div class="input-block mb-3">
 							<label class="col-form-label">Tax <span class="text-danger">(D)</span></label>
-							<input class="form-control" type="text" name="edit_tax_amount" id="edit_tax_amount"
-								placeholder="Tax Amount" onkeyup="calculate_Amount(this)">
+							<input class="form-control" type="text" name="edit_tax_amount" id="edit_tax_amount"  onkeyup="calculate_Amount(this)">
 						</div>
-
 						<div class="input-block mb-3">
 							<label class="col-form-label">Budget Amount <span class="text-danger">( E = C - D )</span>
 							</label>
-							<input class="form-control" type="text" name="edit_budget_amount" id="edit_budget_amount"
-								placeholder="Budget Amount" readonly>
+							<input class="form-control" type="text" name="edit_budget_amount" id="edit_budget_amount" readonly>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn">Submit</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_budget()">Submit</a>
 						</div>
 					</form>
 				</div>
@@ -397,43 +432,96 @@
 	</div>
 	<script>
 		function edit_modal(data) {
-			$.get('/taking_edit_modal/' + data, function (res) {
+			$.get('/HrmTool/HR/get_budget_id/' + data, function (res) {
 				console.log(res)
-
-				$('#edit_id').val(res.id)
-				$('#edit_budget_title').val(res.Budget_Title)
-				// $('#edit_budget_type').val(res.Budget_Type)
-				$('#edit_budget_start_date').val(res.Start_Date)
-				$('#edit_budget_end_date').val(res.End_Date)
-				$('#edit_revenue_title').val(res.Revenue_Title)
-				$('#edit_revenue_amount').val(res.Revenue_Amount)
-				$('#edit_total_revenve').val(res.Overall_Revenues)
-				$('#edit_expenses_title').val(res.Expenses_Title)
-				$('#edit_expenses_amount').val(res.Expenses_Amount)
-				$('#edit_total_expense').val(res.Overall_Expense)
-				$('#edit_total_profit').val(res.Expected_Profit)
-				$('#edit_tax_amount').val(res.Tax)
-				$('#edit_budget_amount').val(res.Budget_Amount)
-				if (res.Budget_Type == 'project') {
-					$('#edit_project').attr('checked', 'checked')
-				} else if (res.Budget_Type == 'category') {
-					$('#edit_project').attr('checked', 'checked')
-				}
-
-
+				$('#edit_idz').val(res.Result.id)
+				$('#edit_budget_title').val(res.Result.Budget_Title)
+				$('#edit_budget_start_date').val(res.Result.Start_Date)
+				$('#edit_budget_end_date').val(res.Result.End_Date)
+				$('#edit_revenue_title').val(res.Result.Revenue_Title)
+				$('#edit_revenue_amount').val(res.Result.Revenue_Amount)
+				$('#edit_total_revenve').val(res.Result.Overall_Revenues)
+				$('#edit_expenses_title').val(res.Result.Expenses_Title)
+				$('#edit_expenses_amount').val(res.Result.Expenses_Amount)
+				$('#edit_total_expense').val(res.Result.Overall_Expense)
+				$('#edit_total_profit').val(res.Result.Expected_Profit)
+				$('#edit_tax_amount').val(res.Result.Tax)
+				$('#edit_budget_amount').val(res.Result.Budget_Amount)
+				if (res.Result.Budget_Type == 'project') { $('#edit_project').attr('checked', 'checked')} 
+				else if (res.Result.Budget_Type == "category") { $('#edit_category').attr('checked', 'checked')}
 			})
 		}
-		function delete_budget(data) {
-			$('#delete_item').val(data)
-		}
 
-		function confirm_delete(data) {
-			$.get('/delete_budget/' + data, function (res) {
-				alert('Deleted Successfully')
-				location.reload()
-			})
+		function edit_budget(){
+			let Edit_id = $('#edit_idz').val();
+			let Title = $('#edit_budget_title').val();
+			let Start = $('#edit_budget_start_date').val();
+			let End = $('#edit_budget_end_date').val();
+			let Revenue_t = $('#edit_revenue_title').val();
+			let Revenue_a = $('#edit_revenue_amount').val();
+			let Overall_Rev = $('#edit_total_revenve').val();
+			let Expenses_t = $('#edit_expenses_title').val();
+			let Expenses_a = $('#edit_expenses_amount').val();
+			let Overall_Exp = $('#edit_total_expense').val();
+			let Profit = $('#edit_total_profit').val();
+			let Tax = $('#edit_tax_amount').val();
+			let Budget = $('#edit_budget_amount').val();
+			//check box
+			let Type = check_box();
+			function check_box()
+			{
+				let Pro = document.getElementById('edit_project')
+				let Cat = document.getElementById('edit_category')
+				if(Pro.checked){ return 'project' }else if (Cat.checked){ return 'category' }else{ return 'None' }
+			}
+
+			if(Title===''||Title===null){ $('#edit_budget_title').css('border-color','#ff3300') }else{ $('#edit_budget_title').css('border-color','#00ff00') }
+			if(Start===''||Start===null){ $('#edit_budget_start_date').css('border-color','#ff3300') }else{ $('#edit_budget_start_date').css('border-color','#00ff00') }
+			if(End===''||End===null){ $('#edit_budget_end_date').css('border-color','#ff3300') }else{ $('#edit_budget_end_date').css('border-color','#00ff00') }
+			if(Revenue_t===''||Revenue_t===null){ $('#edit_revenue_title').css('border-color','#ff3300') }else{ $('#edit_revenue_title').css('border-color','#00ff00') }
+			if(Revenue_a===''||Revenue_a===null){ $('#edit_revenue_amount').css('border-color','#ff3300') }else{ $('#edit_revenue_amount').css('border-color','#00ff00') }
+			if(Overall_Rev===''||Overall_Rev===null){ $('#edit_total_revenve').css('border-color','#ff3300') }else{ $('#edit_total_revenve').css('border-color','#00ff00') }
+			if(Expenses_t===''||Expenses_t===null){ $('#edit_expenses_title').css('border-color','#ff3300') }else{ $('#edit_expenses_title').css('border-color','#00ff00') }
+			if(Expenses_a===''||Expenses_a===null){ $('#edit_expenses_amount').css('border-color','#ff3300') }else{ $('#edit_expenses_amount').css('border-color','#00ff00') }
+			if(Overall_Exp===''||Overall_Exp===null){ $('#edit_total_expense').css('border-color','#ff3300') }else{ $('#edit_total_expense').css('border-color','#00ff00') }
+			if(Profit===''||Profit===null){ $('#edit_total_profit').css('border-color','#ff3300') }else{ $('#edit_total_profit').css('border-color','#00ff00') }
+			if(Tax===''||Tax===null){ $('#edit_tax_amount').css('border-color','#ff3300') }else{ $('#edit_tax_amount').css('border-color','#00ff00') }
+			if(Budget===''||Budget===null){ $('#edit_budget_amount').css('border-color','#ff3300') }else{ $('#edit_budget_amount').css('border-color','#00ff00') }
+			if(Type==='None'||Type===null){ $('#edit_project').css('border-color','#ff3300');$('#edit_category').css('border-color','#ff3300')}else{ $('#edit_project').css('border-color','#00ff00');$('#edit_category').css('border-color','#00ff00') }
+
+			if(Title!==null && Start!==null && End!==null && Revenue_t!==null && Revenue_a!==null && Overall_Rev!==null && Expenses_t!==null && Expenses_a!==null && Overall_Exp!==null && Profit!==null && Tax!==null && Budget!==null && Type!=='None'){
+
+				const formData = new FormData();
+				formData.append('edit_id',Edit_id)
+				formData.append('edit_budget_title',Title)
+				formData.append('edit_budget_start_date',Start)
+				formData.append('edit_budget_end_date',End)
+				formData.append('edit_revenue_title',Revenue_t)
+				formData.append('edit_revenue_amount',Revenue_a)
+				formData.append('edit_total_revenve',Overall_Rev)
+				formData.append('edit_expenses_title',Expenses_t)
+				formData.append('edit_expenses_amount',Expenses_a)
+				formData.append('edit_total_expense',Overall_Exp)
+				formData.append('edit_total_profit',Profit)
+				formData.append('edit_tax_amount',Tax)
+				formData.append('edit_budget_amount',Budget)
+				formData.append('edit_budget_type',Type)
+
+				fetch(`/HrmTool/HR/budget_edit`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
 		}
 	</script>
+
 	<script>
 		function calculate_Revenve(data) {
 			$('#edit_total_revenve').val(data.value)
@@ -446,7 +534,6 @@
 		function calculate_Amount(data) {
 			$('#edit_tax_amount').val(data.value)
 			$('#edit_budget_amount').val(Number($('#edit_total_profit').val()) - Number(data.value))
-
 		}
 	</script>
 	<!-- /Edit Modal -->
@@ -479,6 +566,17 @@
 		</div>
 	</div>
 	<!-- /Delete Holiday Modal -->
+	<script>
+		function delete_budget(data) {
+			$('#delete_item').val(data)
+		}
+
+		function confirm_delete(data) {
+			$.get('/HrmTool/HR/delete_budget/' + data, function (res) {
+				location.reload()
+			})
+		}
+	</script>
 </div>
 <!-- /Page Wrapper -->
 

@@ -1,0 +1,219 @@
+{% include "Layout/top.html" %}
+{% include "Layout/side.html" %}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+	
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Termination Type</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a href="/HrmTool/Admin/dashboard">Dashboard</a></li>
+						<li class="breadcrumb-item active">Termination Type</li>
+					</ul>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="#"  class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_termination"><i class="fa-solid fa-plus"></i> Add</a>
+				</div>
+				<div class="col-auto float-end ms-auto">
+					<a href="/HrmTool/termination/termination" class="btn add-btn" ><i class="fa-solid fa fa-arrow-left"></i> Add Termination</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0 datatable">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th class="text-center">Terminated Type </th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+                            {% for i in termination_type_data %}
+							<tr>
+								<td>{{loop.index}}</td>
+								<td class="text-center">{{i.Name}}</td>
+								<td class="text-end">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_termination" onclick="taking_edit_type_id('{{i.id}}')"><i class="fa-solid fa-pencil m-r-5"></i> Edit</a>
+											<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_termination" onclick="taking_del_type_id('{{i.id}}')"><i class="fa-regular fa-trash-can m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+                            {% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+	<!-- Add Termination Modal -->
+	<div id="add_termination" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Termination Type</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+                <div class="add_error"></div>
+				<div class="modal-body">
+					<form>
+						<div class="input-block mb-3">
+							<label class="col-form-label">Terminated Type <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" id="name" name="name" required>
+						</div>
+						<div class="submit-section">
+							<a class="btn btn-primary submit-btn" onclick="add_termination()">Submit</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Termination Modal -->
+    <script>
+        function add_termination(){
+            let Name = $('#name').val();
+            if (Name===''||Name===null){$('#name').css('border-color','#ff4d4d')}else{$('#name').css('border-color','#66ff99')}
+            if(Name!==null){
+                const formData = new FormData();
+                formData.append('name',Name)
+
+                fetch(`/HrmTool/termination/termination_type`,{method:'post',body:formData})
+                .then(res=>res.json())
+                .then(res=>{
+                    console.log(res)
+                    if(res.Result=='Done'){
+                        location.reload()
+                    }else if(res.Result=='Error'){
+                        $('.add_error').html(`<h5 class="text-danger" style="padding-left: 177px;">Already Entered Data</h5>`)
+                    }else{
+                        $('.add_error').html(`<h5 class="text-danger" style="padding-left: 177px;">Unable To Add</h5>`)
+                    }
+
+                })
+            }
+        }
+    </script>
+	<!-- Edit Termination Modal -->
+	<div id="edit_termination" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Termination Type</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+                <div class="edit_error"></div>
+				<div class="modal-body">
+					<form>
+                        <input type="hidden" id="edit_idz" name="edit_id" />
+						<div class="input-block mb-3">
+							<label class="col-form-label">Terminated Type <span class="text-danger">*</span></label>
+							<input class="form-control" type="text" id="edit_name" name="edit_name" required>
+						</div>
+						<div class="submit-section">
+							<a class="btn btn-primary submit-btn" onclick="edit_type()">Submit</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Edit Termination Modal -->
+    <script>
+        function taking_edit_type_id(data){
+            fetch(`/HrmTool/termination/termination_type_id/${data}`)
+            .then(res=>res.json())
+            .then(res=>{
+                console.log(res)
+                $('#edit_idz').val(res.Result.id)
+                $('#edit_name').val(res.Result.Name)
+            })
+        }
+
+        function edit_type(){
+            let Edit_ID = $('#edit_idz').val();
+            let Name = $('#edit_name').val();
+            if (Name===''||Name===null){$('#edit_name').css('border-color','#ff4d4d')}else{$('#edit_name').css('border-color','#66ff99')}
+            
+            if(Name!==null){
+                const formData = new FormData();
+                formData.append('edit_idz',Edit_ID)
+                formData.append('edit_name',Name)
+
+                fetch(`/HrmTool/termination/termination_type_update`,{method:'post',body:formData})
+                .then(res=>res.json())
+                .then(res=>{
+                    console.log(res)
+                    if(res.Result=='Done'){
+                        location.reload()
+                    }else if(res.Result=='Error'){
+                        $('.edit_error').html(`<h5 class="text-danger" style="padding-left: 177px;">Already Entered Data</h5>`)
+                    }else{
+                        $('.edit_error').html(`<h5 class="text-danger" style="padding-left: 177px;">Unable To Add</h5>`)
+                    }
+
+                })
+            } 
+        }
+    </script>
+	<!-- Delete Termination Modal -->
+	<div class="modal custom-modal fade" id="delete_termination" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Termination</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+                        <input id="conform_del" name="conform_del" type="hidden" />
+						<div class="row">
+							<div class="col-6">
+								<a href="javascript:void(0);" class="btn btn-primary continue-btn" onclick="conform_delete($('#conform_del').val())">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Termination Modal -->
+    <script>
+        function taking_del_type_id(data){
+            $('#conform_del').val(data)
+        }
+
+        function conform_delete(data){
+            fetch(`/HrmTool/termination/delete_termination_type/${data}`)
+            .then(location.reload())
+        }
+    </script>
+
+</div>
+<!-- /Page Wrapper -->
+
+{% include "Layout/side_style.html" %}
+{% include "Layout/bottom.html" %}

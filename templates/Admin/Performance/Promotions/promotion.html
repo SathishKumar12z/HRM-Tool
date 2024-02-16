@@ -48,10 +48,11 @@
 								<td>
 									<h2 class="table-avatar blue-link">
 										{% for i in emp %}
-											{% if i.id|int == employee.Promotion_For|int%}
-											<a href="#" class="avatar"><img src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
-											<a href="profile.html">{{i.First_Name }} {{i.Last_Name}}</a>
-											{% endif %}
+										{% if i.id|int == employee.Promotion_For|int%}
+										<a href="/HrmTool/Employee/emplyee_profile/{{i.id}}" class="avatar"><img
+												src="/templates/assets/uploaded_files/{{i.Photo}}" alt="User Image"></a>
+										<a href="/HrmTool/Employee/emplyee_profile/{{i.id}}">{{i.First_Name }} {{i.Last_Name}}</a>
+										{% endif %}
 										{% endfor %}
 									</h2>
 								</td>
@@ -100,14 +101,14 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Performance/add_promotion" method="POST">
-
+					<form>
 						<div class="input-block mb-3 ">
 							<label class="col-form-label">Promotion For <span class="text-danger">*</span></label>
 							<select class="form-select" id="promotionfor" name="promotionfor"
-								onchange="search_by_designation($(this).val())" required>
-								<option value="">Select Employee</option>
+								onclick="taking_employee_id($(this).val())" required>
+								<option selected disabled>-Select</option>
 								{% for Employee in emp %}
 								<option value="{{ Employee.id}}">{{Employee.First_Name}} {{Employee.Last_Name}}</option>
 								{% endfor %}
@@ -115,42 +116,79 @@
 						</div>
 						<div class="input-block mb-3 show_search_class">
 							<label class="col-form-label">Promotion From <span class="text-danger">*</span></label>
-							<input type="text" class="form-control " id="promotionfrom" name="promotionfrom" readonly
-								required>
+							<input type="text" class="form-control" placeholder="Choose Employee" id="promotionfrom"
+								name="promotionfrom" readonly required>
 						</div>
 
 						<div class="input-block mb-3">
 							<label class="col-form-label">Promotion To <span class="text-danger">*</span></label>
-							<div id="pro_to">
-								<input class="form-control " placeholder="Select Employee" readonly/>
-							</div>
+							<select class="form-select" id="promotionto" name="promotionto" required>
+								<option selected disabled>-select</option>
+								{% for i in new_id %}
+								<option value="{{i.id}}">{{i.Name}}</option>
+								{% endfor %}
+							</select>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Promotion Date <span class="text-danger">*</span></label>
-								<input class="form-control" type="date"
-									id="promotiondate" name="promotiondate" required></div>
-
-						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+							<input class="form-control datetimepicker" type="text" id="promotiondate"
+								name="promotiondate" required>
 						</div>
 
+						<div class="submit-section">
+							<a class="btn btn-primary submit-btn" onclick="add_promotion()">Submit</a>
+						</div>
 					</form>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script>
-		var promotionDateInput = document.getElementById('promotiondate');
-		promotionDateInput.addEventListener('input', function(event) {
-			var inputValue = event.target.value;
-		var dateFormat = /^\d{4}-\d{2}-\d{2}$/;
-		if (!dateFormat.test(inputValue)) {
-			event.target.value = '';
-				}
-			});
-	</script>
 	<!-- /Add Promotion Modal -->
+	<script>
+		function taking_employee_id(data) {
+			fetch(`/HrmTool/Performance/taking_pormotion_employee/${data}`, { method: 'put' })
+				.then(res => res.json())
+				.then(res => {
+					$('#promotionfrom').val(res.Result.Name)
+				})
+		}
 
+		function add_promotion() {
+			let Employee = $('#promotionfor').val();
+			let From = $('#promotionfrom').val();
+			let To = $('#promotionto').val();
+			let Date = $('#promotiondate').val();
+
+			if (Employee === '' || Employee === null) { $('#promotionfor').css('border-color', '#ff6666') } else { $('#promotionfor').css('border-color', '#00ff00') }
+			if (From === '' || From === null) { $('#promotionfrom').css('border-color', '#ff6666') } else { $('#promotionfrom').css('border-color', '#00ff00') }
+			if (To === '' || To === null) { $('#promotionto').css('border-color', '#ff6666') } else { $('#promotionto').css('border-color', '#00ff00') }
+			if (Date === '' || Date === null) { $('#promotiondate').css('border-color', '#ff6666') } else { $('#promotiondate').css('border-color', '#00ff00') }
+
+			if (Employee !== null && From !== null && To !== null && Date !== null) {
+
+				const formData = new FormData();
+				formData.append('promotionfor', Employee)
+				formData.append('promotionfrom', From)
+				formData.append('promotionto', To)
+				formData.append('promotiondate', Date)
+
+				fetch(`/HrmTool/Performance/add_promotion`, { method: 'post', body: formData })
+					.then(res => res.json())
+					.then(res => {
+						console.log(res)
+						if (res.Result == 'Done') {
+							location.reload()
+						} else if (res.Result == 'Error') {
+							$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+						} else {
+							$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Unable To Add</h5>`)
+						}
+					})
+			}
+
+		}
+
+	</script>
 	<!-- Edit Promotion Modal -->
 	<div id="edit_promotion" class="modal custom-modal fade" role="dialog">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -166,12 +204,7 @@
 						<input id="edit_idz" name="edit_id" type="hidden">
 						<div class="input-block mb-3">
 							<label class="col-form-label">Promotion For <span class="text-danger">*</span></label>
-							<select class="form-select" id="epromotionfor" name="epromotionfor" required>
-								<option value="">Select Employee</option>
-								{% for Employee in emp %}
-								<option value="{{ Employee.id}}">{{ Employee.First_Name }} {{ Employee.Last_Name }}</option>
-								{% endfor %}
-							</select>
+							<input class="form-control" id="epromotionfor" name="epromotionfor" type="text"  readonly />
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Promotion From <span class="text-danger">*</span></label>
@@ -181,85 +214,41 @@
 						<div class="input-block mb-3">
 							<label class="col-form-label">Promotion To <span class="text-danger">*</span></label>
 							<select class="form-select" id="epromotionto" name="epromotionto" required>
-								<option value="">Select promotion To</option>
-								{% for i in new_id%}
+								<option selected disabled>-Select</option>
+								{% for i in new_id %}
 								<option value="{{i.id}}">{{i.Name}} </option>
 								{% endfor %}
 							</select>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Promotion Date <span class="text-danger">*</span></label>
-								<input type="date" class="form-control " id="epromotiondate"
-									name="epromotiondate" required>
+							<input type="text" class="form-control datetimepicker" id="epromotiondate" name="epromotiondate" required>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="submit">Submit</button>
+							<button class="btn btn-primary submit-btn">Submit</button>
 						</div>
-
 					</form>
 				</div>
 			</div>
 		</div>
 	</div>
 
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script>
-
-		function edit_master()
-		{
-			$("form").submit(function (event) {
-				let image = $('#eimage')
-				var formData = {
-					edit_id: $("#edit_idz").val(),
-					epromotionfor: $('#epromotionfor').val(),
-					epromotionfrom: $("#epromotionfrom").val(),
-					epromotionto: $("#epromotionto").val(),
-					epromotiondate: $("#epromotiondate").val(),
-
-				};
-				console.log(formData)
-				$.ajax({
-					type: "post",
-					url: "/update_promotion",
-					data: formData,
-					dataType: "json",
-					encode: true,
-				}).done(function (data) {
-					if (data == "Already this name Exist") {
-						$("#messages").html(data);
-					}
-					if (data == "Done") {
-						location.reload();
-					}
-				});
-				event.preventDefault();
-			});
+		function Guest_value(data){
+			fetch(`/HrmTool/Performance/get_pormotion_id/${data}`)
+			.then(res=>res.json())
+			.then(res=>{
+				console.log(res)
+				$('#edit_idz').val(res.Result.id)
+				$('#epromotionfor').val(res.employee_name.First_Name+' '+res.employee_name.Last_Name)
+				$('#epromotionfrom').val(res.current_department.Name)
+				$('#epromotionto').val(res.Result.Promotion_To)
+				$('#epromotiondate').val(res.Result.Promotion_Date)
+			})
 		}
 
+		function edit_promotion(){
 
-		function Guest_value(data)
-		{
-			var id = data;
-		$.ajax( {
-			type    : "put",
-		url     : '/HrmTool/Performance/put_data/'+id,
-		id    : id,
-		contentType: "application/json",
-
-		success: function(data) {
-			console.log(data);
-		$("#edit_idz").val(data[0].id)
-		$("#epromotionfrom").val(data[0].Promotion_From),
-		$("#epromotiondate").val(data[0].Promotion_Date),
-
-		$("#epromotionfor").val(data[0].Promotion_For),
-		$("#epromotionto").val(data[0].Promotion_To),
-		$('#edit_promotion').model('show')
-					
-				},
-			});
-		return false
 		}
 	</script>
 
@@ -297,12 +286,11 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script>
-		function deletingid(id)
-		{
+		function deletingid(id) {
 			$('#del_id').val(id)
 		}
 
-		function conformdel(id){
+		function conformdel(id) {
 			$.get('/HrmTool/Performance/delete/' + id, function () {
 				location.reload();
 			})

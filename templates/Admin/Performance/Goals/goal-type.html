@@ -43,21 +43,20 @@
 							<tr>
 								<td>{{loop.index}}</td>
 								<td>{{i.Name}}</td>
-								<td>{{i.Description}}</td>
+								<td>{{i.Description[:10:]}} ...</td>
 								<td>
 									<div class="dropdown action-label">
 										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
 											data-bs-toggle="dropdown" aria-expanded="false">
-											<i class="fa-regular fa-circle-dot text-success"></i>
-											Active
+											{% if i.Current_status=='Active' %}
+											<i class="fa-regular fa-circle-dot text-success"></i>{{i.Current_status}}
+											{% else %}
+											<i class="fa-regular fa-circle-dot text-danger"></i>{{i.Current_status}}
+											{% endif %}
 										</a>
 										<div class="dropdown-menu">
-											<a class="dropdown-item" href="#"><i
-													class="fa-regular fa-circle-dot text-success"></i>
-												Active</a>
-											<a class="dropdown-item" href="#"><i
-													class="fa-regular fa-circle-dot text-danger"></i>
-												Inactive</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Active')"><i class="fa-regular fa-circle-dot text-success"></i> Active</a>
+											<a class="dropdown-item" href="#" onclick="change_status('{{i.id}}','Inactive')"><i class="fa-regular fa-circle-dot text-danger"></i> Inactive</a>
 										</div>
 									</div>
 								</td>
@@ -87,6 +86,13 @@
 	<!-- /Page Content -->
 
 	<script>
+		function change_status(ids,info){
+			fetch(`/HrmTool/Performance/status_update_goal_type/${ids}/${info}`)
+			.then(location.reload())
+		}
+	</script>
+
+	<script>
 		function getting_id(data) {
 			console.log(data);
 			$.get("/HrmTool/Performance/get_single_id/" + data, function (res) {
@@ -94,6 +100,7 @@
 				$("#edit_idz").val(res.id);
 				$("#edit_name").val(res.Name);
 				$("#edit_description").val(res.Description);
+				$("#edit_c_stat").val(res.Current_status);
 			});
 		}
 	</script>
@@ -115,28 +122,28 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="add_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Performance/goal_type" method="post">
-						<input type="hidden" name="id" id="id" />
+					<form>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Goal Type <span class="text-danger">*</span></label>
 							<input class="form-control" type="text" name="name" id="name" required/>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Description <span class="text-danger">*</span></label>
-							<textarea class="form-control" rows="4" name="description" id="description" required></textarea>
+							<textarea class="form-control" placeholder="Enter 255 Characters" rows="4" name="description" id="description" required></textarea>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Status</label>
-							<select class="form-select" required>
-								<option>Active</option>
-								<option>Inactive</option>
-							</select>
+							<select class="form-select " id="c_status" name="c_status" required>
+								<option value="Active">Active</option>
+								<option value="Inactive">Inactive</option>
+							</select> 
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="submit">
+							<a class="btn btn-primary submit-btn" onclick="add_goal_type()">
 								Submit
-							</button>
+							</a>
 						</div>
 					</form>
 				</div>
@@ -144,6 +151,40 @@
 		</div>
 	</div>
 	<!-- /Add Goal Modal -->
+
+	<script>
+		function add_goal_type(){
+
+			let Name = $('#name').val();
+			let Desc = $('#description').val();
+			let Stat = $('#c_status').val();
+
+			if(Name===''||Name===null){$('#name').css('border-color','#ff6666')}else{$('#name').css('border-color','#00ff00')}
+			if(Desc===''||Desc===null){$('#description').css('border-color','#ff6666')}else{$('#description').css('border-color','#00ff00')}
+			if(Stat===''||Stat===null){$('#c_status').css('border-color','#ff6666')}else{$('#c_status').css('border-color','#00ff00')}
+
+			if(Name!==null && Desc!==null && Stat!==null){
+
+				const formData = new FormData();
+				formData.append('name',Name)
+				formData.append('description',Desc)
+				formData.append('c_status',Stat)
+
+				fetch(`/HrmTool/Performance/goal_type`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.add_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 
 	<!-- Edit Goal Modal -->
 	<div id="edit_type" class="modal custom-modal fade" role="dialog">
@@ -155,29 +196,27 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
+				<div class="edit_error"></div>
 				<div class="modal-body">
-					<form action="/HrmTool/Performance/edit" method="post">
+					<form>
 						<input id="edit_idz" name="edit_id" type="hidden" />
 						<div class="input-block mb-3">
 							<label class="col-form-label">Goal Type <span class="text-danger">*</span></label>
-							<input class="form-control" type="text" name="edit_name" id="edit_name" />
+							<input class="form-control" type="text" name="edit_name" id="edit_name" required />
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Description <span class="text-danger">*</span></label>
-							<textarea class="form-control" rows="4" name="edit_description"
-								id="edit_description"></textarea>
+							<textarea class="form-control" rows="4" placeholder="Enter 255 Character's" name="edit_description" id="edit_description" required></textarea>
 						</div>
 						<div class="input-block mb-3">
 							<label class="col-form-label">Status</label>
-							<select class="select">
-								<option>Active</option>
-								<option>Inactive</option>
+							<select class="form-select" id="edit_c_stat" name="edit_c_stat" required>
+								<option value="Active">Active</option>
+								<option value="Inactive">Inactive</option>
 							</select>
 						</div>
 						<div class="submit-section">
-							<button class="btn btn-primary submit-btn" type="submit">
-								Save
-							</button>
+							<a class="btn btn-primary submit-btn" onclick="edit_goal_type()"> Save</a>
 						</div>
 					</form>
 				</div>
@@ -185,6 +224,42 @@
 		</div>
 	</div>
 	<!-- /Edit Goal Modal -->
+
+	<script>
+		function edit_goal_type(){
+
+			let Edit_ID = $('#edit_idz').val();
+			let Name = $('#edit_name').val();
+			let Desc = $('#edit_description').val();
+			let Stat = $('#edit_c_stat').val();
+
+			if(Name===''||Name===null){$('#edit_name').css('border-color','#ff6666')}else{$('#edit_name').css('border-color','#00ff00')}
+			if(Desc===''||Desc===null){$('#edit_description').css('border-color','#ff6666')}else{$('#edit_description').css('border-color','#00ff00')}
+			if(Stat===''||Stat===null){$('#edit_c_stat').css('border-color','#ff6666')}else{$('#edit_c_stat').css('border-color','#00ff00')}
+
+			if(Name!==null && Desc!==null && Stat!==null){
+
+				const formData = new FormData();
+				formData.append('edit_idz',Edit_ID)
+				formData.append('edit_name',Name)
+				formData.append('edit_description',Desc)
+				formData.append('edit_c_stat',Stat)
+
+				fetch(`/HrmTool/Performance/edit`,{method:'post',body:formData})
+				.then(res=>res.json())
+				.then(res=>{
+					console.log(res)
+					if(res.Result=='Done'){
+						location.reload()
+					}else if(res.Result=='Error'){
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 181px;">Already Data Entered</h5>`)
+					}else{
+						$('.edit_error').html(`<h5 class="text-danger" style="padding-left: 200px;">Unable To Add</h5>`)
+					}
+				})
+			}
+		}
+	</script>
 
 	<!-- Delete Goal Modal -->
 	<div class="modal custom-modal fade" id="delete_type" role="dialog">

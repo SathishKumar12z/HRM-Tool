@@ -5,8 +5,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse,RedirectResponse
 from fastapi.encoders import jsonable_encoder
 # from models.schemas import masterSchemas
-import base64
-import shutil,uuid
+import shutil,uuid,os,base64
 from configs.base_config import BaseConfig
 from jose import jwt, JWTError
 # from django.contrib import messages
@@ -14,6 +13,7 @@ from datetime import datetime
 from models import get_db, models
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from pathlib import Path
 
 router = APIRouter()
 
@@ -38,7 +38,39 @@ def get_form(request:Request,db:Session = Depends(get_db)):
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
                             budget_data = db.query(models.Budget_Expenses).filter(models.Budget_Expenses.status=='ACTIVE').all()
-                            return templates.TemplateResponse("Admin/HR/Accounting/budget-expenses.html",context={"request":request,'emp_data':emp_data,'budget_data':budget_data})
+                            category_data = db.query(models.Categories).filter(models.Categories.status=='ACTIVE').all()
+                            sub_category_data = db.query(models.Sub_Category).filter(models.Sub_Category.status=='ACTIVE').all()
+                            return templates.TemplateResponse("Admin/HR/Accounting/budget-expenses.html",context={"request":request,'emp_data':emp_data,'budget_data':budget_data,'category_data':category_data,'sub_category_data':sub_category_data})
+                        else:
+                            return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
+                    else:
+                        return RedirectResponse('/HrmTool/login/login',status_code=302)
+                except:
+                    return RedirectResponse('/HrmTool/login/login',status_code=302)
+            except JWTError:
+                return RedirectResponse('/HrmTool/login/login',status_code=302)
+        else:
+            return RedirectResponse('/HrmTool/login/login',status_code=303)
+    except JWTError:
+            return RedirectResponse('/HrmTool/login/login',status_code=302)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
+
+@router.get('/select_subcategory/{ids}') 
+def get_form(ids:int,request:Request,db:Session = Depends(get_db)):
+    try:
+        if 'loginer_details' in request.session:
+            token = request.session['loginer_details']
+            try:
+                payload = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=[BaseConfig.ALGORITHM])
+                loginer_id : int= payload.get("empid") 
+                try:
+                    if loginer_id:
+                        emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
+                        if emp_data.Lock_screen == 'OFF':
+                            selective_subcategory = db.query(models.Sub_Category).filter(models.Sub_Category.Category_id==ids).filter(models.Sub_Category.status=='ACTIVE').all()
+                            response_data = jsonable_encoder({'Result':selective_subcategory})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -57,8 +89,8 @@ def get_form(request:Request,db:Session = Depends(get_db)):
 @router.post("/budget_expenses")
 def submit_expenses(request: Request, db: Session = Depends(get_db),
                     amount: str = Form(...), currency_symbol: str = Form(...), notes: str = Form(...),
-                    expense_date: str = Form(...), category: str = Form(...), sub_category: str = Form(...),
-                    receipt: str = Form(...)):
+                    expense_date: str = Form(...), main_category: str = Form(...), sub_cat_id: str = Form(...),
+                    Files: UploadFile = File(...)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -69,21 +101,29 @@ def submit_expenses(request: Request, db: Session = Depends(get_db),
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
+
+                            unique_file_name = str(uuid.uuid4())+'.pdf'
+
+                            with open (f'./templates/assets/uploaded_files/{unique_file_name}','wb+') as Budget_file:
+                                shutil.copyfileobj(Files.file,Budget_file)
+
+
                             body = models.Budget_Expenses(
                                 Amount=amount,
                                 Currency=currency_symbol,
                                 Notes=notes,
                                 Expense_Date=expense_date,
-                                Category_id=category,
-                                Sub_Category_id=sub_category,
-                                File=receipt,
+                                Category_id=main_category,
+                                Sub_Category_id=sub_cat_id,
+                                File=unique_file_name,
                                 status='ACTIVE',
-                                created_by='user123'
-                            )
-
+                                created_by=loginer_id)
+                            
                             db.add(body)
                             db.commit()
-                            return RedirectResponse("/budget-expenses", status_code=303)
+                            db.refresh(body)
+                            response_data = jsonable_encoder({'Result':'Done'})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -99,8 +139,8 @@ def submit_expenses(request: Request, db: Session = Depends(get_db),
     except Exception as e:
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
-@router.get("/taking_edit_modal/{ids}")       
-def taking_edit_modal(ids:int,request:Request,db: Session = Depends(get_db)):
+@router.get("/selective_budget_expense_id/{ids}")       
+def selective_budget_expense_id(ids:int,request:Request,db: Session = Depends(get_db)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -112,7 +152,9 @@ def taking_edit_modal(ids:int,request:Request,db: Session = Depends(get_db)):
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
                             single_data = db.query(models.Budget_Expenses).filter(models.Budget_Expenses.id==ids).filter(models.Budget_Expenses.status=='ACTIVE').first()
-                            return single_data
+                            sub_data = db.query(models.Sub_Category).filter(models.Sub_Category.Category_id==single_data.Category_id).filter(models.Sub_Category.status=='ACTIVE').all()
+                            response_data = jsonable_encoder({'Result':single_data,'sub_data':sub_data})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -130,7 +172,7 @@ def taking_edit_modal(ids:int,request:Request,db: Session = Depends(get_db)):
     
 
 @router.post('/budget_update')
-def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= Form(...),edit_amount: str =Form(...), edit_currency_symbol: str = Form(...),edit_notes: str = Form(...) , edit_expense_date: str = Form(...), edit_main_category1: str = Form(...), edit_sub_category1: str = Form(...),edit_receipt:str=Form(...)):
+def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= Form(...),edit_amount: str =Form(...), edit_currency_symbol: str = Form(...),edit_notes: str = Form(...) , edit_expense_date: str = Form(...), edit_main_categ: str = Form(...), editsub_cat_id: str = Form(...),File:UploadFile=File(None)):
     try:
         if 'loginer_details' in request.session:
             token = request.session['loginer_details']
@@ -141,9 +183,18 @@ def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= 
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            db.query(models.Budget_Expenses).filter(models.Budget_Expenses.id==edit_id).update({"Amount": edit_amount, "Currency": edit_currency_symbol, "Notes": edit_notes, "Expense_Date": edit_expense_date, "Category_id": edit_main_category1, "Sub_Category_id": edit_sub_category1 ,"File" :edit_receipt})
+
+                            if File!=None:
+                                unique_file_name = str(uuid.uuid4())+'.pdf'
+                                with open (f'./templates/assets/uploaded_files/{unique_file_name}','wb+') as Budget_file:
+                                    shutil.copyfileobj(File.file,Budget_file)
+                                    db.query(models.Budget_Expenses).filter(models.Budget_Expenses.id==edit_id).update({'File':unique_file_name})
+                                    db.commit()
+
+                            db.query(models.Budget_Expenses).filter(models.Budget_Expenses.id==edit_id).update({"Amount": edit_amount, "Currency": edit_currency_symbol, "Notes": edit_notes, "Expense_Date": edit_expense_date, "Category_id": edit_main_categ, "Sub_Category_id": editsub_cat_id })
                             db.commit()
-                            return RedirectResponse("/budget-expenses", status_code=303)
+                            response_data = jsonable_encoder({'Result':'Done'})
+                            return JSONResponse(content=response_data,status_code=200)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:
@@ -160,7 +211,7 @@ def create_data(request: Request, db: Session = Depends(get_db),  edit_id: str= 
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}) 
     
 #delete
-@router.get("/action_delete/{ids}")
+@router.get("/budget_expense_delete/{ids}")
 def taking_dlt_id(request: Request,ids:int,db: Session = Depends(get_db)):
     try:
         if 'loginer_details' in request.session:
@@ -172,10 +223,12 @@ def taking_dlt_id(request: Request,ids:int,db: Session = Depends(get_db)):
                     if loginer_id:
                         emp_data = db.query(models.Employee).filter(models.Employee.id==loginer_id).filter(models.Employee.status=='ACTIVE').first()
                         if emp_data.Lock_screen == 'OFF':
-                            db.query(models.Budget_Expenses).filter(models.Budget_Expenses.status=='ACTIVE').all()
+                            item = db.query(models.Budget_Expenses).filter(models.Budget_Expenses.id==ids).filter(models.Budget_Expenses.status=='ACTIVE').first()
                             db.query(models.Budget_Expenses).filter(models.Budget_Expenses.id == ids).update({"status":"INACTIVE"})
                             db.commit()
-                            return templates.TemplateResponse("budget-expenses.html",context={"request":request})
+                            file_path = Path(f'./templates/assets/uploaded_files/{item.File}')
+                            if os.path.exists(file_path):
+                                os.remove(file_path)
                         else:
                             return RedirectResponse('/HrmTool/Lock/lockscreen',status_code=302)
                     else:

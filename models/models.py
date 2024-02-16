@@ -79,6 +79,7 @@ class Department(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     Name = Column(String(255), nullable=False, index=True)
+    Colour = Column(String(255), nullable=False, index=True)
     Current_status = Column(String(255), nullable=False, index=True)
 
     status = Column(String(255), nullable=False, index=True)
@@ -204,13 +205,21 @@ class Tickets(Base):
 
     Ticket_Subject = Column(String(255), nullable=False, index=True)
     Ticket_Id = Column(String(255), nullable=False, index=True)
-    Employee_id = Column(String(255), nullable=False, index=True)
+    Loginer = Column(String(255), nullable=False, index=True)
     Client_id = Column(String(255), nullable=False, index=True)
     Priority = Column(String(255), nullable=False, index=True)
     CC = Column(String(255), nullable=False, index=True)
     Assign_id = Column(String(255), nullable=False, index=True)
     Description = Column(String(255), nullable=False, index=True)
     Files = Column(String(255), nullable=False, index=True)
+    Today_Tickets = Column(String(255), nullable=False, index=True)
+    Today_Tickets_percent = Column(String(255), nullable=False, index=True)
+    Solved_Tickets = Column(String(255), nullable=False, index=True)
+    Solved_Tickets_percent = Column(String(255), nullable=False, index=True)
+    Open_Tickets = Column(String(255), nullable=False, index=True)
+    Open_Tickets_percent = Column(String(255), nullable=False, index=True)
+    Pending_Tickets = Column(String(255), nullable=False, index=True)
+    Pending_Tickets_percent = Column(String(255), nullable=False, index=True)
     Current_status = Column(String(255), nullable=False, index=True)
 
     status = Column(String(255), nullable=False, index=True)
@@ -610,6 +619,7 @@ class Performance_Indicator(Base):
     Conflict_Management = Column(String(255), nullable=False, index=True)
     Attendance = Column(String(255), nullable=False, index=True)
     Meet_Deadline = Column(String(255), nullable=False, index=True)
+    
     Current_status = Column(String(255), nullable=False, index=True)
 
     status = Column(String(255), nullable=False, index=True)
@@ -652,12 +662,14 @@ class Goal_Tracking(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
+    Employee_id   = Column(String(255), nullable=False, index=True)
     Goal_Type_id   = Column(String(255), nullable=False, index=True)
     Subject    = Column(String(255), nullable=False, index=True)
     Target_Achievement   = Column(String(255), nullable=False, index=True)
     Start_Date = Column(String(255), nullable=False, index=True)
     End_Date = Column(String(255), nullable=False, index=True)
     Description  = Column(String(255), nullable=False, index=True)
+    Percentage = Column(String(255), nullable=False, index=True)
     Current_status = Column(String(255), nullable=False, index=True)
 
     status = Column(String(255), nullable=False, index=True)
@@ -688,12 +700,25 @@ class Training(Base):
 
     Training_Type_id   = Column(String(255), nullable=False, index=True)
     Trainer_id     = Column(String(255), nullable=False, index=True)
-    Employees_id = Column(String(255), nullable=False, index=True)
     Training_Cost = Column(String(255), nullable=False, index=True)
     Start_Date = Column(String(255), nullable=False, index=True)
     End_Date = Column(String(255), nullable=False, index=True)
     Description  = Column(String(255), nullable=False, index=True)
     Current_status = Column(String(255), nullable=False, index=True)
+
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+class Training_Followers(Base):
+   
+    __tablename__ = "training_followers"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    Training_id   = Column(String(255), nullable=False, index=True)
+    Employees_id = Column(String(255), nullable=False, index=True)
 
     status = Column(String(255), nullable=False, index=True)
     created_by = Column(String(255), nullable=False, index=True)
@@ -1156,8 +1181,7 @@ class Payroll_Items_Addition(Base):
     Unit_calculation  = Column(String(255), nullable=False, index=True)
     Unit_Amount = Column(String(255), nullable=False, index=True)
     Assignee_radio = Column(String(255), nullable=False, index=True)
-    Assignee_drop = Column(String(255), nullable=False,index=True) #added ths attribute
-
+    Employee_id = Column(String(255), nullable=False,index=True) #added ths attribute
 
     status = Column(String(255), nullable=False, index=True)
     created_by = Column(String(255), nullable=False, index=True)
@@ -1440,8 +1464,36 @@ class Schedule_Timing(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-Base.metadata.create_all(bind=engine)
+class Job_Graph(Base):
+   
+    __tablename__ = "job_graph"
 
+    id = Column(Integer, primary_key=True, index=True)
+
+    Department_id = Column(String(255), nullable=False, index=True)
+    Department_Color = Column(String(255), nullable=False, index=True)
+    Applier_Count = Column(String(255), nullable=False, index=True)
+    Views_Count = Column(String(255), nullable=False, index=True)
+    Jan = Column(String(255), nullable=False, index=True)
+    Feb = Column(String(255), nullable=False, index=True)
+    Mar = Column(String(255), nullable=False, index=True)
+    Apr = Column(String(255), nullable=False, index=True)
+    May = Column(String(255), nullable=False, index=True)
+    Jun = Column(String(255), nullable=False, index=True)
+    Jul = Column(String(255), nullable=False, index=True)
+    Aug = Column(String(255), nullable=False, index=True)
+    Sep = Column(String(255), nullable=False, index=True)
+    Oct = Column(String(255), nullable=False, index=True)
+    Nov = Column(String(255), nullable=False, index=True)
+    Dec = Column(String(255), nullable=False, index=True)
+    
+    status = Column(String(255), nullable=False, index=True)
+    created_by = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+
+Base.metadata.create_all(bind=engine)
 
 
 
